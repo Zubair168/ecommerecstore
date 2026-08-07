@@ -66,10 +66,13 @@ Future<void> main() async {
     debugPrint('Initialization error: $e');
   }
 
+  // Load persisted cart before starting the app
+  final cartProvider = await CartProvider.load();
+
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider.value(value: cartProvider),
       ],
       child: const OnlineShopApp(),
     ),

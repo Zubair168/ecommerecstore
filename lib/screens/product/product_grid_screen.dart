@@ -96,7 +96,7 @@ class _ProductGridScreenState extends State<ProductGridScreen> {
         mainAxisSpacing: AppSpacing.space16,
         childAspectRatio: 0.6,
       ),
-      itemBuilder: (context, i) {
+        itemBuilder: (context, i) {
         final data = docs[i].data() as Map<String, dynamic>;
         final id = docs[i].id;
         return ProductCard(
@@ -109,7 +109,7 @@ class _ProductGridScreenState extends State<ProductGridScreen> {
           reviewCount: data['reviewCount'] ?? 0,
           discountTag: data['badge'],
           isWishlisted: _wishlisted.contains(id),
-          onTap: () => Navigator.pushNamed(context, AppRoutes.productDetails),
+          onTap: () => Navigator.pushNamed(context, AppRoutes.productDetails, arguments: id),
           onWishlistTap: () => setState(() {
             _wishlisted.contains(id) ? _wishlisted.remove(id) : _wishlisted.add(id);
           }),

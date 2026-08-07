@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../constants/app_assets.dart';
 import '../../routes/app_routes.dart';
+import '../../services/auth_service.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -43,11 +44,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
       return;
     }
+
     setState(() => _loading = true);
-    await Future.delayed(const Duration(milliseconds: 800));
-    if (mounted) {
-      setState(() => _loading = false);
+    try {
+      final name = _nameCtrl.text.trim();
+      final email = _emailCtrl.text.trim();
+      final pass = _passCtrl.text;
+
+      await AuthService.signUp(email, pass, name);
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Account created')));
       Navigator.pushReplacementNamed(context, AppRoutes.home);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Sign up failed: $e')));
+      }
+    } finally {
+      if (mounted) setState(() => _loading = false);
     }
   }
 
@@ -211,7 +225,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: AppSpacing.space16),
 
                 // Social buttons
-                _SocialButton(icon: AppAssets.googleLogo, label: 'Continue with Google', onPressed: () {}),
+                _SocialButton(icon: AppAssets.googleLogo, label: 'Continue with Google', onPressed: () async {
+                  setState(() => _loading = true);
+                  try {
+                    final cred = await AuthService.signInWithGoogle();
+                    if (cred != null && mounted) {
+                      Navigator.pushReplacementNamed(context, AppRoutes.home);
+                    }
+                  } catch (e) {
+                    if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Google sign-in failed: $e')));
+                  } finally {
+                    if (mounted) setState(() => _loading = false);
+                  }
+                }),
                 const SizedBox(height: AppSpacing.space12),
                 _SocialButton(icon: AppAssets.appleLogo, label: 'Continue with Apple', onPressed: () {}),
                 const SizedBox(height: AppSpacing.space24),

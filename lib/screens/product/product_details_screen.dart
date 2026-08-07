@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../constants/app_assets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../routes/app_routes.dart';
 import '../../providers/cart_provider.dart';
+import '../../services/product_service.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
   const ProductDetailsScreen({super.key});
@@ -26,12 +28,18 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const kNavy = Color(0xFF1D2939);
-    const kOrange = Color(0xFFFF5722);
-    
-    final cart = Provider.of<CartProvider>(context, listen: false);
+    final productId = ModalRoute.of(context)?.settings.arguments as String?;
+    return FutureBuilder<DocumentSnapshot?>(
+      future: productId != null ? ProductService.getById(productId) : Future.value(null),
+      builder: (context, snap) {
+        if (snap.connectionState == ConnectionState.waiting) return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        final doc = snap.data;
+        final product = doc?.data() as Map<String, dynamic>?;
+        const kNavy = Color(0xFF1D2939);
+        const kOrange = Color(0xFFFF5722);
+        final cart = Provider.of<CartProvider>(context, listen: false);
 
-    return Scaffold(
+        return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -89,33 +97,37 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  children: List.generate(_images.length, (i) {
-                    final isSel = _selectedImage == i;
-                    return GestureDetector(
-                      onTap: () => setState(() => _selectedImage = i),
-                      child: Container(
-                        margin: const EdgeInsets.only(bottom: 10),
-                        width: 54, height: 54,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: isSel ? const Color(0xFFE91E63) : const Color(0xFFEAECF0),
-                            width: isSel ? 1.5 : 1,
+                Builder(builder: (_) {
+                  final imgs = (product?['images'] as List?)?.cast<String>() ?? _images;
+                  return Column(
+                    children: List.generate(imgs.length, (i) {
+                      final isSel = _selectedImage == i;
+                      final src = imgs[i];
+                      return GestureDetector(
+                        onTap: () => setState(() => _selectedImage = i),
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          width: 54,
+                          height: 54,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isSel ? const Color(0xFFE91E63) : const Color(0xFFEAECF0),
+                              width: isSel ? 1.5 : 1,
+                            ),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: src.startsWith('http')
+                                ? Image.network(src, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(color: const Color(0xFFF2F4F7)))
+                                : Image.asset(src, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(color: const Color(0xFFF2F4F7))),
                           ),
                         ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.asset(
-                            _images[i], fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Container(color: const Color(0xFFF2F4F7)),
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
-                ),
+                      );
+                    }),
+                  );
+                }),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Stack(
@@ -128,13 +140,21 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(16),
-                          child: Image.asset(
-                            _images[_selectedImage],
-                            width: double.infinity,
-                            height: 245,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Container(color: const Color(0xFFF2F4F7)),
-                          ),
+                          child: Builder(builder: (_) {
+                            final imgs = (product?['images'] as List?)?.cast<String>() ?? _images;
+                            return PageView.builder(
+                              itemCount: imgs.length,
+                              controller: PageController(initialPage: _selectedImage),
+                              onPageChanged: (p) => setState(() => _selectedImage = p),
+                              itemBuilder: (_, idx) {
+                                final src = imgs.elementAt(idx);
+                                if (src is String && src.startsWith('http')) {
+                                  return Image.network(src, width: double.infinity, height: 245, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(color: const Color(0xFFF2F4F7)));
+                                }
+                                return Image.asset(src, width: double.infinity, height: 245, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(color: const Color(0xFFF2F4F7)));
+                              },
+                            );
+                          }),
                         ),
                       ),
                       Positioned(
@@ -172,40 +192,40 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          const Text('Clothing', style: TextStyle(fontSize: 11, color: Color(0xFF98A2B3))),
+          Text(product?['category'] ?? 'Clothing', style: const TextStyle(fontSize: 11, color: Color(0xFF98A2B3))),
           const SizedBox(height: 2),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Expanded(
+              Expanded(
                 child: Text(
-                  'Simple minimalist Brown Bag',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF101828)),
+                  product?['name'] ?? 'Product',
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF101828)),
                 ),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(color: const Color(0xFFFFECE5), borderRadius: BorderRadius.circular(6)),
-                child: const Text('-25%', style: TextStyle(color: kOrange, fontWeight: FontWeight.w800, fontSize: 11)),
+                child: Text(product?['badge'] ?? '-%', style: const TextStyle(color: kOrange, fontWeight: FontWeight.w800, fontSize: 11)),
               ),
             ],
           ),
           const SizedBox(height: 6),
           Row(
-            children: const [
-              Icon(Icons.star_rounded, color: Color(0xFFFFC107), size: 16),
-              SizedBox(width: 4),
-              Text('4.5', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12, color: Color(0xFF101828))),
-              SizedBox(width: 4),
-              Text('( 2 reviews )', style: TextStyle(fontSize: 11, color: Color(0xFF98A2B3))),
+            children: [
+              const Icon(Icons.star_rounded, color: Color(0xFFFFC107), size: 16),
+              const SizedBox(width: 4),
+              Text('${(product?['rating'] ?? 0).toString()}', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12, color: Color(0xFF101828))),
+              const SizedBox(width: 4),
+              Text('( ${product?['reviewCount'] ?? 0} reviews )', style: const TextStyle(fontSize: 11, color: Color(0xFF98A2B3))),
             ],
           ),
           const SizedBox(height: 8),
           Row(
-            children: const [
-              Text('\$9.00', style: TextStyle(color: kOrange, fontWeight: FontWeight.w900, fontSize: 18)),
-              SizedBox(width: 8),
-              Text('\$15.00', style: TextStyle(decoration: TextDecoration.lineThrough, color: Color(0xFF98A2B3), fontSize: 13)),
+            children: [
+              Text('\$${(product?['price'] ?? 0).toStringAsFixed(2)}', style: const TextStyle(color: kOrange, fontWeight: FontWeight.w900, fontSize: 18)),
+              const SizedBox(width: 8),
+              if (product?['originalPrice'] != null) Text('\$${(product?['originalPrice']).toStringAsFixed(2)}', style: const TextStyle(decoration: TextDecoration.lineThrough, color: Color(0xFF98A2B3), fontSize: 13)),
             ],
           ),
           const SizedBox(height: 14),
@@ -228,7 +248,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'Elevate your everyday look with this timeless leather handbag. Crafted from premium materials, it offers a spacious interior, sturdy handles, and elegant detailing.',
+            product?['description'] ?? 'No description available.',
             maxLines: _isDescExpanded ? 20 : 3,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(fontSize: 12, color: Color(0xFF475467), height: 1.5),
@@ -330,13 +350,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   height: 48,
                   child: ElevatedButton(
                     onPressed: () {
-                      for(int i=0; i<_quantity; i++) {
+                      for (int i = 0; i < _quantity; i++) {
                         cart.addItem(
-                          productId: 'bag_001',
-                          title: 'Simple minimalist Brown Bag',
-                          category: 'Clothing',
-                          price: 9.00,
-                          image: AppAssets.catPhotoBags,
+                          productId: productId ?? 'unknown',
+                          title: product?['name'] ?? 'Product',
+                          category: product?['category'] ?? 'General',
+                          price: (product?['price'] ?? 0).toDouble(),
+                          image: (product?['images'] as List?)?.first ?? AppAssets.catPhotoBags,
                         );
                       }
                       Navigator.pushNamed(context, AppRoutes.cart);

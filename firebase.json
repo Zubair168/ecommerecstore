@@ -1,1 +1,9 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"flutter-firebase-auth-c6d6c","appId":"1:210548096618:android:0614e29b1c0fff81995413","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"flutter-firebase-auth-c6d6c","configurations":{"android":"1:210548096618:android:0614e29b1c0fff81995413","ios":"1:210548096618:ios:26d50ed4cc9e3957995413","web":"1:210548096618:web:0018324b6e95a3d6995413","windows":"1:210548096618:web:0837eee712a4e5a3995413"}}}}}}
+{
+  
+  "emulators": {
+    "functions": { "port": 5001 },
+    "firestore": { "port": 8080 },
+    "auth": { "port": 9099 },
+    "storage": { "port": 9199 }
+  }
+}

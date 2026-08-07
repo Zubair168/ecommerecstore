@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter/foundation.dart';
 
 class AuthService {
   static final _auth = FirebaseAuth.instance;
@@ -26,6 +28,12 @@ class AuthService {
       'photoUrl': '',
       'createdAt': FieldValue.serverTimestamp(),
     });
+    // Send email verification when available
+    try {
+      await cred.user?.sendEmailVerification();
+    } catch (_) {
+      // ignore - verification is optional for demo
+    }
     return cred;
   }
 
@@ -38,18 +46,54 @@ class AuthService {
 
   /// Sign in with Google (Simulated for this demo, usually requires google_sign_in package)
   static Future<UserCredential?> signInWithGoogle() async {
-    // In a real app with google_sign_in:
-    // final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-    // final GoogleSignInAuthentication googleAuth = await googleUser!.authentication;
-    // final OAuthCredential credential = GoogleAuthProvider.credential(
-    //   accessToken: googleAuth.accessToken,
-    //   idToken: googleAuth.idToken,
-    // );
-    // return await FirebaseAuth.instance.signInWithCredential(credential);
+    try {
+      // Web uses popup flow
+      if (kIsWeb) {
+        final provider = GoogleAuthProvider();
+        final userCred = await _auth.signInWithPopup(provider);
+        await _ensureUserDoc(userCred.user);
+        return userCred;
+      }
 
-    // Mocking for the UI flow to work immediately:
-    await Future.delayed(const Duration(seconds: 1));
-    return null; // Return a dummy or handle in UI
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) return null; // user cancelled
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final userCred = await _auth.signInWithCredential(credential);
+      await _ensureUserDoc(userCred.user);
+      return userCred;
+    } on FirebaseAuthException catch (e) {
+      rethrow;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  static Future<void> _ensureUserDoc(User? user) async {
+    if (user == null) return;
+    final doc = _db.collection('users').doc(user.uid);
+    final snapshot = await doc.get();
+    if (!snapshot.exists) {
+      await doc.set({
+        'uid': user.uid,
+        'email': user.email ?? '',
+        'displayName': user.displayName ?? '',
+        'photoUrl': user.photoURL ?? '',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+    } else {
+      // Ensure basic fields are present
+      await doc.set({
+        'email': user.email ?? '',
+        'displayName': user.displayName ?? '',
+        'photoUrl': user.photoURL ?? '',
+      }, SetOptions(merge: true));
+    }
   }
 
   /// Update user profile in Firestore
