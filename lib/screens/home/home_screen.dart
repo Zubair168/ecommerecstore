@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../constants/app_assets.dart';
 import '../../routes/app_routes.dart';
-import '../../theme/app_typography.dart';
 import '../../widgets/index.dart';
+import '../../providers/cart_provider.dart';
 
 const _kOrange = Color(0xFFFF5722);
 const _kNavy = Color(0xFF1D2939);
@@ -146,6 +147,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    const kOrange = Color(0xFFFF5722);
+    const kNavy = Color(0xFF1D2939);
+    const kCoral = Color(0xFFFF6542);
+    
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -155,61 +160,67 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            GestureDetector(
-              onTap: () => Navigator.pushNamed(context, AppRoutes.search),
-              child: Container(
-                width: 38, height: 38,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF2F4F7),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(Icons.search_rounded, size: 20, color: Color(0xFF344054)),
-              ),
-            ),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  width: 26, height: 26,
+                  width: 28, height: 28,
                   decoration: BoxDecoration(
-                    color: _kOrange,
-                    borderRadius: BorderRadius.circular(6),
+                    color: kOrange,
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(Icons.shopping_bag_rounded, color: Colors.white, size: 16),
+                  child: const Icon(Icons.shopping_bag_rounded, color: Colors.white, size: 18),
                 ),
-                const SizedBox(width: 6),
+                const SizedBox(width: 8),
                 RichText(
                   text: const TextSpan(
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, fontFamily: 'Outfit'),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, fontFamily: 'Outfit'),
                     children: [
-                      TextSpan(text: 'Online', style: TextStyle(color: _kOrange)),
-                      TextSpan(text: 'Shop', style: TextStyle(color: _kNavy)),
+                      TextSpan(text: 'Online', style: TextStyle(color: Color(0xFFFF5722))),
+                      TextSpan(text: 'Shop', style: TextStyle(color: Color(0xFF1D2939))),
                     ],
                   ),
                 ),
               ],
             ),
-            GestureDetector(
-              onTap: () => Navigator.pushNamed(context, AppRoutes.notifications),
-              child: Stack(
-                children: [
-                  Container(
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GestureDetector(
+                  onTap: () => Navigator.pushNamed(context, AppRoutes.search),
+                  child: Container(
                     width: 38, height: 38,
                     decoration: BoxDecoration(
                       color: const Color(0xFFF2F4F7),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(Icons.notifications_outlined, size: 20, color: Color(0xFF344054)),
+                    child: const Icon(Icons.search_rounded, size: 20, color: Color(0xFF344054)),
                   ),
-                  Positioned(
-                    top: 6, right: 6,
-                    child: Container(
-                      width: 6, height: 6,
-                      decoration: const BoxDecoration(color: _kOrange, shape: BoxShape.circle),
-                    ),
+                ),
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: () => Navigator.pushNamed(context, AppRoutes.notifications),
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: 38, height: 38,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF2F4F7),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Icon(Icons.notifications_outlined, size: 20, color: Color(0xFF344054)),
+                      ),
+                      Positioned(
+                        top: 6, right: 6,
+                        child: Container(
+                          width: 6, height: 6,
+                          decoration: BoxDecoration(color: kOrange, shape: BoxShape.circle),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ],
         ),
@@ -217,58 +228,61 @@ class _HomeScreenState extends State<HomeScreen> {
       body: CustomScrollView(
         slivers: [
           // ── Lively Auto-Scrolling Hero Banner ────────────────────────
-          SliverToBoxAdapter(child: _heroBannerSlider()),
+          SliverToBoxAdapter(child: _heroBannerSlider(kNavy)),
 
           // ── Real Photo Category Circles Row ─────────────────────────
           SliverToBoxAdapter(child: _photoCategoryRow()),
 
           // ── Flash Sale Header with original asset logo & countdown ──
-          SliverToBoxAdapter(child: _flashSaleHeader()),
-          SliverToBoxAdapter(child: _flashSaleList()),
+          SliverToBoxAdapter(child: _flashSaleHeader(kOrange, kCoral)),
+          SliverToBoxAdapter(child: _flashSaleList(kOrange)),
 
           // ── Limited-Time Deals ─────────────────────────────────────
           SliverToBoxAdapter(
             child: _sectionHeader(
               title: 'Limited-Time Deals',
               onSeeAll: () => Navigator.pushNamed(context, AppRoutes.productGrid),
+              orange: kOrange,
             ),
           ),
-          SliverToBoxAdapter(child: _dealsList()),
+          SliverToBoxAdapter(child: _dealsList(kOrange)),
 
           // ── Seasonal Special Banner ──────────────────────────────────
-          SliverToBoxAdapter(child: _seasonalBanner()),
+          SliverToBoxAdapter(child: _seasonalBanner(kOrange)),
 
           // ── Featured Products (Horizontal Scroll List) ───────────────
           SliverToBoxAdapter(
             child: _sectionHeader(
               title: 'Featured Products',
               onSeeAll: () => Navigator.pushNamed(context, AppRoutes.productGrid),
+              orange: kOrange,
             ),
           ),
-          SliverToBoxAdapter(child: _featuredHorizontalList()),
+          SliverToBoxAdapter(child: _featuredHorizontalList(kOrange)),
 
           // ── Deal of the Day ──────────────────────────────────────────
-          SliverToBoxAdapter(child: _dealOfTheDayCard()),
+          SliverToBoxAdapter(child: _dealOfTheDayCard(kOrange, kCoral)),
 
           // ── New Products Header & Grid ───────────────────────────────
           SliverToBoxAdapter(
             child: _sectionHeader(
               title: 'New Products',
               onSeeAll: () => Navigator.pushNamed(context, AppRoutes.productGrid),
+              orange: kOrange,
             ),
           ),
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             sliver: SliverGrid(
               delegate: SliverChildBuilderDelegate(
-                (context, i) => _buildNewProductCard(i),
+                (context, i) => _buildNewProductCard(i, kOrange),
                 childCount: _newProducts.length,
               ),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
-                childAspectRatio: 0.68,
+                childAspectRatio: 0.62,
               ),
             ),
           ),
@@ -276,27 +290,29 @@ class _HomeScreenState extends State<HomeScreen> {
           const SliverToBoxAdapter(child: SizedBox(height: 32)),
         ],
       ),
-      bottomNavigationBar: CustomBottomNavBar(
-        currentTab: NavTab.home,
-        cartBadgeCount: 3,
-        onTabSelected: (tab) {
-          switch (tab) {
-            case NavTab.category:
-              Navigator.pushReplacementNamed(context, AppRoutes.categories);
-            case NavTab.cart:
-              Navigator.pushReplacementNamed(context, AppRoutes.cart);
-            case NavTab.settings:
-              Navigator.pushReplacementNamed(context, AppRoutes.settings);
-            default:
-              break;
-          }
-        },
+      bottomNavigationBar: Consumer<CartProvider>(
+        builder: (context, cart, child) => CustomBottomNavBar(
+          currentTab: NavTab.home,
+          cartBadgeCount: cart.totalQuantity,
+          onTabSelected: (tab) {
+            switch (tab) {
+              case NavTab.category:
+                Navigator.pushReplacementNamed(context, AppRoutes.categories);
+              case NavTab.cart:
+                Navigator.pushReplacementNamed(context, AppRoutes.cart);
+              case NavTab.settings:
+                Navigator.pushReplacementNamed(context, AppRoutes.settings);
+              default:
+                break;
+            }
+          },
+        ),
       ),
     );
   }
 
   // ── Auto-scrolling Hero Banner Slider ─────────────────────────────────────────
-  Widget _heroBannerSlider() {
+  Widget _heroBannerSlider(Color navy) {
     final slides = [
       {
         'title': 'Summer Collection',
@@ -354,7 +370,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Image.asset(
                         slide['img'] as String,
                         width: 170, fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                        errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
                       ),
                     ),
                     Positioned.fill(
@@ -362,8 +378,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              (slide['color1'] as Color).withOpacity(0.95),
-                              (slide['color1'] as Color).withOpacity(0.4),
+                              (slide['color1'] as Color).withValues(alpha: 0.95),
+                              (slide['color1'] as Color).withValues(alpha: 0.4),
                               Colors.transparent,
                             ],
                             stops: const [0.0, 0.55, 1.0],
@@ -439,7 +455,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
           itemCount: _photoCategories.length,
-          separatorBuilder: (_, __) => const SizedBox(width: 18),
+          separatorBuilder: (context, index) => const SizedBox(width: 18),
           itemBuilder: (context, i) {
             final cat = _photoCategories[i];
             return GestureDetector(
@@ -457,7 +473,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Image.asset(
                         cat['img'] as String,
                         width: 58, height: 58, fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
+                        errorBuilder: (context, error, stackTrace) => Container(
                           color: const Color(0xFFF2F4F7),
                           child: const Icon(Icons.person, color: Color(0xFF667085), size: 24),
                         ),
@@ -481,7 +497,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // ── Flash Sale Header matching original asset ────────────────────────────────
-  Widget _flashSaleHeader() {
+  Widget _flashSaleHeader(Color orange, Color coral) {
     final days = _saleSeconds ~/ 86400;
     final hrs = (_saleSeconds % 86400) ~/ 3600;
     final mins = (_saleSeconds % 3600) ~/ 60;
@@ -497,8 +513,8 @@ class _HomeScreenState extends State<HomeScreen> {
             AppAssets.userFlashSale,
             height: 26,
             fit: BoxFit.contain,
-            errorBuilder: (_, __, ___) => const Text('FLASH SALE',
-                style: TextStyle(fontWeight: FontWeight.w900, color: _kOrange, fontSize: 14)),
+                errorBuilder: (_, __, ___) => Text('FLASH SALE',
+                  style: TextStyle(fontWeight: FontWeight.w900, color: orange, fontSize: 14)),
           ),
           const SizedBox(width: 8),
           Container(width: 1, height: 20, color: const Color(0xFFEAECF0)),
@@ -509,13 +525,13 @@ class _HomeScreenState extends State<HomeScreen> {
           // Coral Countdown Boxes matching original screenshot
           Row(
             children: [
-              _CdBox(_p(days), 'Days'),
+              _cdBox(_p(days), 'Days', coral),
               const SizedBox(width: 4),
-              _CdBox(_p(hrs), 'Hrs'),
+              _cdBox(_p(hrs), 'Hrs', coral),
               const SizedBox(width: 4),
-              _CdBox(_p(mins), 'Min'),
+              _cdBox(_p(mins), 'Min', coral),
               const SizedBox(width: 4),
-              _CdBox(_p(secs), 'Sec'),
+              _cdBox(_p(secs), 'Sec', coral),
             ],
           ),
         ],
@@ -523,15 +539,15 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _CdBox(String val, String label) {
+  Widget _cdBox(String val, String label, [Color color = _kCoral]) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
           width: 26, height: 26,
           alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: _kCoral,
+            decoration: BoxDecoration(
+            color: color,
             borderRadius: BorderRadius.circular(6),
           ),
           child: Text(
@@ -545,14 +561,14 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _flashSaleList() {
+  Widget _flashSaleList(Color orange) {
     return SizedBox(
-      height: 250,
+      height: 270,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         itemCount: _flash.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 10),
+        separatorBuilder: (context, index) => const SizedBox(width: 10),
         itemBuilder: (context, i) {
           final p = _flash[i];
           return SizedBox(
@@ -570,14 +586,14 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _dealsList() {
+  Widget _dealsList(Color orange) {
     return SizedBox(
-      height: 230,
+      height: 240,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         itemCount: _deals.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 10),
+        separatorBuilder: (context, index) => const SizedBox(width: 10),
         itemBuilder: (context, i) {
           final p = _deals[i];
           return SizedBox(
@@ -596,7 +612,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _seasonalBanner() {
+  Widget _seasonalBanner(Color orange) {
     return GestureDetector(
       onTap: () => Navigator.pushNamed(context, AppRoutes.productGrid),
       child: Container(
@@ -617,7 +633,7 @@ class _HomeScreenState extends State<HomeScreen> {
               right: 0, top: 0, bottom: 0,
               child: Image.asset(AppAssets.userHeroPromo,
                   width: 130, fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => const SizedBox.shrink()),
+                  errorBuilder: (context, error, stackTrace) => const SizedBox.shrink()),
             ),
             Padding(
               padding: const EdgeInsets.all(14),
@@ -638,8 +654,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Text('Explore Now',
-                        style: TextStyle(color: _kOrange, fontSize: 11, fontWeight: FontWeight.w700)),
+                    child: Text('Explore Now',
+                          style: TextStyle(color: orange, fontSize: 11, fontWeight: FontWeight.w700)),
                   ),
                 ],
               ),
@@ -651,14 +667,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // ── Featured Products Horizontal Scroll List ────────────────────────────────
-  Widget _featuredHorizontalList() {
+  Widget _featuredHorizontalList(Color orange) {
     return SizedBox(
       height: 110,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         itemCount: _featuredList.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
+        separatorBuilder: (context, index) => const SizedBox(width: 12),
         itemBuilder: (context, i) {
           final item = _featuredList[i];
           return GestureDetector(
@@ -694,7 +710,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Row(
                           children: [
                             Text('\$${(item['price'] as double).toStringAsFixed(2)}',
-                                style: const TextStyle(color: _kOrange, fontWeight: FontWeight.w800, fontSize: 13)),
+                                style: TextStyle(color: orange, fontWeight: FontWeight.w800, fontSize: 13)),
                             const SizedBox(width: 6),
                             Text('\$${(item['orig'] as double).toStringAsFixed(2)}',
                                 style: const TextStyle(decoration: TextDecoration.lineThrough, color: Color(0xFF98A2B3), fontSize: 11)),
@@ -721,7 +737,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _dealOfTheDayCard() {
+  Widget _dealOfTheDayCard(Color orange, Color coral) {
     final hrs = _dealSeconds ~/ 3600;
     final mins = (_dealSeconds % 3600) ~/ 60;
     final secs = _dealSeconds % 60;
@@ -765,7 +781,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Image.asset(
                       AppAssets.productFashion,
                       width: 85, height: 85, fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(width: 85, height: 85, color: const Color(0xFFEAECF0)),
+                      errorBuilder: (context, error, stackTrace) => Container(width: 85, height: 85, color: const Color(0xFFEAECF0)),
                     ),
                   ),
                   Positioned(
@@ -793,10 +809,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 4),
                     Row(
-                      children: const [
-                        Text('\$9.00', style: TextStyle(color: _kOrange, fontWeight: FontWeight.w800, fontSize: 14)),
-                        SizedBox(width: 6),
-                        Text('\$15.00', style: TextStyle(decoration: TextDecoration.lineThrough, color: Color(0xFF98A2B3), fontSize: 11)),
+                      children: [
+                        Text('\$9.00', style: TextStyle(color: orange, fontWeight: FontWeight.w800, fontSize: 14)),
+                        const SizedBox(width: 6),
+                        const Text('\$15.00', style: TextStyle(decoration: TextDecoration.lineThrough, color: Color(0xFF98A2B3), fontSize: 11)),
                       ],
                     ),
                     const SizedBox(height: 4),
@@ -871,7 +887,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _sectionHeader({required String title, required VoidCallback onSeeAll}) {
+  Widget _sectionHeader({required String title, required VoidCallback onSeeAll, Color orange = _kOrange}) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 10),
       child: Row(
@@ -880,14 +896,14 @@ class _HomeScreenState extends State<HomeScreen> {
           Text(title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Color(0xFF101828))),
           GestureDetector(
             onTap: onSeeAll,
-            child: const Text('See All', style: TextStyle(color: _kOrange, fontWeight: FontWeight.w700, fontSize: 13)),
+            child: Text('See All', style: TextStyle(color: orange, fontWeight: FontWeight.w700, fontSize: 13)),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildNewProductCard(int i) {
+  Widget _buildNewProductCard(int i, Color orange) {
     final p = _newProducts[i];
     final isWish = _wNew.contains(i);
 
@@ -908,15 +924,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
                   child: Image.asset(
                     p['img'] as String,
-                    width: double.infinity, height: 145, fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(height: 145, color: const Color(0xFFF2F4F7)),
+                    width: double.infinity, height: 150, fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(height: 150, color: const Color(0xFFF2F4F7)),
                   ),
                 ),
                 Positioned(
                   top: 8, left: 8,
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(color: _kOrange, borderRadius: BorderRadius.circular(4)),
+                    decoration: BoxDecoration(color: orange, borderRadius: BorderRadius.circular(4)),
                     child: Text(p['badge'] as String, style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w800)),
                   ),
                 ),
@@ -952,13 +968,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 4),
                   Row(
-                    children: const [
-                      Icon(Icons.star_rounded, color: Color(0xFFFFC107), size: 14),
-                      SizedBox(width: 3),
-                      Text(
-                        '4.5 ( 2 ) 10 Sold',
-                        style: TextStyle(fontSize: 10, color: Color(0xFF667085), fontWeight: FontWeight.w500),
-                      ),
+                    children: [
+                      const Icon(Icons.star_rounded, color: Color(0xFFFFC107), size: 14),
+                      const SizedBox(width: 2),
+                      const Text('4.5', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF101828))),
+                      const SizedBox(width: 4),
+                      Text('(2) | 10 Sold', style: TextStyle(fontSize: 10, color: Colors.grey[600])),
                     ],
                   ),
                 ],
@@ -966,6 +981,74 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+  // ── Customer Reviews Strip matching Figma ─────────────────────────────────
+  Widget _reviewsStrip() {
+    final reviews = [
+      {'name': 'Jack wylde', 'rating': 5, 'time': '2 Weeks ago', 'text': 'Absolutely love this bag! The quality is amazing for the price.', 'img': AppAssets.productFashion},
+      {'name': 'Alexa young', 'rating': 5, 'time': '1 Week ago', 'text': 'Perfect fit and great quality. Will buy again!', 'img': AppAssets.productShoe},
+      {'name': 'Mark Johnson', 'rating': 4, 'time': '3 Days ago', 'text': 'Really happy with this purchase. Fast shipping too.', 'img': AppAssets.productHeadphone},
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        children: reviews.map((r) {
+          return Container(
+            margin: const EdgeInsets.only(bottom: 14),
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: const Color(0xFFEAECF0)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Image.asset(
+                        r['img'] as String,
+                        width: 36, height: 36, fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          width: 36, height: 36,
+                          decoration: const BoxDecoration(color: Color(0xFFF2F4F7), shape: BoxShape.circle),
+                          child: Center(child: Text((r['name'] as String).substring(0, 1),
+                              style: const TextStyle(fontWeight: FontWeight.w700, color: Color(0xFF344054)))),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(r['name'] as String,
+                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF101828))),
+                          Text(r['time'] as String,
+                              style: const TextStyle(fontSize: 10, color: Color(0xFF98A2B3))),
+                        ],
+                      ),
+                    ),
+                    Row(
+                      children: List.generate(5, (i) => Icon(
+                        i < (r['rating'] as int) ? Icons.star_rounded : Icons.star_border_rounded,
+                        color: const Color(0xFFFFC107), size: 13,
+                      )),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(r['text'] as String,
+                    style: const TextStyle(fontSize: 12, color: Color(0xFF475467), height: 1.4)),
+              ],
+            ),
+          );
+        }).toList(),
       ),
     );
   }
@@ -1010,7 +1093,7 @@ class _FlashCard extends StatelessWidget {
                   child: Image.asset(
                     p['img'] as String,
                     width: double.infinity, height: 135, fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(height: 135, color: const Color(0xFFF2F4F7)),
+                    errorBuilder: (context, error, stackTrace) => Container(height: 135, color: const Color(0xFFF2F4F7)),
                   ),
                 ),
                 Positioned(
@@ -1051,14 +1134,22 @@ class _FlashCard extends StatelessWidget {
                   ),
                   if (showProgress) ...[
                     const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        const Icon(Icons.star_rounded, color: Color(0xFFFFC107), size: 14),
+                        const SizedBox(width: 2),
+                        const Text('4.8', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF101828))),
+                        const SizedBox(width: 4),
+                        Text('(124) | $sold Sold', style: TextStyle(fontSize: 10, color: Color(0xFF667085))),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
                     LinearProgressIndicator(
                       value: sold / total,
                       backgroundColor: const Color(0xFFF2F4F7),
                       valueColor: const AlwaysStoppedAnimation(_kOrange),
                       minHeight: 4,
                     ),
-                    const SizedBox(height: 2),
-                    Text('Has sold $sold', style: const TextStyle(fontSize: 9, color: Color(0xFF98A2B3))),
                   ],
                 ],
               ),

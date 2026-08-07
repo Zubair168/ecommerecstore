@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import '../constants/app_assets.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_spacing.dart';
-import '../theme/app_typography.dart';
 
-/// Reusable Search Bar input with filter button icon option
+/// Professional Search Bar with refined design and shadow
 class CustomSearchBar extends StatelessWidget {
   final String hintText;
   final VoidCallback? onTap;
@@ -17,7 +12,7 @@ class CustomSearchBar extends StatelessWidget {
 
   const CustomSearchBar({
     super.key,
-    this.hintText = 'Search category, product...',
+    this.hintText = 'Search Products...',
     this.onTap,
     this.onChanged,
     this.onFilterTap,
@@ -30,9 +25,16 @@ class CustomSearchBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.backgroundAlt,
-        borderRadius: AppSpacing.radiusMedium,
-        border: Border.all(color: AppColors.border),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        border: Border.all(color: const Color(0xFFEAECF0)),
       ),
       child: TextField(
         controller: controller,
@@ -40,44 +42,21 @@ class CustomSearchBar extends StatelessWidget {
         autofocus: autofocus,
         onTap: onTap,
         onChanged: onChanged,
-        style: AppTypography.textTheme.bodyMedium?.copyWith(
-          color: AppColors.textPrimary,
-        ),
+        style: const TextStyle(color: Color(0xFF101828), fontSize: 14),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: AppTypography.textTheme.bodyMedium?.copyWith(
-            color: AppColors.textSecondary,
-          ),
-          prefixIcon: Padding(
-            padding: const EdgeInsets.all(AppSpacing.space12),
-            child: SvgPicture.asset(
-              AppAssets.navSearch,
-              width: 20,
-              height: 20,
-              colorFilter: const ColorFilter.mode(
-                AppColors.textSecondary,
-                BlendMode.srcIn,
-              ),
-            ),
-          ),
+          hintStyle: const TextStyle(color: Color(0xFF98A2B3), fontSize: 14),
+          prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF98A2B3), size: 22),
           suffixIcon: onFilterTap != null
               ? IconButton(
-                  icon: SvgPicture.asset(
-                    AppAssets.iconFilterConfig,
-                    width: 20,
-                    height: 20,
-                    colorFilter: const ColorFilter.mode(
-                      AppColors.primary,
-                      BlendMode.srcIn,
-                    ),
-                  ),
+                  icon: const Icon(Icons.tune_rounded, color: Color(0xFFFF5722), size: 20),
                   onPressed: onFilterTap,
                 )
               : null,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            vertical: AppSpacing.space14,
-          ),
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(vertical: 14),
         ),
       ),
     );

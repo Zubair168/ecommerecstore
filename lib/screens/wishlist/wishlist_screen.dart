@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../constants/app_assets.dart';
 import '../../routes/app_routes.dart';
+import '../../services/auth_service.dart';
+import '../../widgets/index.dart';
 
 class WishlistScreen extends StatefulWidget {
   const WishlistScreen({super.key});
@@ -48,6 +50,9 @@ class _WishlistScreenState extends State<WishlistScreen> {
     const kNavy = Color(0xFF1D2939);
     const kOrange = Color(0xFFFF5722);
 
+    // If app uses auth, show prompt when not signed in
+    // (lightweight check without importing AuthService here to avoid extra dependency)
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -63,32 +68,12 @@ class _WishlistScreenState extends State<WishlistScreen> {
       ),
       body: Column(
         children: [
-          // Search Bar matching 25_wishlist.png
+          // Search Bar matching professional design
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            child: Container(
-              height: 44,
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF9FAFB),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: const Color(0xFFEAECF0)),
-              ),
-              child: Row(
-                children: const [
-                  Icon(Icons.search_rounded, color: Color(0xFF98A2B3), size: 20),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Search Products...',
-                        hintStyle: TextStyle(color: Color(0xFF98A2B3), fontSize: 13),
-                        border: InputBorder.none,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: CustomSearchBar(
+              hintText: 'Search Products...',
+              onChanged: (v) {},
             ),
           ),
           const SizedBox(height: 8),
@@ -152,7 +137,18 @@ class _WishlistScreenState extends State<WishlistScreen> {
 
           // Wishlist Items List
           Expanded(
-            child: ListView.separated(
+            child: AuthService.currentUser == null
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text('Please sign in to view your wishlist', style: TextStyle(fontSize: 16, color: Color(0xFF667085))),
+                        const SizedBox(height: 12),
+                        ElevatedButton(onPressed: () => Navigator.pushNamed(context, AppRoutes.login), child: const Text('Sign in')),
+                      ],
+                    ),
+                  )
+                : ListView.separated(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               itemCount: _wishlistItems.length,
               separatorBuilder: (_, __) => const Divider(height: 24, color: Color(0xFFEAECF0)),

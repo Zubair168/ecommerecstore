@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../constants/app_assets.dart';
 import '../../routes/app_routes.dart';
 
@@ -17,6 +19,16 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     const kNavy = Color(0xFF1D2939);
     const kOrange = Color(0xFFFF5722);
 
+    final Map<String, dynamic>? order = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+
+    if (order == null) {
+      return Scaffold(body: Center(child: Text('No order data found')));
+    }
+
+    final items = order['items'] as List? ?? [];
+    final timestamp = order['createdAt'] as Timestamp?;
+    final dateStr = timestamp != null ? DateFormat('MMM d, yyyy').format(timestamp.toDate()) : 'Recent';
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -32,7 +44,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       ),
       body: Column(
         children: [
-          // Toggle Bar matching 36_order_details.png
+          // Toggle Bar
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Container(
@@ -100,23 +112,19 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                   icon: Icons.shopping_bag_outlined,
                   title: 'Your order',
                   child: Column(
-                    children: [
-                      _ProductRow(
-                        category: 'Clothing',
-                        title: 'Winter Front Zipper And Front Pocket Hoodie Warm For Men',
-                        price: '\$9.00',
-                        origPrice: '\$18.00',
-                        img: AppAssets.productFashion,
-                      ),
-                      const SizedBox(height: 12),
-                      _ProductRow(
-                        category: 'Watches',
-                        title: 'Full titanium Rolex with silver chains outside',
-                        price: '\$50.00',
-                        origPrice: '\$80.00',
-                        img: AppAssets.productHeadphone,
-                      ),
-                    ],
+                    children: items.map((item) {
+                      final itemData = item as Map<String, dynamic>;
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: _ProductRow(
+                          category: 'Product',
+                          title: itemData['title'] ?? '',
+                          price: '\$${(itemData['price'] ?? 0).toStringAsFixed(2)}',
+                          qty: itemData['quantity'] ?? 1,
+                          img: itemData['image'] ?? AppAssets.productFashion,
+                        ),
+                      );
+                    }).toList(),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -127,70 +135,18 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                   title: 'Delivery Address',
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Icon(Icons.location_on_outlined, color: Color(0xFF475467), size: 20),
-                      SizedBox(width: 10),
+                    children: [
+                      const Icon(Icons.location_on_outlined, color: Color(0xFF475467), size: 20),
+                      const SizedBox(width: 10),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Home', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: Color(0xFF101828))),
-                            SizedBox(height: 3),
-                            Text('Max Tiger ( +100 123 1245 3534)', style: TextStyle(fontSize: 12, color: Color(0xFF475467))),
-                            SizedBox(height: 2),
-                            Text('00000, Al Garhoud, Dubai, United Arab Emirates', style: TextStyle(fontSize: 12, color: Color(0xFF667085))),
+                            const Text('Default Address', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: Color(0xFF101828))),
+                            const SizedBox(height: 3),
+                            Text(order['address'] ?? 'No address provided', style: const TextStyle(fontSize: 12, color: Color(0xFF667085))),
                           ],
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Section: Delivery
-                _SectionBlock(
-                  icon: Icons.local_shipping_outlined,
-                  title: 'Delivery',
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(color: const Color(0xFFF2F4F7), borderRadius: BorderRadius.circular(8)),
-                        child: const Icon(Icons.local_shipping_rounded, size: 20, color: Color(0xFF344054)),
-                      ),
-                      const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text('Express Delivery', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: Color(0xFF101828))),
-                          SizedBox(height: 2),
-                          Text('Estimated delivery Aug 24 - 26', style: TextStyle(fontSize: 12, color: Color(0xFF667085))),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Section: Coupon & Voucher
-                _SectionBlock(
-                  icon: Icons.confirmation_number_outlined,
-                  title: 'Coupon & Voucher',
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: const BoxDecoration(color: Color(0xFFFFECB3), shape: BoxShape.circle),
-                        child: const Icon(Icons.percent_rounded, size: 16, color: Color(0xFFFF9800)),
-                      ),
-                      const SizedBox(width: 10),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text('20% OFF on All Fashion Items', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: Color(0xFF101828))),
-                          SizedBox(height: 2),
-                          Text('Use Code: FASHION20   Valid till Nov 30, 2025', style: TextStyle(fontSize: 11, color: Color(0xFF667085))),
-                        ],
                       ),
                     ],
                   ),
@@ -203,21 +159,15 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                   title: 'Payment Details',
                   child: Column(
                     children: [
-                      _DetailRow('Sub total (2 items)', '\$59.00'),
+                      _DetailRow('Sub total', '\$${(order['total'] ?? 0).toStringAsFixed(2)}'),
                       const SizedBox(height: 8),
-                      _DetailRow('Discount applied', '\$14.00'),
-                      const SizedBox(height: 8),
-                      _DetailRow('Shipping Fee', '\$8.00'),
-                      const SizedBox(height: 8),
-                      _DetailRow('Promo', '-\$10.00'),
-                      const SizedBox(height: 8),
-                      _DetailRow('Estimated VAT', '\$4.00'),
+                      const _DetailRow('Shipping Fee', '\$0.00'),
                       const Divider(height: 20, color: Color(0xFFEAECF0)),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
-                          Text('Total Amount', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Color(0xFF101828))),
-                          Text('\$52.00', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: kOrange)),
+                        children: [
+                          const Text('Total Amount', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Color(0xFF101828))),
+                          Text('\$${(order['total'] ?? 0).toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: kOrange)),
                         ],
                       ),
                     ],
@@ -230,16 +180,14 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                   icon: Icons.receipt_long_outlined,
                   title: 'Order Summary',
                   child: Column(
-                    children: const [
-                      _DetailRow('Order ID', '#ORD57231', isBold: true),
-                      SizedBox(height: 8),
-                      _DetailRow('Order date', '21 Aug, 2025'),
-                      SizedBox(height: 8),
-                      _DetailRow('Payment method', 'Cash on delivery'),
-                      SizedBox(height: 8),
-                      _DetailRow('Tracking ID:', 'SDX1023947'),
-                      SizedBox(height: 8),
-                      _DetailRow('Delivery Partner:', 'SwiftDrop Logistics'),
+                    children: [
+                      _DetailRow('Order ID', '#${order['id'] ?? 'N/A'}', isBold: true),
+                      const SizedBox(height: 8),
+                      _DetailRow('Order date', dateStr),
+                      const SizedBox(height: 8),
+                      const _DetailRow('Payment method', 'Cash on delivery'),
+                      const SizedBox(height: 8),
+                      _DetailRow('Status', order['status'] ?? 'Processing'),
                     ],
                   ),
                 ),
@@ -316,14 +264,14 @@ class _ProductRow extends StatelessWidget {
   final String category;
   final String title;
   final String price;
-  final String origPrice;
+  final int qty;
   final String img;
 
   const _ProductRow({
     required this.category,
     required this.title,
     required this.price,
-    required this.origPrice,
+    required this.qty,
     required this.img,
   });
 
@@ -347,10 +295,10 @@ class _ProductRow extends StatelessWidget {
                   style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF101828))),
               const SizedBox(height: 4),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(price, style: const TextStyle(color: Color(0xFFFF5722), fontWeight: FontWeight.w800, fontSize: 13)),
-                  const SizedBox(width: 6),
-                  Text(origPrice, style: const TextStyle(decoration: TextDecoration.lineThrough, color: Color(0xFF98A2B3), fontSize: 11)),
+                  Text('Qty: $qty', style: const TextStyle(fontSize: 11, color: Color(0xFF667085))),
                 ],
               ),
             ],

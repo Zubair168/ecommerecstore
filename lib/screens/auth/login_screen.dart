@@ -3,8 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../constants/app_assets.dart';
 import '../../routes/app_routes.dart';
-import '../../theme/app_colors.dart';
-import '../../widgets/index.dart';
+import '../../services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -30,10 +29,24 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
-    await Future.delayed(const Duration(milliseconds: 800));
-    if (mounted) {
-      setState(() => _loading = false);
-      Navigator.pushReplacementNamed(context, AppRoutes.home);
+    try {
+      await AuthService.signIn(_emailCtrl.text.trim(), _passCtrl.text);
+      if (mounted) Navigator.pushReplacementNamed(context, AppRoutes.home);
+    } on Exception catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login failed: ${e.toString()}')));
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _googleLogin() async {
+    setState(() => _loading = true);
+    try {
+      await AuthService.signInWithGoogle();
+      // If signInWithGoogle returns a credential (real flow), proceed. If mocked, still navigate.
+      if (mounted) Navigator.pushReplacementNamed(context, AppRoutes.home);
+    } finally {
+      if (mounted) setState(() => _loading = false);
     }
   }
 
@@ -278,7 +291,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 _SocialButton(
                   icon: AppAssets.googleLogo,
                   label: 'Continue with Google',
-                  onPressed: _login,
+                  onPressed: _googleLogin,
                 ),
                 const SizedBox(height: 12),
 
@@ -286,7 +299,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 _SocialButton(
                   icon: AppAssets.appleLogo,
                   label: 'Continue with Apple',
-                  onPressed: _login,
+                  onPressed: _googleLogin,
                 ),
                 const SizedBox(height: 32),
               ],

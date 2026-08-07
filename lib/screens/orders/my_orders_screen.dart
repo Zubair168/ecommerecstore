@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import '../../constants/app_assets.dart';
 import '../../routes/app_routes.dart';
+import '../../services/order_service.dart';
+import '../../services/auth_service.dart';
 
 class MyOrdersScreen extends StatefulWidget {
   const MyOrdersScreen({super.key});
@@ -10,9 +14,8 @@ class MyOrdersScreen extends StatefulWidget {
 }
 
 class _MyOrdersScreenState extends State<MyOrdersScreen> {
-  int _selectedFilter = 0; // 0: All, 1: Pending, 2: Processing, 3: On hold
-
-  static const _filters = ['All', 'Pending', 'Processing', 'On hold'];
+  int _selectedFilter = 0; // 0: All, 1: Pending, 2: Processing, 3: Completed
+  static const _filters = ['All', 'Pending', 'Processing', 'Completed'];
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +36,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
       ),
       body: Column(
         children: [
-          // Horizontal Filter Chips matching 38_my_orders_1.png
+          // Filter Bar
           SizedBox(
             height: 48,
             child: ListView.separated(
@@ -66,57 +69,84 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
           ),
           const SizedBox(height: 12),
 
-          // Orders List
+          // Real-time Orders from Firestore
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              children: [
-                // Group 1: Orders from oct 7 ,2025
-                const Text('Orders from oct 7 ,2025',
-                    style: TextStyle(fontSize: 13, color: Color(0xFF667085), fontWeight: FontWeight.w600)),
-                const SizedBox(height: 10),
-                _OrderItemCard(
-                  title: 'Winter Front Zipper hoodie',
-                  price: '\$9.00',
-                  qty: 2,
-                  totalPrice: '\$18.00',
-                  img: AppAssets.productFashion,
-                  showBuyAgain: true,
-                ),
-                const SizedBox(height: 12),
-                _OrderItemCard(
-                  title: 'Full titanium Rolex watch',
-                  price: '\$24.00',
-                  qty: 1,
-                  totalPrice: '\$24.00',
-                  img: AppAssets.productHeadphone,
-                  showBuyAgain: true,
-                ),
-                const SizedBox(height: 20),
+            child: AuthService.currentUser == null
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text('Please sign in to view your orders', style: TextStyle(fontSize: 16, color: Color(0xFF667085))),
+                        const SizedBox(height: 12),
+                        ElevatedButton(onPressed: () => Navigator.pushNamed(context, AppRoutes.login), child: const Text('Sign in')),
+                      ],
+                    ),
+                  )
+                : StreamBuilder<QuerySnapshot>(
+              stream: OrderService.userOrders,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.receipt_long_outlined, size: 64, color: Colors.grey[300]),
+                        const SizedBox(height: 16),
+                        const Text('No orders found', style: TextStyle(color: Colors.grey, fontSize: 16)),
+                      ],
+                    ),
+                  );
+                }
 
-                // Group 2: Orders from oct 6 ,2025
-                const Text('Orders from oct 6 ,2025',
-                    style: TextStyle(fontSize: 13, color: Color(0xFF667085), fontWeight: FontWeight.w600)),
-                const SizedBox(height: 10),
-                _OrderItemCard(
-                  title: 'Perfect shoes for trekking',
-                  price: '\$20.00',
-                  qty: 3,
-                  totalPrice: '\$60.00',
-                  img: AppAssets.productShoe,
-                  showBuyAgain: true,
-                ),
-                const SizedBox(height: 12),
-                _OrderItemCard(
-                  title: 'Sleeveless t-shirt with fur inside',
-                  price: '\$15.00',
-                  qty: 2,
-                  totalPrice: '\$30.00',
-                  img: AppAssets.productFashion,
-                  showBuyAgain: true,
-                ),
-                const SizedBox(height: 32),
-              ],
+                final allOrders = snapshot.data!.docs;
+                final filteredOrders = _selectedFilter == 0 
+                  ? allOrders 
+                  : allOrders.where((doc) => (doc.data() as Map)['status'] == _filters[_selectedFilter]).toList();
+
+                if (filteredOrders.isEmpty) {
+                   return Center(child: Text('No orders with status: ${_filters[_selectedFilter]}'));
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: filteredOrders.length,
+                  itemBuilder: (context, index) {
+                    final order = filteredOrders[index].data() as Map<String, dynamic>;
+                    final items = (order['items'] as List);
+                    final timestamp = order['createdAt'] as Timestamp?;
+                    final dateStr = timestamp != null ? DateFormat('MMM d, yyyy').format(timestamp.toDate()) : 'Recent';
+                    
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16, bottom: 8),
+                          child: Text('Orders from $dateStr', style: const TextStyle(fontSize: 13, color: Color(0xFF667085), fontWeight: FontWeight.w600)),
+                        ),
+                        ...items.map((item) {
+                          final itemData = item as Map<String, dynamic>;
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: _OrderItemCard(
+                              title: itemData['title'] ?? 'Product',
+                              price: '\$${(itemData['price'] ?? 0).toStringAsFixed(2)}',
+                              qty: itemData['quantity'] ?? 1,
+                              totalPrice: '\$${(order['total'] ?? 0).toStringAsFixed(2)}',
+                              img: itemData['image'] ?? AppAssets.productFashion,
+                              status: order['status'] ?? 'Processing',
+                              onTap: () => Navigator.pushNamed(context, AppRoutes.orderDetails, arguments: order),
+                            ),
+                          );
+                        }).toList(),
+                      ],
+                    );
+                  },
+                );
+              },
             ),
           ),
         ],
@@ -131,7 +161,8 @@ class _OrderItemCard extends StatelessWidget {
   final int qty;
   final String totalPrice;
   final String img;
-  final bool showBuyAgain;
+  final String status;
+  final VoidCallback onTap;
 
   const _OrderItemCard({
     required this.title,
@@ -139,7 +170,8 @@ class _OrderItemCard extends StatelessWidget {
     required this.qty,
     required this.totalPrice,
     required this.img,
-    this.showBuyAgain = false,
+    required this.status,
+    required this.onTap,
   });
 
   @override
@@ -148,7 +180,7 @@ class _OrderItemCard extends StatelessWidget {
     const kOrange = Color(0xFFFF5722);
 
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, AppRoutes.orderDetails),
+      onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
@@ -170,8 +202,17 @@ class _OrderItemCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(title, maxLines: 2, overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF101828))),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(child: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF101828)))),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(color: const Color(0xFFECFDF3), borderRadius: BorderRadius.circular(6)),
+                            child: Text(status, style: const TextStyle(color: Color(0xFF027A48), fontSize: 10, fontWeight: FontWeight.w700)),
+                          ),
+                        ],
+                      ),
                       const SizedBox(height: 4),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -187,7 +228,7 @@ class _OrderItemCard extends StatelessWidget {
                           text: TextSpan(
                             style: const TextStyle(fontSize: 12, color: Color(0xFF667085)),
                             children: [
-                              TextSpan(text: 'Total($qty items): '),
+                              TextSpan(text: 'Total: '),
                               TextSpan(text: totalPrice, style: const TextStyle(color: kOrange, fontWeight: FontWeight.w800)),
                             ],
                           ),
@@ -211,20 +252,18 @@ class _OrderItemCard extends StatelessWidget {
                   ),
                   child: const Text('Cancel/Refund', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF344054))),
                 ),
-                if (showBuyAgain) ...[
-                  const SizedBox(width: 8),
-                  ElevatedButton(
-                    onPressed: () => Navigator.pushNamed(context, AppRoutes.cart),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: kNavy,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    ),
-                    child: const Text('Buy again', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: () => Navigator.pushNamed(context, AppRoutes.productDetails),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: kNavy,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   ),
-                ],
+                  child: const Text('Buy again', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
+                ),
               ],
             ),
           ],

@@ -93,7 +93,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
         ),
         child: PrimaryButton(
           text: 'Confirm Payment Method',
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.pop(context, _selectedIndex),
         ),
       ),
     );

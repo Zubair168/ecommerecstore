@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../routes/app_routes.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../../widgets/index.dart';
+import '../../services/product_service.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -16,23 +17,42 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   final _ctrl = TextEditingController();
   bool _hasQuery = false;
-  final List<String> _recentSearches = ['Nike Shoes', 'Gaming Console', 'Headphones', 'Levi\'s Jacket'];
-  static const _popular = ['Electronics', 'Fashion', 'Beauty', 'Sports', 'Furniture', 'Home', 'Toys', 'Books'];
-
-  // Fake results shown when user has a query
-  static const _results = [
-    (title: 'Nintendo Switch OLED', price: 299.99, category: 'Gaming'),
-    (title: 'Sony WH-1000XM5 Headphones', price: 199.99, category: 'Electronics'),
-    (title: 'Nike Air Max 2024', price: 89.99, category: 'Footwear'),
-    (title: 'Apple AirPods Pro (2nd Gen)', price: 219.00, category: 'Electronics'),
-    (title: 'Levi\'s Classic Denim Jacket', price: 59.99, category: 'Fashion'),
-    (title: 'JBL Charge 5 Speaker', price: 149.99, category: 'Electronics'),
-  ];
+  List<DocumentSnapshot> _results = [];
+  bool _isSearching = false;
+  final List<String> _recentSearches = ['Hoodie', 'Sneakers', 'Headphones', 'Bag'];
+  static const _popular = ['Men', 'Women', 'Shoes', 'Electronics', 'Bags', 'Watches'];
 
   @override
   void dispose() {
     _ctrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _performSearch(String query) async {
+    if (query.trim().isEmpty) {
+      setState(() {
+        _hasQuery = false;
+        _results = [];
+      });
+      return;
+    }
+
+    setState(() {
+      _hasQuery = true;
+      _isSearching = true;
+    });
+
+    try {
+      final snap = await ProductService.search(query);
+      if (mounted) {
+        setState(() {
+          _results = snap.docs;
+          _isSearching = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) setState(() => _isSearching = false);
+    }
   }
 
   @override
@@ -45,13 +65,12 @@ class _SearchScreenState extends State<SearchScreen> {
         titleSpacing: 0,
         automaticallyImplyLeading: false,
         title: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.space16, 0, AppSpacing.space16, 0),
+          padding: const EdgeInsets.fromLTRB(AppSpacing.space16, 0, AppSpacing.space16, 0),
           child: CustomSearchBar(
             controller: _ctrl,
             hintText: 'Search products...',
             autofocus: true,
-            onChanged: (v) => setState(() => _hasQuery = v.trim().isNotEmpty),
+            onChanged: (v) => _performSearch(v),
             onFilterTap: () => Navigator.pushNamed(context, AppRoutes.filter),
           ),
         ),
@@ -64,16 +83,30 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  // ── Results grid ────────────────────────────────────────────────────────────
   Widget _buildResults() {
+    if (_isSearching) {
+      return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+    }
+
+    if (_results.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.search_off_rounded, size: 64, color: Colors.grey[300]),
+            const SizedBox(height: 16),
+            Text('No results found for "${_ctrl.text}"', style: const TextStyle(color: Colors.grey)),
+          ],
+        ),
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.space16, AppSpacing.space12, AppSpacing.space16, 0),
-          child: Text('${_results.length} results for "${_ctrl.text}"',
-            style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary)),
+          padding: const EdgeInsets.fromLTRB(AppSpacing.space16, AppSpacing.space12, AppSpacing.space16, 0),
+          child: Text('${_results.length} results found', style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary)),
         ),
         Expanded(
           child: ListView.separated(
@@ -81,18 +114,19 @@ class _SearchScreenState extends State<SearchScreen> {
             itemCount: _results.length,
             separatorBuilder: (context, i) => const Divider(color: AppColors.divider, height: 16),
             itemBuilder: (context, i) {
-              final r = _results[i];
+              final data = _results[i].data() as Map<String, dynamic>;
+              final String img = (data['images'] as List?)?.first ?? '';
               return ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: Container(
-                  width: 56, height: 56,
-                  decoration: BoxDecoration(color: AppColors.backgroundAlt, borderRadius: AppSpacing.radiusMedium),
-                  child: const Icon(Icons.image_outlined, color: AppColors.border, size: 28),
+                leading: ClipRRect(
+                  borderRadius: AppSpacing.radiusMedium,
+                  child: img.isNotEmpty 
+                    ? Image.asset(img, width: 56, height: 56, fit: BoxFit.cover, errorBuilder: (_, __, ___) => _fallbackIcon())
+                    : _fallbackIcon(),
                 ),
-                title: Text(r.title, style: AppTypography.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
-                subtitle: Text(r.category, style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary)),
-                trailing: Text('\$${r.price.toStringAsFixed(2)}',
-                  style: AppTypography.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary)),
+                title: Text(data['name'] ?? '', style: AppTypography.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
+                subtitle: Text(data['category'] ?? '', style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary)),
+                trailing: Text('\$${(data['price'] ?? 0).toStringAsFixed(2)}', style: AppTypography.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary)),
                 onTap: () => Navigator.pushNamed(context, AppRoutes.productDetails),
               );
             },
@@ -102,58 +136,39 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  // ── Suggestions ─────────────────────────────────────────────────────────────
+  Widget _fallbackIcon() {
+    return Container(width: 56, height: 56, decoration: BoxDecoration(color: AppColors.backgroundAlt, borderRadius: AppSpacing.radiusMedium), child: const Icon(Icons.image_outlined, color: AppColors.border, size: 28));
+  }
+
   Widget _buildSuggestions() {
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.space16),
       children: [
-        // Recent
         if (_recentSearches.isNotEmpty) ...[
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text('Recent Searches',
-              style: AppTypography.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
-            GestureDetector(
-              onTap: () => setState(() => _recentSearches.clear()),
-              child: Text('Clear All',
-                style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600)),
-            ),
+            Text('Recent Searches', style: AppTypography.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
+            GestureDetector(onTap: () => setState(() => _recentSearches.clear()), child: Text('Clear All', style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600))),
           ]),
           const SizedBox(height: AppSpacing.space12),
           Wrap(
-            spacing: 8,
-            runSpacing: 8,
+            spacing: 8, runSpacing: 8,
             children: _recentSearches.map((s) => GestureDetector(
-              onTap: () {
-                _ctrl.text = s;
-                setState(() => _hasQuery = true);
-              },
+              onTap: () { _ctrl.text = s; _performSearch(s); },
               child: Chip(
                 label: Text(s),
                 avatar: const Icon(Icons.history_rounded, size: 16, color: AppColors.textSecondary),
-                deleteIcon: const Icon(Icons.close, size: 14, color: AppColors.textSecondary),
-                onDeleted: () => setState(() => _recentSearches.remove(s)),
               ),
             )).toList(),
           ),
           const SizedBox(height: AppSpacing.space24),
         ],
-
-        // Popular categories
-        Text('Popular Categories',
-          style: AppTypography.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
+        Text('Popular Categories', style: AppTypography.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
         const SizedBox(height: AppSpacing.space12),
         Wrap(
-          spacing: 8,
-          runSpacing: 8,
+          spacing: 8, runSpacing: 8,
           children: _popular.map((c) => GestureDetector(
-            onTap: () {
-              _ctrl.text = c;
-              setState(() => _hasQuery = true);
-            },
-            child: CategoryChip(label: c, onTap: () {
-              _ctrl.text = c;
-              setState(() => _hasQuery = true);
-            }),
+            onTap: () { _ctrl.text = c; _performSearch(c); },
+            child: CategoryChip(label: c, onTap: () { _ctrl.text = c; _performSearch(c); }),
           )).toList(),
         ),
       ],

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../constants/app_assets.dart';
 import '../../routes/app_routes.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../../widgets/index.dart';
+import '../../services/product_service.dart';
 
 class ProductGridScreen extends StatefulWidget {
   const ProductGridScreen({super.key});
@@ -16,15 +17,7 @@ class ProductGridScreen extends StatefulWidget {
 
 class _ProductGridScreenState extends State<ProductGridScreen> {
   bool _isGridView = true;
-  final Set<int> _wishlisted = {};
-
-  static final _products = [
-    {'img': AppAssets.productSwitchConsole1, 'title': 'Nintendo Switch OLED Console', 'category': 'Gaming', 'price': 299.99, 'orig': 349.99, 'rating': 4.8, 'reviews': 124, 'sold': 320, 'discount': '-15%'},
-    {'img': AppAssets.productHeadphone, 'title': 'Sony WH-1000XM5 Headphones', 'category': 'Electronics', 'price': 199.99, 'orig': 349.99, 'rating': 4.9, 'reviews': 342, 'sold': 560, 'discount': '-43%'},
-    {'img': AppAssets.productShoe, 'title': 'Nike Air Max 2024 Running Shoes', 'category': 'Footwear', 'price': 89.99, 'orig': 130.00, 'rating': 4.7, 'reviews': 87, 'sold': 210, 'discount': '-31%'},
-    {'img': AppAssets.productFashion, 'title': 'Levi\'s Classic Denim Jacket', 'category': 'Fashion', 'price': 59.99, 'orig': 89.99, 'rating': 4.6, 'reviews': 56, 'sold': 120},
-    {'img': AppAssets.productSwitchConsole2, 'title': 'JBL Charge 5 Portable Speaker', 'category': 'Audio', 'price': 149.99, 'orig': 199.99, 'rating': 4.7, 'reviews': 134, 'sold': 290},
-  ];
+  final Set<String> _wishlisted = {};
 
   @override
   Widget build(BuildContext context) {
@@ -47,94 +40,102 @@ class _ProductGridScreenState extends State<ProductGridScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // Sub-bar with count and active filters
-          Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.space16, AppSpacing.space12, AppSpacing.space16, AppSpacing.space8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('${_products.length} Products Found',
-                  style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary, fontWeight: FontWeight.w600)),
-                GestureDetector(
-                  onTap: () => Navigator.pushNamed(context, AppRoutes.filter),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.sort_rounded, size: 16, color: AppColors.primary),
-                      const SizedBox(width: 4),
-                      Text('Sort & Filter', style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.primary, fontWeight: FontWeight.w700)),
-                    ],
-                  ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: ProductService.productsStream,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+          final docs = snapshot.data?.docs ?? [];
+          if (docs.isEmpty) {
+            return const Center(child: Text('No products available'));
+          }
+
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(AppSpacing.space16, AppSpacing.space12, AppSpacing.space16, AppSpacing.space8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('${docs.length} Products Found',
+                      style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary, fontWeight: FontWeight.w600)),
+                    GestureDetector(
+                      onTap: () => Navigator.pushNamed(context, AppRoutes.filter),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.sort_rounded, size: 16, color: AppColors.primary),
+                          const SizedBox(width: 4),
+                          Text('Sort & Filter', style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.primary, fontWeight: FontWeight.w700)),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: _isGridView ? _buildGrid() : _buildList(),
-          ),
-        ],
+              ),
+              Expanded(
+                child: _isGridView ? _buildGrid(docs) : _buildList(docs),
+              ),
+            ],
+          );
+        }
       ),
     );
   }
 
-  Widget _buildGrid() {
+  Widget _buildGrid(List<DocumentSnapshot> docs) {
     return GridView.builder(
       padding: const EdgeInsets.all(AppSpacing.space16),
-      itemCount: _products.length,
+      itemCount: docs.length,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: AppSpacing.space16,
         mainAxisSpacing: AppSpacing.space16,
-        childAspectRatio: 0.62,
+        childAspectRatio: 0.6,
       ),
       itemBuilder: (context, i) {
-        final p = _products[i];
+        final data = docs[i].data() as Map<String, dynamic>;
+        final id = docs[i].id;
         return ProductCard(
-          title: p['title'] as String,
-          imageAsset: p['img'] as String,
-          category: p['category'] as String?,
-          price: p['price'] as double,
-          originalPrice: p['orig'] as double?,
-          rating: p['rating'] as double,
-          reviewCount: p['reviews'] as int,
-          soldCount: p['sold'] as int?,
-          discountTag: p['discount'] as String?,
-          isWishlisted: _wishlisted.contains(i),
+          title: data['name'] ?? '',
+          imageAsset: (data['images'] as List?)?.first ?? AppAssets.productFashion,
+          category: data['category'],
+          price: (data['price'] ?? 0).toDouble(),
+          originalPrice: (data['originalPrice'] ?? 0).toDouble(),
+          rating: (data['rating'] ?? 0).toDouble(),
+          reviewCount: data['reviewCount'] ?? 0,
+          discountTag: data['badge'],
+          isWishlisted: _wishlisted.contains(id),
           onTap: () => Navigator.pushNamed(context, AppRoutes.productDetails),
           onWishlistTap: () => setState(() {
-            _wishlisted.contains(i) ? _wishlisted.remove(i) : _wishlisted.add(i);
+            _wishlisted.contains(id) ? _wishlisted.remove(id) : _wishlisted.add(id);
           }),
         );
       },
     );
   }
 
-  Widget _buildList() {
+  Widget _buildList(List<DocumentSnapshot> docs) {
     return ListView.separated(
       padding: const EdgeInsets.all(AppSpacing.space16),
-      itemCount: _products.length,
+      itemCount: docs.length,
       separatorBuilder: (context, i) => const SizedBox(height: AppSpacing.space12),
       itemBuilder: (context, i) {
-        final p = _products[i];
+        final data = docs[i].data() as Map<String, dynamic>;
         return GestureDetector(
           onTap: () => Navigator.pushNamed(context, AppRoutes.productDetails),
           child: Container(
             padding: const EdgeInsets.all(AppSpacing.space12),
-            decoration: BoxDecoration(
-              color: AppColors.background,
-              borderRadius: AppSpacing.radiusLarge,
-              border: Border.all(color: AppColors.border),
-            ),
+            decoration: BoxDecoration(color: AppColors.background, borderRadius: AppSpacing.radiusLarge, border: Border.all(color: AppColors.border)),
             child: Row(
               children: [
                 ClipRRect(
                   borderRadius: AppSpacing.radiusMedium,
-                  child: Image.asset(p['img'] as String, width: 88, height: 88, fit: BoxFit.cover,
-                    errorBuilder: (ctx, err, st) => Container(
-                      width: 88, height: 88, color: AppColors.backgroundAlt,
-                      child: const Icon(Icons.image_outlined, color: AppColors.border),
-                    ),
+                  child: Image.asset((data['images'] as List?)?.first ?? '', width: 88, height: 88, fit: BoxFit.cover,
+                    errorBuilder: (ctx, err, st) => Container(width: 88, height: 88, color: AppColors.backgroundAlt, child: const Icon(Icons.image_outlined, color: AppColors.border)),
                   ),
                 ),
                 const SizedBox(width: AppSpacing.space12),
@@ -142,19 +143,16 @@ class _ProductGridScreenState extends State<ProductGridScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(p['title'] as String, maxLines: 2, overflow: TextOverflow.ellipsis,
-                        style: AppTypography.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
+                      Text(data['name'] ?? '', maxLines: 2, overflow: TextOverflow.ellipsis, style: AppTypography.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
                       const SizedBox(height: 4),
-                      RatingBar(rating: p['rating'] as double, reviewCount: p['reviews'] as int, iconSize: 13),
+                      RatingBar(rating: (data['rating'] ?? 0).toDouble(), reviewCount: data['reviewCount'] ?? 0, iconSize: 13),
                       const SizedBox(height: 8),
                       Row(
                         children: [
-                          Text('\$${(p['price'] as double).toStringAsFixed(2)}',
-                            style: AppTypography.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary)),
-                          if (p['orig'] != null) ...[
+                          Text('\$${(data['price'] ?? 0).toStringAsFixed(2)}', style: AppTypography.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary)),
+                          if (data['originalPrice'] != null) ...[
                             const SizedBox(width: 6),
-                            Text('\$${(p['orig'] as double).toStringAsFixed(2)}',
-                              style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary, decoration: TextDecoration.lineThrough)),
+                            Text('\$${(data['originalPrice']).toStringAsFixed(2)}', style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary, decoration: TextDecoration.lineThrough)),
                           ],
                         ],
                       ),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../constants/app_assets.dart';
 import '../../routes/app_routes.dart';
 import '../../widgets/index.dart';
+import '../../providers/cart_provider.dart';
 
 class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({super.key});
@@ -171,7 +173,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> with SingleTickerPr
                           child: Image.asset(
                             cat['img'] as String,
                             width: 60, height: 60, fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Container(
+                            errorBuilder: (context, error, stackTrace) => Container(
                               color: const Color(0xFFF2F4F7),
                               child: const Icon(Icons.person, color: Color(0xFF667085), size: 24),
                             ),
@@ -209,7 +211,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> with SingleTickerPr
                 crossAxisCount: 2,
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
-                childAspectRatio: 0.52,
+                childAspectRatio: 0.6,
               ),
               itemBuilder: (context, i) {
                 final p = _newProducts[i];
@@ -232,7 +234,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> with SingleTickerPr
                               child: Image.asset(
                                 p['img'] as String,
                                 width: double.infinity, height: 150, fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => Container(height: 150, color: const Color(0xFFF2F4F7)),
+                                errorBuilder: (context, error, stackTrace) => Container(height: 150, color: const Color(0xFFF2F4F7)),
                               ),
                             ),
                             Positioned(
@@ -305,21 +307,23 @@ class _CategoriesScreenState extends State<CategoriesScreen> with SingleTickerPr
           ],
         ),
       ),
-      bottomNavigationBar: CustomBottomNavBar(
-        currentTab: NavTab.category,
-        cartBadgeCount: 3,
-        onTabSelected: (tab) {
-          switch (tab) {
-            case NavTab.home:
-              Navigator.pushReplacementNamed(context, AppRoutes.home);
-            case NavTab.cart:
-              Navigator.pushReplacementNamed(context, AppRoutes.cart);
-            case NavTab.settings:
-              Navigator.pushReplacementNamed(context, AppRoutes.settings);
-            default:
-              break;
-          }
-        },
+      bottomNavigationBar: Consumer<CartProvider>(
+        builder: (context, cart, child) => CustomBottomNavBar(
+          currentTab: NavTab.category,
+          cartBadgeCount: cart.totalQuantity,
+          onTabSelected: (tab) {
+            switch (tab) {
+              case NavTab.home:
+                Navigator.pushReplacementNamed(context, AppRoutes.home);
+              case NavTab.cart:
+                Navigator.pushReplacementNamed(context, AppRoutes.cart);
+              case NavTab.settings:
+                Navigator.pushReplacementNamed(context, AppRoutes.settings);
+              default:
+                break;
+            }
+          },
+        ),
       ),
     );
   }

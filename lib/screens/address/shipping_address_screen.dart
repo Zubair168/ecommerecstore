@@ -46,8 +46,6 @@ class _ShippingAddressScreenState extends State<ShippingAddressScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const kNavy = Color(0xFF1D2939);
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -262,7 +260,8 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                 const Text('SET AS DEFAULT', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: Color(0xFF101828))),
                 Switch(
                   value: _isDefault,
-                  activeColor: kNavy,
+                  activeThumbColor: kNavy,
+                  activeTrackColor: kNavy.withValues(alpha: 0.5),
                   onChanged: (val) => setState(() => _isDefault = val),
                 ),
               ],

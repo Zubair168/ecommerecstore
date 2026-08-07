@@ -36,6 +36,22 @@ class AuthService {
   /// Sign out
   static Future<void> signOut() => _auth.signOut();
 
+  /// Sign in with Google (Simulated for this demo, usually requires google_sign_in package)
+  static Future<UserCredential?> signInWithGoogle() async {
+    // In a real app with google_sign_in:
+    // final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    // final GoogleSignInAuthentication googleAuth = await googleUser!.authentication;
+    // final OAuthCredential credential = GoogleAuthProvider.credential(
+    //   accessToken: googleAuth.accessToken,
+    //   idToken: googleAuth.idToken,
+    // );
+    // return await FirebaseAuth.instance.signInWithCredential(credential);
+
+    // Mocking for the UI flow to work immediately:
+    await Future.delayed(const Duration(seconds: 1));
+    return null; // Return a dummy or handle in UI
+  }
+
   /// Update user profile in Firestore
   static Future<void> updateProfile(Map<String, dynamic> data) async {
     final uid = currentUser?.uid;

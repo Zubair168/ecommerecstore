@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 import '../../constants/app_assets.dart';
 import '../../routes/app_routes.dart';
@@ -7,6 +8,7 @@ import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../../widgets/index.dart';
+import '../../providers/cart_provider.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -86,21 +88,23 @@ class ProfileScreen extends StatelessWidget {
           const SizedBox(height: AppSpacing.space40),
         ],
       ),
-      bottomNavigationBar: CustomBottomNavBar(
-        currentTab: NavTab.settings,
-        cartBadgeCount: 3,
-        onTabSelected: (tab) {
-          switch (tab) {
-            case NavTab.home:
-              Navigator.pushReplacementNamed(context, AppRoutes.home);
-            case NavTab.category:
-              Navigator.pushReplacementNamed(context, AppRoutes.categories);
-            case NavTab.cart:
-              Navigator.pushReplacementNamed(context, AppRoutes.cart);
-            default:
-              break;
-          }
-        },
+      bottomNavigationBar: Consumer<CartProvider>(
+        builder: (context, cart, child) => CustomBottomNavBar(
+          currentTab: NavTab.settings,
+          cartBadgeCount: cart.totalQuantity,
+          onTabSelected: (tab) {
+            switch (tab) {
+              case NavTab.home:
+                Navigator.pushReplacementNamed(context, AppRoutes.home);
+              case NavTab.category:
+                Navigator.pushReplacementNamed(context, AppRoutes.categories);
+              case NavTab.cart:
+                Navigator.pushReplacementNamed(context, AppRoutes.cart);
+              default:
+                break;
+            }
+          },
+        ),
       ),
     );
   }

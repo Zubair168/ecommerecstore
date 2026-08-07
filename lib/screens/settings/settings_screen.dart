@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../constants/app_assets.dart';
 import '../../routes/app_routes.dart';
+import '../../services/auth_service.dart';
 import '../../widgets/index.dart';
+import '../../providers/cart_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -44,22 +47,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 CircleAvatar(
                   radius: 30,
                   backgroundColor: const Color(0xFFEAECF0),
-                  backgroundImage: const AssetImage(AppAssets.avatarUserDefault),
-                  child: const Icon(Icons.person, color: Color(0xFF667085), size: 30),
+                  backgroundImage: AuthService.currentUser?.photoURL != null
+                      ? NetworkImage(AuthService.currentUser!.photoURL!) as ImageProvider
+                      : const AssetImage(AppAssets.avatarUserDefault),
+                  child: AuthService.currentUser?.photoURL == null ? const Icon(Icons.person, color: Color(0xFF667085), size: 30) : null,
                 ),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Text(
-                        'Max Tiger',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF101828)),
+                        AuthService.currentUser?.displayName ?? 'Guest User',
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF101828)),
                       ),
-                      SizedBox(height: 2),
+                      const SizedBox(height: 2),
                       Text(
-                        'Maxtiger234@gmail.com',
-                        style: TextStyle(fontSize: 13, color: Color(0xFF667085)),
+                        AuthService.currentUser?.email ?? 'Not signed in',
+                        style: const TextStyle(fontSize: 13, color: Color(0xFF667085)),
                       ),
                     ],
                   ),
@@ -167,28 +172,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
               icon: Icons.logout_rounded,
               title: 'Log out',
               showChevron: false,
-              onTap: () => Navigator.pushReplacementNamed(context, AppRoutes.login),
+              onTap: () async {
+                await AuthService.signOut();
+                if (mounted) Navigator.pushReplacementNamed(context, AppRoutes.login);
+              },
             ),
 
             const SizedBox(height: 32),
           ],
         ),
       ),
-      bottomNavigationBar: CustomBottomNavBar(
-        currentTab: NavTab.settings,
-        cartBadgeCount: 3,
-        onTabSelected: (tab) {
-          switch (tab) {
-            case NavTab.home:
-              Navigator.pushReplacementNamed(context, AppRoutes.home);
-            case NavTab.category:
-              Navigator.pushReplacementNamed(context, AppRoutes.categories);
-            case NavTab.cart:
-              Navigator.pushReplacementNamed(context, AppRoutes.cart);
-            default:
-              break;
-          }
-        },
+      bottomNavigationBar: Consumer<CartProvider>(
+        builder: (context, cart, child) => CustomBottomNavBar(
+          currentTab: NavTab.settings,
+          cartBadgeCount: cart.totalQuantity,
+          onTabSelected: (tab) {
+            switch (tab) {
+              case NavTab.home:
+                Navigator.pushReplacementNamed(context, AppRoutes.home);
+              case NavTab.category:
+                Navigator.pushReplacementNamed(context, AppRoutes.categories);
+              case NavTab.cart:
+                Navigator.pushReplacementNamed(context, AppRoutes.cart);
+              default:
+                break;
+            }
+          },
+        ),
       ),
     );
   }

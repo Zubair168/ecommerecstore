@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../constants/app_assets.dart';
 import '../../routes/app_routes.dart';
+import '../../providers/cart_provider.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
   const ProductDetailsScreen({super.key});
@@ -26,6 +28,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   Widget build(BuildContext context) {
     const kNavy = Color(0xFF1D2939);
     const kOrange = Color(0xFFFF5722);
+    
+    final cart = Provider.of<CartProvider>(context, listen: false);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -47,10 +51,25 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: Container(
-              width: 36, height: 36,
-              decoration: const BoxDecoration(color: Color(0xFFF2F4F7), shape: BoxShape.circle),
-              child: const Icon(Icons.shopping_cart_outlined, color: Color(0xFF344054), size: 18),
+            icon: Stack(
+              children: [
+                Container(
+                  width: 36, height: 36,
+                  decoration: const BoxDecoration(color: Color(0xFFF2F4F7), shape: BoxShape.circle),
+                  child: const Icon(Icons.shopping_cart_outlined, color: Color(0xFF344054), size: 18),
+                ),
+                Consumer<CartProvider>(
+                  builder: (context, cart, child) => cart.totalQuantity > 0 ? Positioned(
+                    top: 0, right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: const BoxDecoration(color: kOrange, shape: BoxShape.circle),
+                      constraints: const BoxConstraints(minWidth: 14, minHeight: 14),
+                      child: Text('${cart.totalQuantity}', style: const TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                    ),
+                  ) : const SizedBox.shrink(),
+                ),
+              ],
             ),
             onPressed: () => Navigator.pushNamed(context, AppRoutes.cart),
           ),
@@ -61,8 +80,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         children: [
           const SizedBox(height: 8),
-
-          // ── Main Gallery Container matching screenshot ──────────────────
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
@@ -72,7 +89,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Vertical thumbnails on left matching screenshot
                 Column(
                   children: List.generate(_images.length, (i) {
                     final isSel = _selectedImage == i;
@@ -101,8 +117,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   }),
                 ),
                 const SizedBox(width: 12),
-
-                // Main Image display with Compare & Heart buttons
                 Expanded(
                   child: Stack(
                     children: [
@@ -123,45 +137,41 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           ),
                         ),
                       ),
-
-                    // Top-right action buttons (Compare & Heart)
-                    Positioned(
-                      top: 10, right: 10,
-                      child: Row(
-                        children: [
-                          GestureDetector(
-                            onTap: () => Navigator.pushNamed(context, AppRoutes.compareProducts),
-                            child: Container(
-                              width: 34, height: 34,
-                              decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                              child: const Icon(Icons.compare_arrows_rounded, color: Color(0xFF344054), size: 18),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          GestureDetector(
-                            onTap: () => setState(() => _isWishlisted = !_isWishlisted),
-                            child: Container(
-                              width: 34, height: 34,
-                              decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                              child: Icon(
-                                _isWishlisted ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                                color: _isWishlisted ? Colors.red : const Color(0xFF344054),
-                                size: 18,
+                      Positioned(
+                        top: 10, right: 10,
+                        child: Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () => Navigator.pushNamed(context, AppRoutes.compareProducts),
+                              child: Container(
+                                width: 34, height: 34,
+                                decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                                child: const Icon(Icons.compare_arrows_rounded, color: Color(0xFF344054), size: 18),
                               ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: 8),
+                            GestureDetector(
+                              onTap: () => setState(() => _isWishlisted = !_isWishlisted),
+                              child: Container(
+                                width: 34, height: 34,
+                                decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                                child: Icon(
+                                  _isWishlisted ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                                  color: _isWishlisted ? Colors.red : const Color(0xFF344054),
+                                  size: 18,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
           ),
           const SizedBox(height: 16),
-
-          // ── Product Category & Title ──────────────────────────────────────
           const Text('Clothing', style: TextStyle(fontSize: 11, color: Color(0xFF98A2B3))),
           const SizedBox(height: 2),
           Row(
@@ -181,8 +191,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             ],
           ),
           const SizedBox(height: 6),
-
-          // Star Rating & Price line
           Row(
             children: const [
               Icon(Icons.star_rounded, color: Color(0xFFFFC107), size: 16),
@@ -201,8 +209,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             ],
           ),
           const SizedBox(height: 14),
-
-          // Coupon / Voucher Bar matching screenshot
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             decoration: BoxDecoration(
@@ -221,10 +227,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             ),
           ),
           const SizedBox(height: 16),
-
-          // ── Description Section ──────────────────────────────────────────
           Text(
-            'Elevate your everyday look with this timeless leather handbag. Crafted from premium materials, it offers a spacious interior, sturdy handles, and elegant detailing — perfect for both work and casual outings. Designed for comfort and versatility, this backpack features multiple compartments, water-resistant fabric, and a sleek modern look — ideal for daily commutes, college, or short trips.',
+            'Elevate your everyday look with this timeless leather handbag. Crafted from premium materials, it offers a spacious interior, sturdy handles, and elegant detailing.',
             maxLines: _isDescExpanded ? 20 : 3,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(fontSize: 12, color: Color(0xFF475467), height: 1.5),
@@ -235,20 +239,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  _isDescExpanded ? 'View Less' : 'View More',
-                  style: const TextStyle(color: Color(0xFF101828), fontWeight: FontWeight.w700, fontSize: 12),
-                ),
-                Icon(
-                  _isDescExpanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
-                  size: 18, color: const Color(0xFF101828),
-                ),
+                Text(_isDescExpanded ? 'View Less' : 'View More', style: const TextStyle(color: Color(0xFF101828), fontWeight: FontWeight.w700, fontSize: 12)),
+                Icon(_isDescExpanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, size: 18, color: const Color(0xFF101828)),
               ],
             ),
           ),
           const SizedBox(height: 20),
-
-          // ── Rating and Reviews Section matching screenshot ────────────────
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -260,8 +256,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             ],
           ),
           const SizedBox(height: 12),
-
-          // Big 4.5 Rating Breakdown Box
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -271,30 +265,20 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             ),
             child: Row(
               children: [
-                // 4.5 yellow circle on left
                 Column(
                   children: [
                     Container(
                       width: 54, height: 54,
                       alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: const Color(0xFFFFC107), width: 2),
-                      ),
+                      decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle, border: Border.all(color: const Color(0xFFFFC107), width: 2)),
                       child: const Text('4.5', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF101828))),
                     ),
                     const SizedBox(height: 4),
                     const Text('2 reviews', style: TextStyle(fontSize: 9, color: Color(0xFF98A2B3))),
-                    const SizedBox(height: 2),
-                    Row(
-                      children: List.generate(5, (_) => const Icon(Icons.star_rounded, color: Color(0xFFFFC107), size: 10)),
-                    ),
+                    Row(children: List.generate(5, (_) => const Icon(Icons.star_rounded, color: Color(0xFFFFC107), size: 10))),
                   ],
                 ),
                 const SizedBox(width: 20),
-
-                // Rating Progress Bars on right
                 Expanded(
                   child: Column(
                     children: [
@@ -309,30 +293,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 16),
-
-          // Customer Review 1: Jack wylde
-          _reviewCard(
-            name: 'Jack wylde',
-            time: '2 Weeks ago',
-            text: 'Absolutely love this bag! The quality is amazing for the price and it looks even better in person',
-            photos: [AppAssets.userHeroPromo, AppAssets.productShoe, AppAssets.productFashion],
-          ),
-          const SizedBox(height: 12),
-
-          // Customer Review 2: Alexa young
-          _reviewCard(
-            name: 'Alexa young',
-            time: '2 Weeks ago',
-            text: 'Absolutely love this bag! The quality is amazing for the price and it looks even better in person',
-            photos: [AppAssets.productFashion, AppAssets.productHeadphone, AppAssets.productSwitchConsole1],
-          ),
-
           const SizedBox(height: 30),
         ],
       ),
-
-      // ── Bottom Action Bar (- 1 + Quantity Stepper + Dark Navy Buy Now Button) ──
       bottomNavigationBar: Container(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
         decoration: const BoxDecoration(
@@ -343,42 +306,41 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           top: false,
           child: Row(
             children: [
-              // Quantity Stepper matching screenshot
               Container(
                 height: 44,
                 padding: const EdgeInsets.symmetric(horizontal: 4),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF2F4F7),
-                  borderRadius: BorderRadius.circular(22),
-                ),
+                decoration: BoxDecoration(color: const Color(0xFFF2F4F7), borderRadius: BorderRadius.circular(22)),
                 child: Row(
                   children: [
                     InkWell(
                       onTap: () { if (_quantity > 1) setState(() => _quantity--); },
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        child: Text('-', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF344054))),
-                      ),
+                      child: const Padding(padding: EdgeInsets.symmetric(horizontal: 10), child: Text('-', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF344054)))),
                     ),
                     Text('$_quantity', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF101828))),
                     InkWell(
                       onTap: () => setState(() => _quantity++),
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        child: Text('+', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF344054))),
-                      ),
+                      child: const Padding(padding: EdgeInsets.symmetric(horizontal: 10), child: Text('+', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF344054)))),
                     ),
                   ],
                 ),
               ),
               const SizedBox(width: 14),
-
-              // Dark Navy Buy now Button matching screenshot
               Expanded(
                 child: SizedBox(
                   height: 48,
                   child: ElevatedButton(
-                    onPressed: () => Navigator.pushNamed(context, AppRoutes.checkout),
+                    onPressed: () {
+                      for(int i=0; i<_quantity; i++) {
+                        cart.addItem(
+                          productId: 'bag_001',
+                          title: 'Simple minimalist Brown Bag',
+                          category: 'Clothing',
+                          price: 9.00,
+                          image: AppAssets.catPhotoBags,
+                        );
+                      }
+                      Navigator.pushNamed(context, AppRoutes.cart);
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: kNavy,
                       foregroundColor: Colors.white,
@@ -403,80 +365,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         children: [
           Text(label, style: const TextStyle(fontSize: 9, color: Color(0xFF98A2B3))),
           const SizedBox(width: 6),
-          Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(2),
-              child: LinearProgressIndicator(
-                value: val,
-                backgroundColor: const Color(0xFFF2F4F7),
-                valueColor: const AlwaysStoppedAnimation(Color(0xFFFFC107)),
-                minHeight: 4,
-              ),
-            ),
-          ),
+          Expanded(child: ClipRRect(borderRadius: BorderRadius.circular(2), child: LinearProgressIndicator(value: val, backgroundColor: const Color(0xFFF2F4F7), valueColor: const AlwaysStoppedAnimation(Color(0xFFFFC107)), minHeight: 4))),
           const SizedBox(width: 6),
           Text(pct, style: const TextStyle(fontSize: 9, color: Color(0xFF98A2B3))),
         ],
       ),
-    );
-  }
-
-  Widget _reviewCard({
-    required String name,
-    required String time,
-    required String text,
-    required List<String> photos,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: const Color(0xFFF2F4F7),
-              child: Text(name.substring(0, 1), style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12, color: Color(0xFF344054))),
-            ),
-            const SizedBox(width: 8),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(name, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF101828))),
-                Text(time, style: const TextStyle(fontSize: 10, color: Color(0xFF98A2B3))),
-              ],
-            ),
-            const Spacer(),
-            const Icon(Icons.more_vert_rounded, size: 18, color: Color(0xFF98A2B3)),
-          ],
-        ),
-        const SizedBox(height: 6),
-        Row(
-          children: [
-            ...List.generate(5, (_) => const Icon(Icons.star_rounded, color: Color(0xFFFFC107), size: 12)),
-            const SizedBox(width: 4),
-            const Text('5 stars', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF344054))),
-          ],
-        ),
-        const SizedBox(height: 2),
-        const Text('Variant: XXL Black', style: TextStyle(fontSize: 10, color: Color(0xFF98A2B3))),
-        const SizedBox(height: 6),
-        Text(text, style: const TextStyle(fontSize: 11, color: Color(0xFF475467), height: 1.4)),
-        const SizedBox(height: 8),
-        Row(
-          children: photos.map((p) {
-            return Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.asset(
-                  p, width: 64, height: 64, fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(width: 64, height: 64, color: const Color(0xFFF2F4F7)),
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
     );
   }
 }

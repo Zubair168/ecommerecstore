@@ -166,6 +166,7 @@ class _OnboardingPageView extends StatelessWidget {
             page.illustration,
             height: 240,
             fit: BoxFit.contain,
+            placeholderBuilder: (context) => const SizedBox(height: 240, child: Center(child: CircularProgressIndicator())),
           ),
           const SizedBox(height: 36),
           Text(
@@ -249,13 +250,18 @@ class _PillArrowButton extends StatelessWidget {
                 ),
               ),
             ),
-            // Right double chevron matching Frame 1000008470.png
-            const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.chevron_right_rounded, color: Colors.white54, size: 20),
-                Icon(Icons.chevron_right_rounded, color: Colors.white, size: 20),
-              ],
+            // Right double chevron matching provided image (grey then white)
+            SizedBox(
+              width: 32,
+              child: Stack(
+                children: [
+                  Icon(Icons.chevron_right_rounded, color: Colors.white.withValues(alpha: 0.5), size: 24),
+                  const Positioned(
+                    left: 8,
+                    child: Icon(Icons.chevron_right_rounded, color: Colors.white, size: 24),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(width: 12),
           ],

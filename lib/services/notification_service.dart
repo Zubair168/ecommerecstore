@@ -1,4 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 /// Top-level handler for background Firebase messages (must be top-level)
@@ -27,25 +28,27 @@ class NotificationService {
     // Request permission
     await _fcm.requestPermission(alert: true, badge: true, sound: true);
 
-    // Android notification channel
-    const androidChannel = AndroidNotificationChannel(
-      _channelId,
-      _channelName,
-      description: 'Notifications for order status updates',
-      importance: Importance.high,
-    );
+    if (!kIsWeb) {
+      // Android notification channel
+      const androidChannel = AndroidNotificationChannel(
+        _channelId,
+        _channelName,
+        description: 'Notifications for order status updates',
+        importance: Importance.high,
+      );
 
-    await _localNotif
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(androidChannel);
+      await _localNotif
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()
+          ?.createNotificationChannel(androidChannel);
 
-    // Local notifications init
-    const initSettings = InitializationSettings(
-      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-      iOS: DarwinInitializationSettings(),
-    );
-    await _localNotif.initialize(initSettings);
+      // Local notifications init
+      const initSettings = InitializationSettings(
+        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+        iOS: DarwinInitializationSettings(),
+      );
+      await _localNotif.initialize(initSettings);
+    }
 
     // Foreground message handler
     FirebaseMessaging.onMessage.listen((msg) {
@@ -55,29 +58,35 @@ class NotificationService {
       }
     });
 
-    // Subscribe to order topic
-    await _fcm.subscribeToTopic('order_updates');
+    // Subscribe to order topic (Not supported on Web)
+    if (!kIsWeb) {
+      await _fcm.subscribeToTopic('order_updates');
+    }
   }
 
   /// Show a local notification
-  static Future<void> show({required String title, required String body}) =>
-      _localNotif.show(
-        DateTime.now().millisecondsSinceEpoch ~/ 1000,
-        title,
-        body,
-        const NotificationDetails(
-          android: AndroidNotificationDetails(
-            _channelId,
-            _channelName,
-            channelDescription: 'Order status notifications',
-            importance: Importance.high,
-            priority: Priority.high,
-            icon: '@mipmap/ic_launcher',
-          ),
-          iOS: DarwinNotificationDetails(),
+  static Future<void> show({required String title, required String body}) async {
+    if (kIsWeb) return; // Local notifications plugin not fully supported/needed same way on web for this demo
+
+    await _localNotif.show(
+      DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      title,
+      body,
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          _channelId,
+          _channelName,
+          channelDescription: 'Order status notifications',
+          importance: Importance.high,
+          priority: Priority.high,
+          icon: '@mipmap/ic_launcher',
         ),
-      );
+        iOS: DarwinNotificationDetails(),
+      ),
+    );
+  }
 
   /// Get the FCM device token
   static Future<String?> getToken() => _fcm.getToken();
 }
+
