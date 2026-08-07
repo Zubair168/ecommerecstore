@@ -12,25 +12,68 @@ class CartScreen extends StatefulWidget {
 
 class _CartScreenState extends State<CartScreen> {
   int _selectedToggle = 0; // 0: Layout, 1: Filter
-  bool _selectAll = false;
+  bool _selectAll = true;
 
-  int _qty1 = 1;
-  int _qty2 = 1;
-  int _qty3 = 1;
-  int _qty4 = 1;
-  int _qty5 = 1;
+  // Mock data for cart items
+  final List<Map<String, dynamic>> _cartItems = [
+    {
+      'category': 'Clothing',
+      'title': 'Winter zipper hoodie',
+      'price': 9.00,
+      'qty': 1,
+      'img': AppAssets.catPhotoMen,
+      'showDelete': true,
+    },
+    {
+      'category': 'Shoes',
+      'title': 'Classic White Sneakers',
+      'price': 12.00,
+      'qty': 1,
+      'img': AppAssets.catPhotoShoes,
+    },
+    {
+      'category': 'Electronics',
+      'title': 'Pro Wireless Headphones',
+      'price': 18.00,
+      'qty': 1,
+      'img': AppAssets.catPhotoElec,
+    },
+    {
+      'category': 'Women',
+      'title': 'Floral Wrap Summer Dress',
+      'price': 14.00,
+      'qty': 1,
+      'img': AppAssets.catPhotoWomen,
+    },
+    {
+      'category': 'Bags',
+      'title': 'Brown Leather Crossbody Bag',
+      'price': 20.00,
+      'qty': 1,
+      'img': AppAssets.catPhotoBags,
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
     const kNavy = Color(0xFF1D2939);
+    const kOrange = Color(0xFFFF5722);
+
+    int totalItems = 0;
+    double totalPrice = 0;
+    for (var item in _cartItems) {
+      totalItems += item['qty'] as int;
+      totalPrice += (item['price'] as double) * (item['qty'] as int);
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
+        centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF344054), size: 20),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF101828), size: 20),
           onPressed: () {
             if (Navigator.canPop(context)) {
               Navigator.pop(context);
@@ -39,64 +82,70 @@ class _CartScreenState extends State<CartScreen> {
             }
           },
         ),
-        title: const Text('Cart',
-            style: TextStyle(color: Color(0xFF101828), fontWeight: FontWeight.w700, fontSize: 18)),
-        centerTitle: true,
+        title: const Text(
+          'Cart',
+          style: TextStyle(color: Color(0xFF101828), fontWeight: FontWeight.w800, fontSize: 18),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_outline_rounded, color: Color(0xFF344054), size: 22),
-            onPressed: () {},
+            onPressed: () {
+              setState(() {
+                _cartItems.clear();
+              });
+            },
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // Search Products Bar
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            child: Container(
-              height: 44,
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF9FAFB),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: const Color(0xFFEAECF0)),
-              ),
-              child: Row(
-                children: const [
-                  Icon(Icons.search_rounded, color: Color(0xFF98A2B3), size: 20),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Search Products...',
-                        hintStyle: TextStyle(color: Color(0xFF98A2B3), fontSize: 13),
-                        border: InputBorder.none,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Search Bar
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Container(
+                height: 48,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF9FAFB),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFEAECF0)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.search_rounded, color: Color(0xFF98A2B3), size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: 'Search Products...',
+                          hintStyle: TextStyle(color: const Color(0xFF98A2B3), fontSize: 14),
+                          border: InputBorder.none,
+                          isDense: true,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 8),
 
-          // Layout / Filter Toggle Bar
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Material(
-              color: const Color(0xFFF2F4F7),
-              borderRadius: BorderRadius.circular(12),
-              child: Padding(
+            // Toggle Bar (Layout / Filter)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Container(
+                height: 44,
                 padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF2F4F7),
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Row(
                   children: [
                     Expanded(
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(8),
+                      child: GestureDetector(
                         onTap: () => setState(() => _selectedToggle = 0),
                         child: Container(
-                          height: 38,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: _selectedToggle == 0 ? kNavy : Colors.transparent,
@@ -117,11 +166,9 @@ class _CartScreenState extends State<CartScreen> {
                       ),
                     ),
                     Expanded(
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(8),
+                      child: GestureDetector(
                         onTap: () => setState(() => _selectedToggle = 1),
                         child: Container(
-                          height: 38,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: _selectedToggle == 1 ? kNavy : Colors.transparent,
@@ -145,97 +192,76 @@ class _CartScreenState extends State<CartScreen> {
                 ),
               ),
             ),
-          ),
-          const SizedBox(height: 12),
 
-          // Stepper bar (Cart -> Checkout -> Payment)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
-            child: Row(
-              children: [
-                _stepDot('Cart', isDone: true, isActive: true),
-                Expanded(child: Container(height: 2, color: const Color(0xFFEAECF0))),
-                _stepDot('Checkout', isDone: false, isActive: false),
-                Expanded(child: Container(height: 2, color: const Color(0xFFEAECF0))),
-                _stepDot('Payment', isDone: false, isActive: false),
-              ],
+            // Stepper (Cart -> Checkout -> Payment)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+              child: Row(
+                children: [
+                  _stepDot('Cart', isDone: true, isActive: true),
+                  Expanded(child: Container(height: 2, color: const Color(0xFFEAECF0))),
+                  _stepDot('Checkout', isDone: false, isActive: false),
+                  Expanded(child: Container(height: 2, color: const Color(0xFFEAECF0))),
+                  _stepDot('Payment', isDone: false, isActive: false),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
 
-          // Cart Items List
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              children: [
-                _cartTile(
-                  category: 'Clothing',
-                  title: 'Winter zipper hoodie',
-                  price: '\$9.00',
-                  qty: _qty1,
-                  img: AppAssets.productFashion,
-                  showOrangeTrash: true,
-                  onQtyMinus: () => setState(() { if (_qty1 > 1) _qty1--; }),
-                  onQtyPlus: () => setState(() => _qty1++),
-                ),
-                const SizedBox(height: 12),
-
-                _cartTile(
-                  category: 'Watches',
-                  title: 'Full titanium Rolex with silver chains outside',
-                  price: '\$50.00',
-                  qty: _qty2,
-                  img: AppAssets.productHeadphone,
-                  onQtyMinus: () => setState(() { if (_qty2 > 1) _qty2--; }),
-                  onQtyPlus: () => setState(() => _qty2++),
-                ),
-                const SizedBox(height: 12),
-
-                _cartTile(
-                  category: 'Shoes',
-                  title: 'Vans OG 1994 with double sole and lace',
-                  price: '\$35.00',
-                  qty: _qty3,
-                  img: AppAssets.productShoe,
-                  onQtyMinus: () => setState(() { if (_qty3 > 1) _qty3--; }),
-                  onQtyPlus: () => setState(() => _qty3++),
-                ),
-                const SizedBox(height: 12),
-
-                _cartTile(
-                  category: 'Clothing',
-                  title: 'Thic fur sweatshirt for winter with hand gloves',
-                  price: '\$14.00',
-                  qty: _qty4,
-                  img: AppAssets.productFashion,
-                  onQtyMinus: () => setState(() { if (_qty4 > 1) _qty4--; }),
-                  onQtyPlus: () => setState(() => _qty4++),
-                ),
-                const SizedBox(height: 12),
-
-                _cartTile(
-                  category: 'Clothing',
-                  title: 'Baggy pants for winter with cushion inside',
-                  price: '\$20.00',
-                  qty: _qty5,
-                  img: AppAssets.productSwitchConsole1,
-                  onQtyMinus: () => setState(() { if (_qty5 > 1) _qty5--; }),
-                  onQtyPlus: () => setState(() => _qty5++),
-                ),
-                const SizedBox(height: 24),
-              ],
+            // Cart Items List
+            Expanded(
+              child: _cartItems.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.shopping_cart_outlined, size: 64, color: Colors.grey[300]),
+                          const SizedBox(height: 16),
+                          const Text('Your cart is empty', style: TextStyle(color: Colors.grey, fontSize: 16)),
+                        ],
+                      ),
+                    )
+                  : ListView.separated(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      itemCount: _cartItems.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 12),
+                      itemBuilder: (context, index) {
+                        final item = _cartItems[index];
+                        return _cartTile(
+                          category: item['category'],
+                          title: item['title'],
+                          price: '\$${(item['price'] as double).toStringAsFixed(2)}',
+                          qty: item['qty'],
+                          img: item['img'],
+                          showDelete: item['showDelete'] ?? false,
+                          onQtyMinus: () {
+                            if (item['qty'] > 1) {
+                              setState(() => item['qty']--);
+                            }
+                          },
+                          onQtyPlus: () {
+                            setState(() => item['qty']++);
+                          },
+                          onDelete: () {
+                            setState(() => _cartItems.removeAt(index));
+                          },
+                        );
+                      },
+                    ),
             ),
-          ),
-
-          // Bottom Bar matching 27_cart_2.png
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              border: Border(top: BorderSide(color: Color(0xFFEAECF0))),
-            ),
-            child: SafeArea(
-              top: false,
+          ],
+        ),
+      ),
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Checkout Action Bar
+          if (_cartItems.isNotEmpty)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                border: Border(top: BorderSide(color: Color(0xFFEAECF0))),
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -251,41 +277,40 @@ class _CartScreenState extends State<CartScreen> {
                       const Text('All', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Color(0xFF344054))),
                     ],
                   ),
-                  SizedBox(
-                    height: 44,
-                    child: ElevatedButton(
-                      onPressed: () => Navigator.pushNamed(context, AppRoutes.checkout),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: kNavy,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        padding: const EdgeInsets.symmetric(horizontal: 28),
-                        elevation: 0,
-                      ),
-                      child: const Text('Checkout (0)', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
+                  ElevatedButton(
+                    onPressed: () => Navigator.pushNamed(context, AppRoutes.checkout),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: kNavy,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                      elevation: 0,
                     ),
+                    child: Text('Checkout ($totalItems) • \$${totalPrice.toStringAsFixed(2)}',
+                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
                   ),
                 ],
               ),
             ),
+
+          // Main Bottom Nav Bar
+          CustomBottomNavBar(
+            currentTab: NavTab.cart,
+            cartBadgeCount: totalItems,
+            onTabSelected: (tab) {
+              switch (tab) {
+                case NavTab.home:
+                  Navigator.pushReplacementNamed(context, AppRoutes.home);
+                case NavTab.category:
+                  Navigator.pushReplacementNamed(context, AppRoutes.categories);
+                case NavTab.settings:
+                  Navigator.pushReplacementNamed(context, AppRoutes.settings);
+                default:
+                  break;
+              }
+            },
           ),
         ],
-      ),
-      bottomNavigationBar: CustomBottomNavBar(
-        currentTab: NavTab.cart,
-        cartBadgeCount: 3,
-        onTabSelected: (tab) {
-          switch (tab) {
-            case NavTab.home:
-              Navigator.pushReplacementNamed(context, AppRoutes.home);
-            case NavTab.category:
-              Navigator.pushReplacementNamed(context, AppRoutes.categories);
-            case NavTab.settings:
-              Navigator.pushReplacementNamed(context, AppRoutes.settings);
-            default:
-              break;
-          }
-        },
       ),
     );
   }
@@ -312,9 +337,10 @@ class _CartScreenState extends State<CartScreen> {
     required String price,
     required int qty,
     required String img,
-    bool showOrangeTrash = false,
+    bool showDelete = false,
     required VoidCallback onQtyMinus,
     required VoidCallback onQtyPlus,
+    required VoidCallback onDelete,
   }) {
     const kOrange = Color(0xFFFF5722);
 
@@ -327,14 +353,17 @@ class _CartScreenState extends State<CartScreen> {
       clipBehavior: Clip.hardEdge,
       child: Row(
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.asset(
-              img, width: 72, height: 72, fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(width: 72, height: 72, color: const Color(0xFFF2F4F7)),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.asset(
+                img, width: 72, height: 72, fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(width: 72, height: 72, color: const Color(0xFFF2F4F7)),
+              ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 4),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -350,6 +379,7 @@ class _CartScreenState extends State<CartScreen> {
                     Text(price, style: const TextStyle(color: kOrange, fontWeight: FontWeight.w800, fontSize: 13)),
                     Container(
                       height: 28,
+                      margin: const EdgeInsets.only(right: 8),
                       decoration: BoxDecoration(
                         color: const Color(0xFFF9FAFB),
                         borderRadius: BorderRadius.circular(6),
@@ -380,14 +410,17 @@ class _CartScreenState extends State<CartScreen> {
               ],
             ),
           ),
-          if (showOrangeTrash)
-            Container(
-              width: 50, height: 72,
-              color: const Color(0xFFFFB74D),
-              child: const Icon(Icons.delete_outline_rounded, color: Colors.white, size: 22),
+          if (showDelete)
+            GestureDetector(
+              onTap: onDelete,
+              child: Container(
+                width: 50, height: 88,
+                color: const Color(0xFFFFB74D),
+                child: const Icon(Icons.delete_outline_rounded, color: Colors.white, size: 22),
+              ),
             )
           else
-            const SizedBox(width: 12),
+            const SizedBox(width: 8),
         ],
       ),
     );

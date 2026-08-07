@@ -15,23 +15,21 @@ class _CategoriesScreenState extends State<CategoriesScreen> with SingleTickerPr
   final Set<int> _wishlist = {};
 
   static final _catTiles = [
-    {'title': 'Bracelet', 'img': AppAssets.productHeadphone},
-    {'title': 'Jacket', 'img': AppAssets.productShoe},
-    {'title': 'Formal Suits', 'img': AppAssets.productFashion},
-    {'title': 'Shirts', 'img': AppAssets.userHeroPromo},
-    {'title': 'Necklace', 'img': AppAssets.productSwitchConsole1},
-    {'title': 'Rings', 'img': AppAssets.productSwitchConsole2},
-    {'title': 'Watches', 'img': AppAssets.productHeadphone},
-    {'title': 'View More', 'img': AppAssets.productFashion},
+    {'title': 'Men', 'img': AppAssets.catPhotoMen},
+    {'title': 'Women', 'img': AppAssets.catPhotoWomen},
+    {'title': 'Shoes', 'img': AppAssets.catPhotoShoes},
+    {'title': 'Electronics', 'img': AppAssets.catPhotoElec},
+    {'title': 'Bags', 'img': AppAssets.catPhotoBags},
+    {'title': 'Watches', 'img': AppAssets.catPhotoWatches},
   ];
 
   static final _newProducts = [
-    {'title': 'Minimalist Brown Bag', 'category': 'Clothing', 'img': AppAssets.productFashion, 'price': 9.00, 'orig': 15.00, 'badge': '-56%'},
-    {'title': 'Fur Hoodie', 'category': 'Outwears', 'img': AppAssets.productShoe, 'price': 24.00, 'orig': 30.00, 'badge': '-56%'},
-    {'title': 'Rolex O78', 'category': 'Watches', 'img': AppAssets.productHeadphone, 'price': 20.00, 'orig': 25.00, 'badge': '-56%'},
-    {'title': 'Sunray Glasses', 'category': 'Sunglass', 'img': AppAssets.productSwitchConsole1, 'price': 35.00, 'orig': 45.00, 'badge': '-56%'},
-    {'title': 'Timberland', 'category': 'Shoe', 'img': AppAssets.productSwitchConsole2, 'price': 12.00, 'orig': 124.00, 'badge': '-56%'},
-    {'title': 'Design t-shirt', 'category': 'Clothing', 'img': AppAssets.productFashion, 'price': 24.00, 'orig': 34.00, 'badge': '-56%'},
+    {'title': 'Minimalist Brown Bag', 'category': 'Women', 'img': AppAssets.catPhotoWomen, 'price': 9.00, 'orig': 15.00, 'badge': '-56%'},
+    {'title': 'Slim Fit Navy Hoodie', 'category': 'Men', 'img': AppAssets.catPhotoMen, 'price': 29.99, 'orig': 45.00, 'badge': '-33%'},
+    {'title': 'Classic White Sneakers', 'category': 'Shoes', 'img': AppAssets.catPhotoShoes, 'price': 49.99, 'orig': 80.00, 'badge': '-38%'},
+    {'title': 'Pro Wireless Headphones', 'category': 'Electronics', 'img': AppAssets.catPhotoElec, 'price': 89.99, 'orig': 149.00, 'badge': '-40%'},
+    {'title': 'Brown Leather Crossbody', 'category': 'Bags', 'img': AppAssets.catPhotoBags, 'price': 44.99, 'orig': 75.00, 'badge': '-40%'},
+    {'title': 'Steel Chronograph Watch', 'category': 'Watches', 'img': AppAssets.catPhotoWatches, 'price': 129.99, 'orig': 220.00, 'badge': '-41%'},
   ];
 
   @override

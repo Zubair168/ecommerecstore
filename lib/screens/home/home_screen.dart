@@ -42,66 +42,66 @@ class _HomeScreenState extends State<HomeScreen> {
 
   static const _flash = [
     {
-      'title': 'Classic Fit Unisex T-Shirt',
-      'price': 24.99, 'orig': 40.99, 'badge': 'SALE',
+      'title': 'Slim Fit Navy Hoodie',
+      'price': 29.99, 'orig': 45.00, 'badge': 'SALE',
       'badgeColor': Color(0xFFEF4444),
       'hasSold': 82, 'total': 100,
-      'img': AppAssets.productFashion,
+      'img': AppAssets.catPhotoMen,
     },
     {
-      'title': 'SoftTouch Regular Tee',
-      'price': 18.99, 'orig': 32.99, 'badge': '50% OFF',
+      'title': 'Classic White Sneakers',
+      'price': 49.99, 'orig': 80.00, 'badge': '50% OFF',
       'badgeColor': Color(0xFFEF4444),
       'hasSold': 45, 'total': 100,
-      'img': AppAssets.productShoe,
+      'img': AppAssets.catPhotoShoes,
     },
     {
-      'title': 'Minimalist Brown Bag',
-      'price': 9.00, 'orig': 15.00, 'badge': '-56%',
+      'title': 'Pro Wireless Headphones',
+      'price': 89.99, 'orig': 149.00, 'badge': '-40%',
       'badgeColor': Color(0xFFEF4444),
       'hasSold': 82, 'total': 100,
-      'img': AppAssets.productHeadphone,
+      'img': AppAssets.catPhotoElec,
     },
   ];
 
   static const _deals = [
     {
-      'title': 'Minimalist Brown Bag',
-      'price': 9.00, 'orig': 15.00, 'badge': '-56%',
-      'img': AppAssets.productShoe,
+      'title': 'Brown Leather Crossbody',
+      'price': 44.99, 'orig': 75.00, 'badge': '-40%',
+      'img': AppAssets.catPhotoBags,
     },
     {
-      'title': 'Multifunctional business analog',
-      'price': 9.00, 'orig': 15.00, 'badge': '-16%',
-      'img': AppAssets.productHeadphone,
+      'title': 'Steel Chronograph Watch',
+      'price': 129.99, 'orig': 220.00, 'badge': '-41%',
+      'img': AppAssets.catPhotoWatches,
     },
     {
-      'title': 'Timberland Leather Boots',
-      'price': 12.00, 'orig': 124.00, 'badge': '-12%',
-      'img': AppAssets.productSwitchConsole1,
+      'title': 'Floral Wrap Summer Dress',
+      'price': 39.99, 'orig': 65.00, 'badge': '-38%',
+      'img': AppAssets.catPhotoWomen,
     },
   ];
 
   static const _featuredList = [
     {
-      'title': 'Minimalist Brown Bag',
-      'price': 9.00, 'orig': 15.00, 'badge': '-38%',
-      'rating': '4.5 (21)', 'sold': '10 Sold',
-      'img': AppAssets.productFashion,
+      'title': 'Slim Fit Navy Hoodie',
+      'price': 29.99, 'orig': 45.00, 'badge': '-33%',
+      'rating': '4.8 (124)', 'sold': '82 Sold',
+      'img': AppAssets.catPhotoMen,
     },
     {
-      'title': 'Leather Urban Backpack',
-      'price': 14.00, 'orig': 25.00, 'badge': '-25%',
-      'rating': '4.8 (15)', 'sold': '25 Sold',
-      'img': AppAssets.productShoe,
+      'title': 'Classic White Sneakers',
+      'price': 49.99, 'orig': 80.00, 'badge': '-38%',
+      'rating': '4.9 (521)', 'sold': '145 Sold',
+      'img': AppAssets.catPhotoShoes,
     },
   ];
 
   static const _newProducts = [
-    {'title': 'Minimalist Brown Bag', 'category': 'Clothing', 'price': 9.00, 'orig': 15.00, 'badge': '-56%', 'img': AppAssets.productFashion},
-    {'title': 'Fur Hoodie', 'category': 'Outwears', 'price': 24.00, 'orig': 30.00, 'badge': '-56%', 'img': AppAssets.productShoe},
-    {'title': 'Rolex O78', 'category': 'Watches', 'price': 20.00, 'orig': 25.00, 'badge': '-56%', 'img': AppAssets.productHeadphone},
-    {'title': 'Sunray Glasses', 'category': 'Sunglass', 'price': 35.00, 'orig': 45.00, 'badge': '-56%', 'img': AppAssets.productSwitchConsole1},
+    {'title': 'Minimalist Brown Bag', 'category': 'Clothing', 'price': 9.00, 'orig': 15.00, 'badge': '-56%', 'img': AppAssets.catPhotoWomen},
+    {'title': 'Slim Fit Navy Hoodie', 'category': 'Men', 'price': 29.99, 'orig': 45.00, 'badge': '-33%', 'img': AppAssets.catPhotoMen},
+    {'title': 'Classic White Sneakers', 'category': 'Shoes', 'price': 49.99, 'orig': 80.00, 'badge': '-38%', 'img': AppAssets.catPhotoShoes},
+    {'title': 'Pro Wireless Headphones', 'category': 'Electronics', 'price': 89.99, 'orig': 149.00, 'badge': '-40%', 'img': AppAssets.catPhotoElec},
   ];
 
   @override
@@ -273,15 +273,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // ── Customer Reviews Section matching Figma ──────────────────
-          SliverToBoxAdapter(
-            child: _sectionHeader(
-              title: 'Customer Reviews',
-              onSeeAll: () => Navigator.pushNamed(context, AppRoutes.review),
-            ),
-          ),
-          SliverToBoxAdapter(child: _reviewsStrip()),
-
           const SliverToBoxAdapter(child: SizedBox(height: 32)),
         ],
       ),
@@ -306,10 +297,31 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // ── Auto-scrolling Hero Banner Slider ─────────────────────────────────────────
   Widget _heroBannerSlider() {
-    final banners = [
-      AppAssets.userBannerHero,
-      AppAssets.userHeroPromo,
-      AppAssets.productFashion,
+    final slides = [
+      {
+        'title': 'Summer Collection',
+        'subtitle': 'Up to 50% OFF on Women Fashion',
+        'badge': 'NEW ARRIVALS',
+        'color1': const Color(0xFFFF6542),
+        'color2': const Color(0xFFFF8A65),
+        'img': AppAssets.catPhotoWomen,
+      },
+      {
+        'title': 'Premium Electronics',
+        'subtitle': 'Wireless Headphones & Earbuds',
+        'badge': 'HOT DEALS',
+        'color1': const Color(0xFF1D2939),
+        'color2': const Color(0xFF344054),
+        'img': AppAssets.catPhotoElec,
+      },
+      {
+        'title': 'Step Into Style',
+        'subtitle': 'Top Rated Sneakers & Shoes',
+        'badge': 'TRENDING',
+        'color1': const Color(0xFF0284C7),
+        'color2': const Color(0xFF38BDF8),
+        'img': AppAssets.catPhotoShoes,
+      },
     ];
 
     return Container(
@@ -317,7 +329,6 @@ class _HomeScreenState extends State<HomeScreen> {
       margin: const EdgeInsets.fromLTRB(16, 10, 16, 0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        color: const Color(0xFFFFC107),
       ),
       clipBehavior: Clip.hardEdge,
       child: Stack(
@@ -325,33 +336,89 @@ class _HomeScreenState extends State<HomeScreen> {
           PageView.builder(
             controller: _heroPageCtrl,
             onPageChanged: (i) => setState(() => _heroIndex = i),
-            itemCount: banners.length,
+            itemCount: slides.length,
             itemBuilder: (context, i) {
-              return Image.asset(
-                banners[i],
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Image.asset(
-                  'assets/raw/Frame 1000008764.png',
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(color: const Color(0xFFFFC107)),
+              final slide = slides[i];
+              return Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [slide['color1'] as Color, slide['color2'] as Color],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ),
+                ),
+                child: Stack(
+                  children: [
+                    Positioned(
+                      right: -10, top: 0, bottom: 0,
+                      child: Image.asset(
+                        slide['img'] as String,
+                        width: 170, fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                      ),
+                    ),
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              (slide['color1'] as Color).withOpacity(0.95),
+                              (slide['color1'] as Color).withOpacity(0.4),
+                              Colors.transparent,
+                            ],
+                            stops: const [0.0, 0.55, 1.0],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 160, 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: Colors.white24,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              slide['badge'] as String,
+                              style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w800, letterSpacing: 0.5),
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            slide['title'] as String,
+                            style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w800, height: 1.1),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            slide['subtitle'] as String,
+                            style: const TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.w500),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               );
             },
           ),
           Positioned(
-            bottom: 10, left: 0, right: 0,
+            bottom: 10, left: 16,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(
-                banners.length,
+                slides.length,
                 (i) => AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
-                  margin: const EdgeInsets.symmetric(horizontal: 3),
-                  width: _heroIndex == i ? 20 : 8,
-                  height: 4,
+                  margin: const EdgeInsets.only(right: 4),
+                  width: _heroIndex == i ? 18 : 6,
+                  height: 5,
                   decoration: BoxDecoration(
-                    color: _heroIndex == i ? _kNavy : Colors.white70,
-                    borderRadius: BorderRadius.circular(2),
+                    color: _heroIndex == i ? Colors.white : Colors.white38,
+                    borderRadius: BorderRadius.circular(3),
                   ),
                 ),
               ),
@@ -883,80 +950,22 @@ class _HomeScreenState extends State<HomeScreen> {
                       Text('\$${(p['orig'] as double).toStringAsFixed(2)}', style: const TextStyle(decoration: TextDecoration.lineThrough, color: Color(0xFF98A2B3), fontSize: 10)),
                     ],
                   ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: const [
+                      Icon(Icons.star_rounded, color: Color(0xFFFFC107), size: 14),
+                      SizedBox(width: 3),
+                      Text(
+                        '4.5 ( 2 ) 10 Sold',
+                        style: TextStyle(fontSize: 10, color: Color(0xFF667085), fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  // ── Customer Reviews Strip matching Figma ─────────────────────────────────
-  Widget _reviewsStrip() {
-    final reviews = [
-      {'name': 'Jack wylde', 'rating': 5, 'time': '2 Weeks ago', 'text': 'Absolutely love this bag! The quality is amazing for the price.', 'img': AppAssets.productFashion},
-      {'name': 'Alexa young', 'rating': 5, 'time': '1 Week ago', 'text': 'Perfect fit and great quality. Will buy again!', 'img': AppAssets.productShoe},
-      {'name': 'Mark Johnson', 'rating': 4, 'time': '3 Days ago', 'text': 'Really happy with this purchase. Fast shipping too.', 'img': AppAssets.productHeadphone},
-    ];
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        children: reviews.map((r) {
-          return Container(
-            margin: const EdgeInsets.only(bottom: 14),
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: const Color(0xFFEAECF0)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.asset(
-                        r['img'] as String,
-                        width: 36, height: 36, fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
-                          width: 36, height: 36,
-                          decoration: const BoxDecoration(color: Color(0xFFF2F4F7), shape: BoxShape.circle),
-                          child: Center(child: Text((r['name'] as String).substring(0, 1),
-                              style: const TextStyle(fontWeight: FontWeight.w700, color: Color(0xFF344054)))),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(r['name'] as String,
-                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF101828))),
-                          Text(r['time'] as String,
-                              style: const TextStyle(fontSize: 10, color: Color(0xFF98A2B3))),
-                        ],
-                      ),
-                    ),
-                    Row(
-                      children: List.generate(5, (i) => Icon(
-                        i < (r['rating'] as int) ? Icons.star_rounded : Icons.star_border_rounded,
-                        color: const Color(0xFFFFC107), size: 13,
-                      )),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(r['text'] as String,
-                    style: const TextStyle(fontSize: 12, color: Color(0xFF475467), height: 1.4)),
-              ],
-            ),
-          );
-        }).toList(),
       ),
     );
   }
