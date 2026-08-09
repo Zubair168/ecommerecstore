@@ -14,6 +14,7 @@ class WishlistScreen extends StatefulWidget {
 class _WishlistScreenState extends State<WishlistScreen> {
   int _selectedLayout = 0; // 0: Layout, 1: Filter
   int _layoutMode = 0; // 0: List, 1: Grid
+  String? _selectedCategory; // null = show all
 
   static final _wishlistItems = [
     {
@@ -150,23 +151,65 @@ class _WishlistScreenState extends State<WishlistScreen> {
                     ),
                   )
                 : Builder(builder: (context) {
-              // categories from items
+              // Build category list from items
               final categories = _wishlistItems.map((e) => e['category'] as String).toSet().toList();
+
+              // Apply filter
+              final filteredItems = _selectedCategory == null
+                  ? _wishlistItems
+                  : _wishlistItems.where((e) => e['category'] == _selectedCategory).toList();
+
               if (_selectedLayout == 1) {
-                // show filter options
+                // Show filter options as selectable chips
                 return Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Filter by Category', style: TextStyle(fontWeight: FontWeight.w700)),
-                      const SizedBox(height: 8),
+                      const Text('Filter by Category', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+                      const SizedBox(height: 12),
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
-                        children: categories.map((c) {
-                          return ChoiceChip(label: Text(c), selected: false, onSelected: (_) {});
-                        }).toList(),
+                        children: [
+                          // 'All' chip
+                          ChoiceChip(
+                            label: const Text('All'),
+                            selected: _selectedCategory == null,
+                            onSelected: (_) => setState(() {
+                              _selectedCategory = null;
+                              _selectedLayout = 0; // switch back to list
+                            }),
+                            selectedColor: kNavy,
+                            labelStyle: TextStyle(
+                              color: _selectedCategory == null ? Colors.white : const Color(0xFF344054),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          // Category chips
+                          ...categories.map((c) {
+                            final isSelected = _selectedCategory == c;
+                            return ChoiceChip(
+                              label: Text(c),
+                              selected: isSelected,
+                              onSelected: (_) => setState(() {
+                                _selectedCategory = isSelected ? null : c;
+                                _selectedLayout = 0; // switch back to list
+                              }),
+                              selectedColor: kNavy,
+                              labelStyle: TextStyle(
+                                color: isSelected ? Colors.white : const Color(0xFF344054),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            );
+                          }),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      // Preview filtered count
+                      Text(
+                        '${filteredItems.length} item${filteredItems.length != 1 ? 's' : ''} ${_selectedCategory != null ? 'in $_selectedCategory' : 'total'}',
+                        style: const TextStyle(fontSize: 12, color: Color(0xFF98A2B3)),
                       ),
                     ],
                   ),
@@ -177,10 +220,10 @@ class _WishlistScreenState extends State<WishlistScreen> {
               if (_layoutMode == 0) {
                 return ListView.separated(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: _wishlistItems.length,
+                  itemCount: filteredItems.length,
                   separatorBuilder: (_, __) => const Divider(height: 24, color: Color(0xFFEAECF0)),
                   itemBuilder: (context, i) {
-                    final item = _wishlistItems[i];
+                    final item = filteredItems[i];
                     return GestureDetector(
                       onTap: () => Navigator.pushNamed(context, AppRoutes.productDetails),
                       child: Row(
@@ -227,9 +270,9 @@ class _WishlistScreenState extends State<WishlistScreen> {
                   mainAxisSpacing: 12,
                   childAspectRatio: 0.85,
                 ),
-                itemCount: _wishlistItems.length,
+                itemCount: filteredItems.length,
                 itemBuilder: (context, i) {
-                  final item = _wishlistItems[i];
+                  final item = filteredItems[i];
                   return GestureDetector(
                     onTap: () => Navigator.pushNamed(context, AppRoutes.productDetails),
                     child: Column(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import '../../constants/app_assets.dart';
 import '../../routes/app_routes.dart';
@@ -34,7 +35,12 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
             style: TextStyle(color: Color(0xFF101828), fontWeight: FontWeight.w700, fontSize: 18)),
         centerTitle: true,
       ),
-      body: Column(
+      body: StreamBuilder<User?>(
+        stream: AuthService.authStateChanges,
+        builder: (context, authSnap) {
+          final user = authSnap.data;
+
+          return Column(
         children: [
           // Filter Bar
           SizedBox(
@@ -48,6 +54,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                 final isSelected = _selectedFilter == i;
                 return GestureDetector(
                   onTap: () => setState(() => _selectedFilter = i),
+
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
                     decoration: BoxDecoration(
@@ -71,7 +78,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
 
           // Real-time Orders from Firestore
           Expanded(
-            child: AuthService.currentUser == null
+            child: user == null
                 ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -83,7 +90,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                     ),
                   )
                 : StreamBuilder<QuerySnapshot>(
-              stream: OrderService.userOrdersFor(AuthService.currentUser?.uid),
+              stream: OrderService.userOrdersFor(user.uid),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
@@ -159,6 +166,8 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
             ),
           ),
         ],
+      );
+        },
       ),
     );
   }

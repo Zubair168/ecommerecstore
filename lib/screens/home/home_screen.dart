@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../constants/app_assets.dart';
 import '../../routes/app_routes.dart';
 import '../../widgets/index.dart';
 import '../../providers/cart_provider.dart';
+import '../../services/product_service.dart';
 
 const _kOrange = Color(0xFFFF5722);
 const _kNavy = Color(0xFF1D2939);
@@ -30,6 +32,10 @@ class _HomeScreenState extends State<HomeScreen> {
   final Set<int> _wFlash = {};
   final Set<int> _wDeals = {};
   final Set<int> _wNew = {};
+
+  // Real Firestore products loaded dynamically
+  List<DocumentSnapshot> _firestoreProducts = [];
+  StreamSubscription<QuerySnapshot>? _productsSub;
 
   // Real Photo Category Items — using AI-generated product category images
   static final _photoCategories = [
@@ -111,6 +117,10 @@ class _HomeScreenState extends State<HomeScreen> {
     _heroPageCtrl = PageController();
     _startTimer();
     _startHeroAutoScroll();
+    // Subscribe to live Firestore products for real IDs
+    _productsSub = ProductService.productsStream.listen((snap) {
+      if (mounted) setState(() => _firestoreProducts = snap.docs);
+    });
   }
 
   void _startTimer() {
@@ -140,7 +150,14 @@ class _HomeScreenState extends State<HomeScreen> {
     _timer.cancel();
     _heroTimer?.cancel();
     _heroPageCtrl.dispose();
+    _productsSub?.cancel();
     super.dispose();
+  }
+
+  /// Get the Firestore product ID by index (cycles if not enough products)
+  String? _productId(int index) {
+    if (_firestoreProducts.isEmpty) return null;
+    return _firestoreProducts[index % _firestoreProducts.length].id;
   }
 
   String _p(int n) => n.toString().padLeft(2, '0');
@@ -576,7 +593,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: _FlashCard(
               p: p,
               wishlisted: _wFlash.contains(i),
-              onTap: () => Navigator.pushNamed(context, AppRoutes.productDetails),
+              onTap: () => Navigator.pushNamed(context, AppRoutes.productDetails, arguments: _productId(i)),
               onHeart: () => setState(() =>
                   _wFlash.contains(i) ? _wFlash.remove(i) : _wFlash.add(i)),
             ),
@@ -602,7 +619,7 @@ class _HomeScreenState extends State<HomeScreen> {
               p: p,
               wishlisted: _wDeals.contains(i),
               showProgress: false,
-              onTap: () => Navigator.pushNamed(context, AppRoutes.productDetails),
+              onTap: () => Navigator.pushNamed(context, AppRoutes.productDetails, arguments: _productId(i + 10)),
               onHeart: () => setState(() =>
                   _wDeals.contains(i) ? _wDeals.remove(i) : _wDeals.add(i)),
             ),
@@ -908,7 +925,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final isWish = _wNew.contains(i);
 
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, AppRoutes.productDetails),
+      onTap: () => Navigator.pushNamed(context, AppRoutes.productDetails, arguments: _productId(i)),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,

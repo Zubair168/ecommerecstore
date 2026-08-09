@@ -125,8 +125,9 @@ class _ProductGridScreenState extends State<ProductGridScreen> {
       separatorBuilder: (context, i) => const SizedBox(height: AppSpacing.space12),
       itemBuilder: (context, i) {
         final data = docs[i].data() as Map<String, dynamic>;
+        final id = docs[i].id;
         return GestureDetector(
-          onTap: () => Navigator.pushNamed(context, AppRoutes.productDetails),
+          onTap: () => Navigator.pushNamed(context, AppRoutes.productDetails, arguments: id),
           child: Container(
             padding: const EdgeInsets.all(AppSpacing.space12),
             decoration: BoxDecoration(color: AppColors.background, borderRadius: AppSpacing.radiusLarge, border: Border.all(color: AppColors.border)),
@@ -134,9 +135,15 @@ class _ProductGridScreenState extends State<ProductGridScreen> {
               children: [
                 ClipRRect(
                   borderRadius: AppSpacing.radiusMedium,
-                  child: Image.asset((data['images'] as List?)?.first ?? '', width: 88, height: 88, fit: BoxFit.cover,
-                    errorBuilder: (ctx, err, st) => Container(width: 88, height: 88, color: AppColors.backgroundAlt, child: const Icon(Icons.image_outlined, color: AppColors.border)),
-                  ),
+                  child: Builder(builder: (context) {
+                    final src = (data['images'] as List?)?.first?.toString() ?? '';
+                    if (src.startsWith('http')) {
+                      return Image.network(src, width: 88, height: 88, fit: BoxFit.cover,
+                        errorBuilder: (ctx, err, st) => Container(width: 88, height: 88, color: AppColors.backgroundAlt, child: const Icon(Icons.image_outlined, color: AppColors.border)));
+                    }
+                    return Image.asset(src.isNotEmpty ? src : AppAssets.productFashion, width: 88, height: 88, fit: BoxFit.cover,
+                      errorBuilder: (ctx, err, st) => Container(width: 88, height: 88, color: AppColors.backgroundAlt, child: const Icon(Icons.image_outlined, color: AppColors.border)));
+                  }),
                 ),
                 const SizedBox(width: AppSpacing.space12),
                 Expanded(
