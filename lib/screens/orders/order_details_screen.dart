@@ -14,20 +14,49 @@ class OrderDetailsScreen extends StatefulWidget {
 class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   int _selectedTab = 0; // 0: Order details, 1: Track order
 
+  static double _parseDouble(dynamic val) {
+    if (val == null) return 0.0;
+    if (val is num) return val.toDouble();
+    if (val is String) return double.tryParse(val) ?? 0.0;
+    return 0.0;
+  }
+
+  static int _parseInt(dynamic val) {
+    if (val == null) return 1;
+    if (val is num) return val.toInt();
+    if (val is String) return int.tryParse(val) ?? 1;
+    return 1;
+  }
+
   @override
   Widget build(BuildContext context) {
     const kNavy = Color(0xFF1D2939);
     const kOrange = Color(0xFFFF5722);
 
-    final Map<String, dynamic>? order = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final rawArg = ModalRoute.of(context)?.settings.arguments;
+    final Map<String, dynamic>? order = rawArg is Map ? Map<String, dynamic>.from(rawArg) : null;
 
     if (order == null) {
-      return Scaffold(body: Center(child: Text('No order data found')));
+      return const Scaffold(body: Center(child: Text('No order data found')));
     }
 
-    final items = order['items'] as List? ?? [];
-    final timestamp = order['createdAt'] as Timestamp?;
-    final dateStr = timestamp != null ? DateFormat('MMM d, yyyy').format(timestamp.toDate()) : 'Recent';
+    final rawItems = order['items'];
+    final List<Map<String, dynamic>> items = [];
+    if (rawItems is List) {
+      for (final item in rawItems) {
+        if (item is Map) {
+          items.add(Map<String, dynamic>.from(item));
+        }
+      }
+    }
+
+    final timestamp = order['createdAt'];
+    String dateStr = 'Recent';
+    if (timestamp is Timestamp) {
+      dateStr = DateFormat('MMM d, yyyy').format(timestamp.toDate());
+    } else if (timestamp != null) {
+      dateStr = timestamp.toString();
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,

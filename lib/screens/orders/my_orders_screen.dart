@@ -16,6 +16,20 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
   int _selectedFilter = 0; // 0: All, 1: Pending, 2: Processing, 3: Completed
   static const _filters = ['All', 'Pending', 'Processing', 'Completed'];
 
+  static double _parseDouble(dynamic val) {
+    if (val == null) return 0.0;
+    if (val is num) return val.toDouble();
+    if (val is String) return double.tryParse(val) ?? 0.0;
+    return 0.0;
+  }
+
+  static int _parseInt(dynamic val) {
+    if (val == null) return 1;
+    if (val is num) return val.toInt();
+    if (val is String) return int.tryParse(val) ?? 1;
+    return 1;
+  }
+
   @override
   Widget build(BuildContext context) {
     const kNavy = Color(0xFF1D2939);
@@ -169,7 +183,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
 
                     final orderId = (order['id'] ?? 'ZU0PZZLU').toString();
                     final shortId = orderId.length >= 8 ? orderId.substring(0, 8).toUpperCase() : orderId;
-                    final totalNum = (order['total'] as num?)?.toDouble() ?? 0.0;
+                    final totalNum = _parseDouble(order['total']);
                     final statusStr = order['status']?.toString() ?? 'Processing';
                     final payMethod = order['paymentMethod']?.toString() ?? 'Cash on Delivery';
 
@@ -204,8 +218,8 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                         else
                           ...items.map((itemData) {
                             final titleStr = itemData['title']?.toString() ?? 'Product';
-                            final priceNum = (itemData['price'] as num?)?.toDouble() ?? 0.0;
-                            final qtyNum = (itemData['quantity'] as num?)?.toInt() ?? 1;
+                            final priceNum = _parseDouble(itemData['price']);
+                            final qtyNum = _parseInt(itemData['quantity']);
                             final imgSrc = itemData['image']?.toString() ?? AppAssets.productFashion;
 
                             return Padding(
