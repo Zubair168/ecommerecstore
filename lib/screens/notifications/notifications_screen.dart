@@ -242,7 +242,7 @@ class _NotifCard extends StatelessWidget {
                     Text(
                       item.time,
                       style: AppTypography.textTheme.labelSmall?.copyWith(
-                        color: AppColors.textLight,
+                        color: AppColors.textDisabled,
                       ),
                     ),
                   ],
