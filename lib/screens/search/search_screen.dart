@@ -113,6 +113,7 @@ class _SearchScreenState extends State<SearchScreen> {
             padding: const EdgeInsets.all(AppSpacing.space16),
             itemCount: _results.length,
             separatorBuilder: (context, i) => const Divider(color: AppColors.divider, height: 16),
+            itemBuilder: (context, i) {
               final doc = _results[i];
               final data = doc.data() as Map<String, dynamic>;
               final String img = (data['images'] as List?)?.first?.toString() ?? '';
