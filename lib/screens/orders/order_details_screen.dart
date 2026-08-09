@@ -115,15 +115,15 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                         title: 'Your order',
                         child: Column(
                           children: items.map((item) {
-                            final itemData = item as Map<String, dynamic>;
+                            final itemData = item is Map ? Map<String, dynamic>.from(item) : <String, dynamic>{};
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 12),
                               child: _ProductRow(
                                 category: 'Product',
-                                title: itemData['title'] ?? '',
+                                title: itemData['title']?.toString() ?? 'Product',
                                 price: '\$${((itemData['price'] as num?) ?? 0).toStringAsFixed(2)}',
-                                qty: itemData['quantity'] ?? 1,
-                                img: itemData['image'] ?? AppAssets.productFashion,
+                                qty: (itemData['quantity'] as num?)?.toInt() ?? 1,
+                                img: itemData['image']?.toString() ?? AppAssets.productFashion,
                               ),
                             );
                           }).toList(),

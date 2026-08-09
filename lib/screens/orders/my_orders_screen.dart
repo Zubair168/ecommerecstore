@@ -76,20 +76,25 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                 final ordersList = <Map<String, dynamic>>[];
                 final seenIds = <String>{};
 
-                // Add Firestore stream orders
+                // Add Firestore stream orders securely converting Map types
                 if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
                   for (final doc in snapshot.data!.docs) {
-                    final data = Map<String, dynamic>.from(doc.data() as Map);
-                    data['id'] = doc.id;
-                    ordersList.add(data);
-                    seenIds.add(doc.id);
+                    try {
+                      final rawData = doc.data();
+                      if (rawData is Map) {
+                        final data = Map<String, dynamic>.from(rawData);
+                        data['id'] = doc.id;
+                        ordersList.add(data);
+                        seenIds.add(doc.id);
+                      }
+                    } catch (_) {}
                   }
                 }
 
                 // Merge local persistent orders so user NEVER sees blank screen
                 for (final local in OrderService.localOrders) {
                   final id = local['id']?.toString() ?? '';
-                  if (!seenIds.contains(id)) {
+                  if (id.isNotEmpty && !seenIds.contains(id)) {
                     ordersList.add(local);
                     seenIds.add(id);
                   }
@@ -142,16 +147,31 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                   itemCount: filteredOrders.length,
                   itemBuilder: (context, index) {
                     final order = filteredOrders[index];
-                    final items = (order['items'] as List?) ?? [];
+
+                    // Safely extract items list without Map<dynamic, dynamic> cast crash
+                    final rawItems = order['items'];
+                    final List<Map<String, dynamic>> items = [];
+                    if (rawItems is List) {
+                      for (final item in rawItems) {
+                        if (item is Map) {
+                          items.add(Map<String, dynamic>.from(item));
+                        }
+                      }
+                    }
+
                     final timestamp = order['createdAt'];
                     String dateStr = 'Recent';
                     if (timestamp is Timestamp) {
                       dateStr = DateFormat('MMM d, yyyy • hh:mm a').format(timestamp.toDate());
-                    } else if (timestamp is String) {
-                      dateStr = timestamp;
+                    } else if (timestamp != null) {
+                      dateStr = timestamp.toString();
                     }
+
                     final orderId = (order['id'] ?? 'ZU0PZZLU').toString();
                     final shortId = orderId.length >= 8 ? orderId.substring(0, 8).toUpperCase() : orderId;
+                    final totalNum = (order['total'] as num?)?.toDouble() ?? 0.0;
+                    final statusStr = order['status']?.toString() ?? 'Processing';
+                    final payMethod = order['paymentMethod']?.toString() ?? 'Cash on Delivery';
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -173,28 +193,31 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                         if (items.isEmpty)
                           _OrderItemCard(
                             title: 'Online Shop Order',
-                            price: '\$${((order['total'] as num?) ?? 0).toStringAsFixed(2)}',
+                            price: '\$${totalNum.toStringAsFixed(2)}',
                             qty: 1,
-                            totalPrice: '\$${((order['total'] as num?) ?? 0).toStringAsFixed(2)}',
+                            totalPrice: '\$${totalNum.toStringAsFixed(2)}',
                             img: AppAssets.productFashion,
-                            status: order['status']?.toString() ?? 'Processing',
-                            paymentMethod: order['paymentMethod']?.toString() ?? 'COD',
+                            status: statusStr,
+                            paymentMethod: payMethod,
                             onTap: () => Navigator.pushNamed(context, AppRoutes.orderDetails, arguments: order),
                           )
                         else
-                          ...items.map((item) {
-                            final itemData = item as Map<String, dynamic>;
+                          ...items.map((itemData) {
+                            final titleStr = itemData['title']?.toString() ?? 'Product';
+                            final priceNum = (itemData['price'] as num?)?.toDouble() ?? 0.0;
+                            final qtyNum = (itemData['quantity'] as num?)?.toInt() ?? 1;
                             final imgSrc = itemData['image']?.toString() ?? AppAssets.productFashion;
+
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 12),
                               child: _OrderItemCard(
-                                title: itemData['title']?.toString() ?? 'Product',
-                                price: '\$${((itemData['price'] as num?) ?? 0).toStringAsFixed(2)}',
-                                qty: (itemData['quantity'] as int?) ?? 1,
-                                totalPrice: '\$${((order['total'] as num?) ?? 0).toStringAsFixed(2)}',
+                                title: titleStr,
+                                price: '\$${priceNum.toStringAsFixed(2)}',
+                                qty: qtyNum,
+                                totalPrice: '\$${totalNum.toStringAsFixed(2)}',
                                 img: imgSrc,
-                                status: order['status']?.toString() ?? 'Processing',
-                                paymentMethod: order['paymentMethod']?.toString() ?? 'COD',
+                                status: statusStr,
+                                paymentMethod: payMethod,
                                 onTap: () => Navigator.pushNamed(context, AppRoutes.orderDetails, arguments: order),
                               ),
                             );
