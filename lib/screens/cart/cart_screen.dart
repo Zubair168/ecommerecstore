@@ -13,6 +13,7 @@ class CartScreen extends StatefulWidget {
 
 class _CartScreenState extends State<CartScreen> {
   String _searchQuery = '';
+  bool _selectAll = true;
 
   @override
   Widget build(BuildContext context) {
