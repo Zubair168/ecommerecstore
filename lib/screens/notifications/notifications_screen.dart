@@ -17,6 +17,7 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotifItem {
+  final String id;
   final IconData icon;
   final Color iconBg;
   final Color iconColor;
@@ -26,6 +27,7 @@ class _NotifItem {
   bool isRead;
 
   _NotifItem({
+    required this.id,
     required this.icon,
     required this.iconBg,
     required this.iconColor,
@@ -37,26 +39,6 @@ class _NotifItem {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
-  final List<_NotifItem> _promoItems = [
-    _NotifItem(
-      icon: Icons.local_offer_outlined,
-      iconBg: AppColors.warningBg,
-      iconColor: AppColors.warning,
-      title: 'Flash Sale is Live 🔥',
-      body: 'Up to 50% OFF on electronics today only. Don\'t miss out!',
-      time: '1 hr ago',
-    ),
-    _NotifItem(
-      icon: Icons.card_giftcard_outlined,
-      iconBg: AppColors.primarySoft,
-      iconColor: AppColors.primary,
-      title: 'You have a voucher!',
-      body: 'Use code SAVE20 for \$20 OFF your next order over \$100.',
-      time: '2 days ago',
-      isRead: true,
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
@@ -69,33 +51,23 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              setState(() {
-                for (final n in _promoItems) {
-                  n.isRead = true;
-                }
-              });
-            },
-            child: Text(
-              'Mark all read',
-              style: AppTypography.textTheme.bodySmall
-                  ?.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600),
-            ),
-          ),
-        ],
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: OrderService.notificationsStreamFor(user?.uid),
         builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
           final realNotifs = <_NotifItem>[];
 
           if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
             final docs = snapshot.data!.docs.toList();
             docs.sort((a, b) {
-              final aTime = (a.data() as Map)['createdAt'] as Timestamp?;
-              final bTime = (b.data() as Map)['createdAt'] as Timestamp?;
+              final aData = a.data() as Map<String, dynamic>;
+              final bData = b.data() as Map<String, dynamic>;
+              final aTime = aData['createdAt'] as Timestamp?;
+              final bTime = bData['createdAt'] as Timestamp?;
               if (aTime == null) return 1;
               if (bTime == null) return -1;
               return bTime.compareTo(aTime);
@@ -108,11 +80,27 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   ? DateFormat('MMM d • hh:mm a').format(timestamp.toDate())
                   : 'Just now';
 
+              final type = data['type']?.toString() ?? 'order';
+              IconData icon = Icons.shopping_bag_outlined;
+              Color iconBg = const Color(0xFFEFF8FF);
+              Color iconColor = AppColors.accentBlue;
+
+              if (type == 'order_confirmed') {
+                icon = Icons.check_circle_outline_rounded;
+                iconBg = const Color(0xFFECFDF3);
+                iconColor = const Color(0xFF027A48);
+              } else if (type == 'shipped') {
+                icon = Icons.local_shipping_outlined;
+                iconBg = const Color(0xFFE0F2FE);
+                iconColor = const Color(0xFF0086C9);
+              }
+
               realNotifs.add(_NotifItem(
-                icon: Icons.check_circle_outline_rounded,
-                iconBg: const Color(0xFFECFDF3),
-                iconColor: const Color(0xFF027A48),
-                title: data['title'] ?? 'Order Update',
+                id: doc.id,
+                icon: icon,
+                iconBg: iconBg,
+                iconColor: iconColor,
+                title: data['title'] ?? 'Order Notification',
                 body: data['body'] ?? '',
                 time: timeStr,
                 isRead: data['isRead'] ?? false,
@@ -120,16 +108,20 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             }
           }
 
-          final allItems = [...realNotifs, ..._promoItems];
-
-          if (allItems.isEmpty) {
+          if (realNotifs.isEmpty) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Icon(Icons.notifications_none_rounded, size: 64, color: AppColors.border),
                   const SizedBox(height: AppSpacing.space16),
-                  Text('No notifications', style: AppTypography.textTheme.headlineSmall),
+                  Text('No notifications yet', style: AppTypography.textTheme.headlineSmall),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Order confirmation & status updates will appear here',
+                    style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+                    textAlign: TextAlign.center,
+                  ),
                 ],
               ),
             );
@@ -137,12 +129,26 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
           return ListView.separated(
             padding: const EdgeInsets.all(AppSpacing.space16),
-            itemCount: allItems.length,
+            itemCount: realNotifs.length,
             separatorBuilder: (context, i) => const SizedBox(height: AppSpacing.space8),
             itemBuilder: (context, i) => _NotifCard(
-              item: allItems[i],
-              onTap: () => setState(() => allItems[i].isRead = true),
-              onDismiss: () => setState(() => allItems.removeAt(i)),
+              item: realNotifs[i],
+              onTap: () async {
+                setState(() => realNotifs[i].isRead = true);
+                try {
+                  await FirebaseFirestore.instance
+                      .collection('notifications')
+                      .doc(realNotifs[i].id)
+                      .update({'isRead': true});
+                } catch (_) {}
+              },
+              onDismiss: () async {
+                final id = realNotifs[i].id;
+                setState(() => realNotifs.removeAt(i));
+                try {
+                  await FirebaseFirestore.instance.collection('notifications').doc(id).delete();
+                } catch (_) {}
+              },
             ),
           );
         },
@@ -161,7 +167,7 @@ class _NotifCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dismissible(
-      key: ValueKey(item.title + item.time),
+      key: ValueKey(item.id),
       direction: DismissDirection.endToStart,
       background: Container(
         alignment: Alignment.centerRight,
