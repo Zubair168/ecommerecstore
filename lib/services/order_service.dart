@@ -9,7 +9,29 @@ class OrderService {
   /// In-memory persistence so placed orders NEVER disappear even if Firestore is offline or unindexed
   static final List<Map<String, dynamic>> localOrders = [
     {
-      'id': 'ZU0PZZLU',
+      'id': 'VEP0CFLE',
+      'userId': 'guest',
+      'items': [
+        {
+          'id': 'xBbqO5boiTAInfl7z36A',
+          'title': 'Canvas Weekend Backpack',
+          'price': 34.99,
+          'quantity': 1,
+          'image': 'assets/raw/products/cat_bags.png',
+        }
+      ],
+      'subtotal': 34.99,
+      'deliveryFee': 5.00,
+      'codFee': 2.00,
+      'total': 41.99,
+      'address': 'Max Tiger, 00000, Al Garhoud, Dubai, UAE',
+      'notes': '',
+      'paymentMethod': 'Cash on Delivery',
+      'status': 'Processing',
+      'createdAt': 'Aug 9, 2026 • 03:16 PM',
+    },
+    {
+      'id': 'XTQDHHXK',
       'userId': 'guest',
       'items': [
         {
@@ -28,8 +50,30 @@ class OrderService {
       'notes': '',
       'paymentMethod': 'Cash on Delivery',
       'status': 'Processing',
-      'createdAt': Timestamp.now(),
-    }
+      'createdAt': 'Aug 9, 2026 • 03:10 PM',
+    },
+    {
+      'id': 'ZU0PZZLU',
+      'userId': 'guest',
+      'items': [
+        {
+          'id': '2',
+          'title': 'Classic White Sneakers',
+          'price': 49.99,
+          'quantity': 1,
+          'image': 'assets/raw/products/cat_shoes.png',
+        }
+      ],
+      'subtotal': 49.99,
+      'deliveryFee': 5.00,
+      'codFee': 0.00,
+      'total': 54.99,
+      'address': 'Max Tiger, 00000, Al Garhoud, Dubai, UAE',
+      'notes': '',
+      'paymentMethod': 'Credit Card',
+      'status': 'Completed',
+      'createdAt': 'Aug 7, 2026',
+    },
   ];
 
   /// Place a new order in Firestore & local storage, creating a real notification
@@ -76,9 +120,7 @@ class OrderService {
         'createdAt': FieldValue.serverTimestamp(),
       });
       orderId = docRef.id;
-    } catch (_) {
-      // ignore firestore add error, local memory persists it below
-    }
+    } catch (_) {}
 
     final shortId = orderId.length >= 8 ? orderId.substring(0, 8).toUpperCase() : orderId;
 

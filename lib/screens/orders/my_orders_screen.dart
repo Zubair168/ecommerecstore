@@ -160,84 +160,115 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   itemCount: filteredOrders.length,
                   itemBuilder: (context, index) {
-                    final order = filteredOrders[index];
+                    try {
+                      final order = filteredOrders[index];
 
-                    // Safely extract items list without Map<dynamic, dynamic> cast crash
-                    final rawItems = order['items'];
-                    final List<Map<String, dynamic>> items = [];
-                    if (rawItems is List) {
-                      for (final item in rawItems) {
-                        if (item is Map) {
-                          items.add(Map<String, dynamic>.from(item));
+                      // Safely extract items list without Map<dynamic, dynamic> cast crash
+                      final rawItems = order['items'];
+                      final List<Map<String, dynamic>> items = [];
+                      if (rawItems is List) {
+                        for (final item in rawItems) {
+                          if (item is Map) {
+                            items.add(Map<String, dynamic>.from(item));
+                          }
                         }
                       }
-                    }
 
-                    final timestamp = order['createdAt'];
-                    String dateStr = 'Recent';
-                    if (timestamp is Timestamp) {
-                      dateStr = DateFormat('MMM d, yyyy • hh:mm a').format(timestamp.toDate());
-                    } else if (timestamp != null) {
-                      dateStr = timestamp.toString();
-                    }
+                      final timestamp = order['createdAt'];
+                      String dateStr = 'Recent';
+                      if (timestamp is Timestamp) {
+                        dateStr = DateFormat('MMM d, yyyy • hh:mm a').format(timestamp.toDate());
+                      } else if (timestamp != null) {
+                        dateStr = timestamp.toString();
+                      }
 
-                    final orderId = (order['id'] ?? 'ZU0PZZLU').toString();
-                    final shortId = orderId.length >= 8 ? orderId.substring(0, 8).toUpperCase() : orderId;
-                    final totalNum = _parseDouble(order['total']);
-                    final statusStr = order['status']?.toString() ?? 'Processing';
-                    final payMethod = order['paymentMethod']?.toString() ?? 'Cash on Delivery';
+                      final orderId = (order['id'] ?? 'ZU0PZZLU').toString();
+                      final shortId = orderId.length >= 8 ? orderId.substring(0, 8).toUpperCase() : orderId;
+                      final totalNum = _parseDouble(order['total']);
+                      final statusStr = order['status']?.toString() ?? 'Processing';
+                      final payMethod = order['paymentMethod']?.toString() ?? 'Cash on Delivery';
 
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 16, bottom: 8),
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 16, bottom: 8),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Order #$shortId',
+                                  style: const TextStyle(
+                                      fontSize: 12, color: Color(0xFF344054), fontWeight: FontWeight.w700),
+                                ),
+                                Text(dateStr, style: const TextStyle(fontSize: 11, color: Color(0xFF98A2B3))),
+                              ],
+                            ),
+                          ),
+                          if (items.isEmpty)
+                            _OrderItemCard(
+                              title: 'Online Shop Order',
+                              price: '\$${totalNum.toStringAsFixed(2)}',
+                              qty: 1,
+                              totalPrice: '\$${totalNum.toStringAsFixed(2)}',
+                              img: AppAssets.productFashion,
+                              status: statusStr,
+                              paymentMethod: payMethod,
+                              onTap: () => Navigator.pushNamed(context, AppRoutes.orderDetails, arguments: order),
+                            )
+                          else
+                            ...items.map((itemData) {
+                              final titleStr = itemData['title']?.toString() ?? 'Product';
+                              final priceNum = _parseDouble(itemData['price']);
+                              final qtyNum = _parseInt(itemData['quantity']);
+                              final imgSrc = itemData['image']?.toString() ?? AppAssets.productFashion;
+
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 12),
+                                child: _OrderItemCard(
+                                  title: titleStr,
+                                  price: '\$${priceNum.toStringAsFixed(2)}',
+                                  qty: qtyNum,
+                                  totalPrice: '\$${totalNum.toStringAsFixed(2)}',
+                                  img: imgSrc,
+                                  status: statusStr,
+                                  paymentMethod: payMethod,
+                                  onTap: () => Navigator.pushNamed(context, AppRoutes.orderDetails, arguments: order),
+                                ),
+                              );
+                            }).toList(),
+                        ],
+                      );
+                    } catch (e) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: const Color(0xFFEAECF0)),
+                          ),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                'Order #$shortId',
-                                style: const TextStyle(
-                                    fontSize: 12, color: Color(0xFF344054), fontWeight: FontWeight.w700),
+                              const Icon(Icons.shopping_bag_outlined, color: kNavy),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Order #${(filteredOrders[index]['id'] ?? '').toString().substring(0, 8).toUpperCase()}',
+                                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                                    const Text('Tap to view details', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                                  ],
+                                ),
                               ),
-                              Text(dateStr, style: const TextStyle(fontSize: 11, color: Color(0xFF98A2B3))),
+                              const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
                             ],
                           ),
                         ),
-                        if (items.isEmpty)
-                          _OrderItemCard(
-                            title: 'Online Shop Order',
-                            price: '\$${totalNum.toStringAsFixed(2)}',
-                            qty: 1,
-                            totalPrice: '\$${totalNum.toStringAsFixed(2)}',
-                            img: AppAssets.productFashion,
-                            status: statusStr,
-                            paymentMethod: payMethod,
-                            onTap: () => Navigator.pushNamed(context, AppRoutes.orderDetails, arguments: order),
-                          )
-                        else
-                          ...items.map((itemData) {
-                            final titleStr = itemData['title']?.toString() ?? 'Product';
-                            final priceNum = _parseDouble(itemData['price']);
-                            final qtyNum = _parseInt(itemData['quantity']);
-                            final imgSrc = itemData['image']?.toString() ?? AppAssets.productFashion;
-
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child: _OrderItemCard(
-                                title: titleStr,
-                                price: '\$${priceNum.toStringAsFixed(2)}',
-                                qty: qtyNum,
-                                totalPrice: '\$${totalNum.toStringAsFixed(2)}',
-                                img: imgSrc,
-                                status: statusStr,
-                                paymentMethod: payMethod,
-                                onTap: () => Navigator.pushNamed(context, AppRoutes.orderDetails, arguments: order),
-                              ),
-                            );
-                          }).toList(),
-                      ],
-                    );
+                      );
+                    }
                   },
                 );
               },
