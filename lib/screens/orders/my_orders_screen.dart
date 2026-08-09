@@ -159,7 +159,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                         Padding(
                           padding: const EdgeInsets.only(top: 16, bottom: 8),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.between,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
                                 'Order #$shortId',
