@@ -17,12 +17,9 @@ class PaymentMethodScreen extends StatefulWidget {
 }
 
 class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
-  int _selectedIndex = 3; // Cash on Delivery default selected
+  int _selectedIndex = 0;
 
   static const _methods = [
-    _PayMethod(icon: Icons.credit_card_rounded, label: 'Credit / Debit Card', sub: '•••• •••• •••• 4242'),
-    _PayMethod(icon: Icons.account_balance_wallet_outlined, label: 'PayPal', sub: 'john@email.com'),
-    _PayMethod(icon: Icons.apple_rounded, label: 'Apple Pay', sub: 'Tap to pay'),
     _PayMethod(icon: Icons.local_shipping_outlined, label: 'Cash on Delivery', sub: 'Pay when you receive'),
   ];
 

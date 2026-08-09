@@ -1,5 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
 import '../../constants/app_assets.dart';
+import '../../services/auth_service.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import '../../services/upload_service.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -14,6 +21,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _phoneCtrl = TextEditingController(text: '+122 123 132 1234');
   final _bdayCtrl = TextEditingController(text: '1999/12/08');
   String _gender = 'Male';
+  String? _photoUrl;
+  bool _loading = false;
 
   @override
   void dispose() {
@@ -22,6 +31,55 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _phoneCtrl.dispose();
     _bdayCtrl.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _pickAndUpload() async {
+    final picker = ImagePicker();
+    final XFile? xfile = await picker.pickImage(source: ImageSource.gallery);
+    if (xfile == null) return;
+
+    setState(() => _loading = true);
+    try {
+      final res = await UploadService.uploadFile(File(xfile.path));
+      final url = res['secure_url'] as String?;
+      if (url != null) setState(() => _photoUrl = url);
+      if (url != null) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Image uploaded')));
+      }
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Upload failed: $e')));
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _loadProfile() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+    setState(() => _loading = true);
+    try {
+      final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      final data = doc.data();
+      if (data != null) {
+        _nameCtrl.text = (data['displayName'] as String?) ?? _nameCtrl.text;
+        _emailCtrl.text = (data['email'] as String?) ?? _emailCtrl.text;
+        _phoneCtrl.text = (data['phone'] as String?) ?? _phoneCtrl.text;
+        _bdayCtrl.text = (data['birthday'] as String?) ?? _bdayCtrl.text;
+        _gender = (data['gender'] as String?) ?? _gender;
+        _photoUrl = (data['photoUrl'] as String?) ?? _photoUrl;
+        setState(() {});
+      }
+    } catch (_) {
+      // ignore load errors — keep defaults
+    } finally {
+      setState(() => _loading = false);
+    }
   }
 
   @override
@@ -46,26 +104,37 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Avatar with edit button
+            // Avatar with edit/upload
             Center(
-              child: Stack(
+              child: Column(
                 children: [
-                  const CircleAvatar(
-                    radius: 40,
-                    backgroundImage: AssetImage(AppAssets.avatarUserDefault),
-                    child: Icon(Icons.person, size: 40, color: Colors.white),
-                  ),
-                  Positioned(
-                    bottom: 0, right: 0,
-                    child: Container(
-                      width: 28, height: 28,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFFF9800),
-                        shape: BoxShape.circle,
+                  Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: 40,
+                        backgroundColor: const Color(0xFFF2F4F7),
+                        backgroundImage: _photoUrl != null && _photoUrl!.isNotEmpty
+                            ? NetworkImage(_photoUrl!) as ImageProvider
+                            : const AssetImage(AppAssets.avatarUserDefault),
+                        child: _photoUrl == null ? const Icon(Icons.person, size: 40, color: Colors.white) : null,
                       ),
-                      child: const Icon(Icons.edit_outlined, size: 16, color: Colors.white),
-                    ),
+                      Positioned(
+                        bottom: 0, right: 0,
+                        child: InkWell(
+                          onTap: _pickAndUpload,
+                          child: Container(
+                            width: 28, height: 28,
+                            decoration: const BoxDecoration(
+                              color: Colors.black,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.edit_outlined, size: 16, color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
+                  const SizedBox(height: 12),
                 ],
               ),
             ),
@@ -137,16 +206,43 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             const SizedBox(height: 36),
 
-            // Save changes button (Dark Navy)
+                // Save changes button (Dark Navy)
             SizedBox(
               width: double.infinity,
               height: 52,
               child: ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Profile updated successfully.')),
-                  );
-                  Navigator.pop(context);
+                onPressed: _loading ? null : () async {
+                  setState(() => _loading = true);
+                  try {
+                    final updates = <String, dynamic>{
+                      'displayName': _nameCtrl.text.trim(),
+                      'email': _emailCtrl.text.trim(),
+                      'phone': _phoneCtrl.text.trim(),
+                      'gender': _gender,
+                      'birthday': _bdayCtrl.text.trim(),
+                      'photoUrl': _photoUrl ?? '',
+                    };
+                    await AuthService.updateProfile(updates);
+                    final user = FirebaseAuth.instance.currentUser;
+                    if (user != null) {
+                      await user.updateDisplayName(_nameCtrl.text.trim());
+                      if (_photoUrl != null && _photoUrl!.isNotEmpty) {
+                        try {
+                          await user.updatePhotoURL(_photoUrl);
+                        } catch (_) {}
+                      }
+                    }
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Profile updated successfully.')),
+                      );
+                      Navigator.pop(context);
+                    }
+                  } catch (e) {
+                    if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Update failed: $e')));
+                  } finally {
+                    if (mounted) setState(() => _loading = false);
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: kNavy,

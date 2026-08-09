@@ -43,8 +43,15 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _loading = true);
     try {
       await AuthService.signInWithGoogle();
-      // If signInWithGoogle returns a credential (real flow), proceed. If mocked, still navigate.
       if (mounted) Navigator.pushReplacementNamed(context, AppRoutes.home);
+    } catch (e) {
+      final msg = e.toString();
+      if (msg.contains('ApiException') || msg.contains('DEVELOPER_ERROR') || msg.contains('sign_in_failed') || msg.contains('10')) {
+        final help = 'Google sign-in failed (ApiException 10).\n\nPlease add your Android app SHA-1/ SHA-256 fingerprint to the Firebase console for the Android app, download an updated google-services.json and rebuild the app.';
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(help)));
+      } else {
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Google sign-in failed: $e')));
+      }
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -249,18 +256,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // Already have an account? Sign in text below button
+                // Don't have an account? Sign up link
                 Center(
                   child: RichText(
                     text: TextSpan(
                       style: const TextStyle(fontSize: 13, color: Color(0xFF667085)),
                       children: [
-                        const TextSpan(text: 'Already have an account? '),
+                        const TextSpan(text: "Don't have an account? "),
                         WidgetSpan(
                           child: GestureDetector(
-                            onTap: _login,
+                            onTap: () => Navigator.pushNamed(context, AppRoutes.register),
                             child: const Text(
-                              'Sign in',
+                              'Sign up',
                               style: TextStyle(
                                 color: kNavy,
                                 fontWeight: FontWeight.w700,

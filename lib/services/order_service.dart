@@ -10,6 +10,7 @@ class OrderService {
   static Future<String> placeOrder({
     required List<CartItem> items,
     required double total,
+    double deliveryFee = 0.0,
     required String address,
     String? notes,
     String? paymentMethod,
@@ -27,7 +28,9 @@ class OrderService {
         'quantity': item.quantity,
         'image': item.image,
       }).toList(),
-      'total': total,
+      'subtotal': total,
+      'deliveryFee': deliveryFee,
+      'total': (total + deliveryFee),
       'address': address,
       'notes': notes ?? '',
       'paymentMethod': paymentMethod ?? 'Unknown',
@@ -40,9 +43,9 @@ class OrderService {
   }
 
   /// Stream of user orders
-  static Stream<QuerySnapshot> get userOrders => _db
-      .collection('orders')
-      .where('userId', isEqualTo: _auth.currentUser?.uid)
-      .orderBy('createdAt', descending: true)
-      .snapshots();
+  static Stream<QuerySnapshot> userOrdersFor(String? uid) {
+    final col = _db.collection('orders');
+    final queryUid = uid ?? 'guest';
+    return col.where('userId', isEqualTo: queryUid).snapshots();
+  }
 }

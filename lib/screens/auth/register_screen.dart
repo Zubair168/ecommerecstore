@@ -67,59 +67,138 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    const kNavy = Color(0xFF1D2939);
+
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF344054), size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space24),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: AppSpacing.space32),
+                const SizedBox(height: 12),
 
-                // Logo
+                // Logo matching sign-in screen
                 Center(
-                  child: Image.asset(
-                    AppAssets.appLogoPng,
-                    height: 48,
-                    fit: BoxFit.contain,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 32, height: 32,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFF5722),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(Icons.shopping_bag_rounded, color: Colors.white, size: 20),
+                      ),
+                      const SizedBox(width: 8),
+                      RichText(
+                        text: const TextSpan(
+                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800, fontFamily: 'Outfit'),
+                          children: [
+                            TextSpan(text: 'Online', style: TextStyle(color: Color(0xFFFF5722))),
+                            TextSpan(text: 'Shop', style: TextStyle(color: Color(0xFF1D2939))),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: AppSpacing.space32),
+                const SizedBox(height: 36),
 
-                Text('Create Account 🎉', style: AppTypography.textTheme.headlineLarge),
-                const SizedBox(height: AppSpacing.space8),
-                Text(
-                  'Fill in the details below to get started.',
-                  style: AppTypography.textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+                const Center(
+                  child: Text(
+                    'Create Account 🎉',
+                    style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF101828),
+                    ),
+                  ),
                 ),
-                const SizedBox(height: AppSpacing.space24),
+                const SizedBox(height: 6),
+                const Center(
+                  child: Text(
+                    'Fill in the details below to get started',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF667085),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 32),
 
                 // Full Name
-                CustomTextField(
-                  label: 'Full Name',
-                  hintText: 'Enter your full name',
+                const Text(
+                  'Full Name',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: Color(0xFF344054)),
+                ),
+                const SizedBox(height: 6),
+                TextFormField(
                   controller: _nameCtrl,
-                  prefixIcon: const Padding(
-                    padding: EdgeInsets.all(AppSpacing.space12),
-                    child: Icon(Icons.person_outline_rounded, color: AppColors.textSecondary, size: 20),
+                  decoration: InputDecoration(
+                    hintText: 'Enter your full name',
+                    hintStyle: const TextStyle(color: Color(0xFF98A2B3), fontSize: 14),
+                    prefixIcon: const Icon(Icons.person_outline_rounded, color: Color(0xFF667085), size: 20),
+                    filled: true,
+                    fillColor: const Color(0xFFF9FAFB),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: Color(0xFFEAECF0)),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: Color(0xFFEAECF0)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: kNavy, width: 1.5),
+                    ),
                   ),
                   validator: (v) => (v == null || v.isEmpty) ? 'Enter your name' : null,
                 ),
-                const SizedBox(height: AppSpacing.space16),
+                const SizedBox(height: 20),
 
                 // Email
-                CustomTextField(
-                  label: 'Email Address',
-                  hintText: 'Enter your email',
+                const Text(
+                  'Email Address',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: Color(0xFF344054)),
+                ),
+                const SizedBox(height: 6),
+                TextFormField(
                   controller: _emailCtrl,
                   keyboardType: TextInputType.emailAddress,
-                  prefixIcon: Padding(
-                    padding: const EdgeInsets.all(AppSpacing.space12),
-                    child: SvgPicture.asset(AppAssets.iconMail, width: 20, height: 20,
-                      colorFilter: const ColorFilter.mode(AppColors.textSecondary, BlendMode.srcIn)),
+                  decoration: InputDecoration(
+                    hintText: 'Enter your email',
+                    hintStyle: const TextStyle(color: Color(0xFF98A2B3), fontSize: 14),
+                    prefixIcon: const Icon(Icons.mail_outline_rounded, color: Color(0xFF667085), size: 20),
+                    filled: true,
+                    fillColor: const Color(0xFFF9FAFB),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: Color(0xFFEAECF0)),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: Color(0xFFEAECF0)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: kNavy, width: 1.5),
+                    ),
                   ),
                   validator: (v) {
                     if (v == null || v.isEmpty) return 'Enter your email';
@@ -127,23 +206,44 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: AppSpacing.space16),
+                const SizedBox(height: 20),
 
                 // Password
-                CustomTextField(
-                  label: 'Password',
-                  hintText: 'Create a password',
+                const Text(
+                  'Password',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: Color(0xFF344054)),
+                ),
+                const SizedBox(height: 6),
+                TextFormField(
                   controller: _passCtrl,
                   obscureText: _obscurePass,
-                  prefixIcon: Padding(
-                    padding: const EdgeInsets.all(AppSpacing.space12),
-                    child: SvgPicture.asset(AppAssets.iconPassword, width: 20, height: 20,
-                      colorFilter: const ColorFilter.mode(AppColors.textSecondary, BlendMode.srcIn)),
-                  ),
-                  suffixIcon: IconButton(
-                    icon: Icon(_obscurePass ? Icons.visibility_off : Icons.visibility,
-                        color: AppColors.textSecondary, size: 20),
-                    onPressed: () => setState(() => _obscurePass = !_obscurePass),
+                  decoration: InputDecoration(
+                    hintText: 'Create a password',
+                    hintStyle: const TextStyle(color: Color(0xFF98A2B3), fontSize: 14),
+                    prefixIcon: const Icon(Icons.lock_outline_rounded, color: Color(0xFF667085), size: 20),
+                    filled: true,
+                    fillColor: const Color(0xFFF9FAFB),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: Color(0xFFEAECF0)),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: Color(0xFFEAECF0)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: kNavy, width: 1.5),
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePass ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                        color: const Color(0xFF667085),
+                        size: 20,
+                      ),
+                      onPressed: () => setState(() => _obscurePass = !_obscurePass),
+                    ),
                   ),
                   validator: (v) {
                     if (v == null || v.isEmpty) return 'Enter a password';
@@ -151,23 +251,44 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: AppSpacing.space16),
+                const SizedBox(height: 20),
 
                 // Confirm Password
-                CustomTextField(
-                  label: 'Confirm Password',
-                  hintText: 'Confirm your password',
+                const Text(
+                  'Confirm Password',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: Color(0xFF344054)),
+                ),
+                const SizedBox(height: 6),
+                TextFormField(
                   controller: _confirmCtrl,
                   obscureText: _obscureConfirm,
-                  prefixIcon: Padding(
-                    padding: const EdgeInsets.all(AppSpacing.space12),
-                    child: SvgPicture.asset(AppAssets.iconPassword, width: 20, height: 20,
-                      colorFilter: const ColorFilter.mode(AppColors.textSecondary, BlendMode.srcIn)),
-                  ),
-                  suffixIcon: IconButton(
-                    icon: Icon(_obscureConfirm ? Icons.visibility_off : Icons.visibility,
-                        color: AppColors.textSecondary, size: 20),
-                    onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                  decoration: InputDecoration(
+                    hintText: 'Confirm your password',
+                    hintStyle: const TextStyle(color: Color(0xFF98A2B3), fontSize: 14),
+                    prefixIcon: const Icon(Icons.lock_outline_rounded, color: Color(0xFF667085), size: 20),
+                    filled: true,
+                    fillColor: const Color(0xFFF9FAFB),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: Color(0xFFEAECF0)),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: Color(0xFFEAECF0)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: kNavy, width: 1.5),
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureConfirm ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                        color: const Color(0xFF667085),
+                        size: 20,
+                      ),
+                      onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                    ),
                   ),
                   validator: (v) {
                     if (v == null || v.isEmpty) return 'Please confirm your password';
@@ -175,7 +296,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: AppSpacing.space16),
+                const SizedBox(height: 16),
 
                 // Terms checkbox
                 Row(
@@ -183,23 +304,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Checkbox(
                       value: _agreeTerms,
                       onChanged: (v) => setState(() => _agreeTerms = v ?? false),
-                      activeColor: AppColors.primary,
+                      activeColor: kNavy,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                     ),
                     Expanded(
                       child: RichText(
-                        text: TextSpan(
-                          style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+                        text: const TextSpan(
+                          style: TextStyle(fontSize: 12, color: Color(0xFF667085)),
                           children: [
-                            const TextSpan(text: 'I agree to the '),
+                            TextSpan(text: 'I agree to the '),
                             TextSpan(
                               text: 'Terms of Service',
-                              style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600),
+                              style: TextStyle(color: kNavy, fontWeight: FontWeight.w600),
                             ),
-                            const TextSpan(text: ' and '),
+                            TextSpan(text: ' and '),
                             TextSpan(
                               text: 'Privacy Policy',
-                              style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600),
+                              style: TextStyle(color: kNavy, fontWeight: FontWeight.w600),
                             ),
                           ],
                         ),
@@ -207,61 +328,98 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: AppSpacing.space24),
+                const SizedBox(height: 24),
 
-                // Sign Up button
-                PrimaryButton(text: 'Sign Up', onPressed: _register, isLoading: _loading),
-                const SizedBox(height: AppSpacing.space24),
+                // Black Sign Up button
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton(
+                    onPressed: _loading ? null : _register,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: kNavy,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: _loading
+                        ? const SizedBox(
+                            width: 24, height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2, valueColor: AlwaysStoppedAnimation(Colors.white)))
+                        : const Text(
+                            'Sign up',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                          ),
+                  ),
+                ),
+                const SizedBox(height: 24),
 
                 // OR divider
-                Row(children: [
-                  const Expanded(child: Divider()),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space12),
-                    child: Text('OR', style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary)),
-                  ),
-                  const Expanded(child: Divider()),
-                ]),
-                const SizedBox(height: AppSpacing.space16),
+                Row(
+                  children: const [
+                    Expanded(child: Divider(color: Color(0xFFEAECF0))),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Text('Or', style: TextStyle(color: Color(0xFF98A2B3), fontSize: 13)),
+                    ),
+                    Expanded(child: Divider(color: Color(0xFFEAECF0))),
+                  ],
+                ),
+                const SizedBox(height: 24),
 
-                // Social buttons
-                _SocialButton(icon: AppAssets.googleLogo, label: 'Continue with Google', onPressed: () async {
-                  setState(() => _loading = true);
-                  try {
-                    final cred = await AuthService.signInWithGoogle();
-                    if (cred != null && mounted) {
-                      Navigator.pushReplacementNamed(context, AppRoutes.home);
+                // Continue with Google
+                _SocialButton(
+                  icon: AppAssets.googleLogo,
+                  label: 'Continue with Google',
+                  onPressed: () async {
+                    setState(() => _loading = true);
+                    try {
+                      final cred = await AuthService.signInWithGoogle();
+                      if (cred != null && mounted) {
+                        Navigator.pushReplacementNamed(context, AppRoutes.home);
+                      }
+                    } catch (e) {
+                      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Google sign-in failed: $e')));
+                    } finally {
+                      if (mounted) setState(() => _loading = false);
                     }
-                  } catch (e) {
-                    if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Google sign-in failed: $e')));
-                  } finally {
-                    if (mounted) setState(() => _loading = false);
-                  }
-                }),
-                const SizedBox(height: AppSpacing.space12),
-                _SocialButton(icon: AppAssets.appleLogo, label: 'Continue with Apple', onPressed: () {}),
-                const SizedBox(height: AppSpacing.space24),
+                  },
+                ),
+                const SizedBox(height: 12),
+                _SocialButton(
+                  icon: AppAssets.appleLogo,
+                  label: 'Continue with Apple',
+                  onPressed: () {},
+                ),
+                const SizedBox(height: 24),
 
-                // Login link
+                // Sign In link
                 Center(
                   child: RichText(
                     text: TextSpan(
-                      style: AppTypography.textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+                      style: const TextStyle(fontSize: 13, color: Color(0xFF667085)),
                       children: [
                         const TextSpan(text: 'Already have an account? '),
                         WidgetSpan(
                           child: GestureDetector(
                             onTap: () => Navigator.pushReplacementNamed(context, AppRoutes.login),
-                            child: Text('Sign In',
-                              style: AppTypography.textTheme.bodyMedium?.copyWith(
-                                color: AppColors.primary, fontWeight: FontWeight.w700)),
+                            child: const Text(
+                              'Sign In',
+                              style: TextStyle(
+                                color: kNavy,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
-                const SizedBox(height: AppSpacing.space32),
+                const SizedBox(height: 32),
               ],
             ),
           ),
@@ -270,6 +428,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 }
+
 
 class _SocialButton extends StatelessWidget {
   final String icon;

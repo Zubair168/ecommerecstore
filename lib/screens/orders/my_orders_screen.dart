@@ -83,7 +83,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                     ),
                   )
                 : StreamBuilder<QuerySnapshot>(
-              stream: OrderService.userOrders,
+              stream: OrderService.userOrdersFor(AuthService.currentUser?.uid),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
@@ -102,7 +102,16 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                   );
                 }
 
-                final allOrders = snapshot.data!.docs;
+                final allOrders = snapshot.data!.docs.toList();
+                allOrders.sort((a, b) {
+                  final aData = a.data() as Map<String, dynamic>;
+                  final bData = b.data() as Map<String, dynamic>;
+                  final aTime = aData['createdAt'] as Timestamp?;
+                  final bTime = bData['createdAt'] as Timestamp?;
+                  if (aTime == null) return 1;
+                  if (bTime == null) return -1;
+                  return bTime.compareTo(aTime);
+                });
                 final filteredOrders = _selectedFilter == 0 
                   ? allOrders 
                   : allOrders.where((doc) => (doc.data() as Map)['status'] == _filters[_selectedFilter]).toList();

@@ -14,6 +14,7 @@ class CheckoutScreen extends StatefulWidget {
 class _CheckoutScreenState extends State<CheckoutScreen> {
   final _notesCtrl = TextEditingController();
   bool _isLoading = false;
+  String _paymentMethod = 'Cash on Delivery';
 
   @override
   void dispose() {
@@ -28,13 +29,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // Ask user to pick a payment method first
-      final selected = await Navigator.pushNamed(context, AppRoutes.paymentMethod) as int?;
-      const _methods = ['Credit / Debit Card', 'PayPal', 'Apple Pay', 'Cash on Delivery'];
-      final paymentMethod = (selected != null && selected >= 0 && selected < _methods.length) ? _methods[selected] : 'Unknown';
+      final paymentMethod = _paymentMethod;
+
+      // Simple flat delivery fee (could be replaced with a dynamic calculation)
+      const deliveryFee = 5.00;
+
       await OrderService.placeOrder(
         items: cart.items.values.toList(),
         total: cart.totalAmount,
+        deliveryFee: deliveryFee,
         address: 'Max Tiger, 00000, Al Garhoud, Dubai, UAE',
         notes: _notesCtrl.text,
         paymentMethod: paymentMethod,
@@ -157,6 +160,95 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   ),
                 )).toList(),
                 const SizedBox(height: 20),
+                const Text('Payment Method', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Color(0xFF101828))),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF2F4F7),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => setState(() => _paymentMethod = 'Cash on Delivery'),
+                          child: Container(
+                            height: 38,
+                            decoration: BoxDecoration(
+                              color: _paymentMethod == 'Cash on Delivery' ? kNavy : Colors.transparent,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.local_shipping_outlined, size: 16, color: _paymentMethod == 'Cash on Delivery' ? Colors.white : const Color(0xFF667085)),
+                                const SizedBox(width: 6),
+                                Text('Cash on Delivery', style: TextStyle(color: _paymentMethod == 'Cash on Delivery' ? Colors.white : const Color(0xFF667085), fontWeight: FontWeight.w700, fontSize: 13)),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => setState(() => _paymentMethod = 'Credit Card'),
+                          child: Container(
+                            height: 38,
+                            decoration: BoxDecoration(
+                              color: _paymentMethod == 'Credit Card' ? kNavy : Colors.transparent,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.credit_card_rounded, size: 16, color: _paymentMethod == 'Credit Card' ? Colors.white : const Color(0xFF667085)),
+                                const SizedBox(width: 6),
+                                Text('Credit Card', style: TextStyle(color: _paymentMethod == 'Credit Card' ? Colors.white : const Color(0xFF667085), fontWeight: FontWeight.w700, fontSize: 13)),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (_paymentMethod == 'Credit Card') ...[
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFFEAECF0)),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF2F4F7),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: const Text('VISA', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: Color(0xFF1D2939))),
+                        ),
+                        const SizedBox(width: 12),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Visa Classic Card', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: Color(0xFF101828))),
+                              SizedBox(height: 2),
+                              Text('**** **** **** 4242', style: TextStyle(fontSize: 12, color: Color(0xFF667085))),
+                            ],
+                          ),
+                        ),
+                        const Icon(Icons.check_circle_rounded, color: Color(0xFFFF9800), size: 20),
+                      ],
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 20),
                 const Text('Notes', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Color(0xFF101828))),
                 const SizedBox(height: 8),
                 TextFormField(
@@ -180,9 +272,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     children: [
                       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text('Sub total', style: TextStyle(color: Color(0xFF667085), fontSize: 13)), Text('\$${cart.totalAmount.toStringAsFixed(2)}', style: const TextStyle(color: Color(0xFF101828), fontSize: 13, fontWeight: FontWeight.w600))]),
                       const SizedBox(height: 8),
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: const [Text('Coupon Discount', style: TextStyle(color: Color(0xFF667085), fontSize: 13)), Text('-\$0.00', style: TextStyle(color: Color(0xFF667085), fontSize: 13, fontWeight: FontWeight.w600))]),
-                      const Divider(height: 20, color: Color(0xFFEAECF0)),
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text('Total', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Color(0xFF101828))), Text('\$${cart.totalAmount.toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: kOrange))]),
+                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: const [Text('Coupon Discount', style: TextStyle(color: Color(0xFF667085), fontSize: 13)), Text('-\$0.00', style: TextStyle(color: Color(0xFF667085), fontSize: 13, fontWeight: FontWeight.w600))]),
+                            const SizedBox(height: 8),
+                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text('Delivery Fee', style: TextStyle(color: Color(0xFF667085), fontSize: 13)), Text('\$5.00', style: const TextStyle(color: Color(0xFF101828), fontSize: 13, fontWeight: FontWeight.w600))]),
+                            const Divider(height: 20, color: Color(0xFFEAECF0)),
+                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text('Total', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Color(0xFF101828))), Text('\$${(cart.totalAmount + 5.0).toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: kOrange))]),
                     ],
                   ),
                 ),

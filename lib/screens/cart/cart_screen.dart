@@ -12,10 +12,7 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  int _selectedToggle = 0; // 0: Layout, 1: Filter
-  bool _selectAll = true;
-  int _layoutMode = 0; // 0: List, 1: Grid
-  String? _categoryFilter;
+  String _searchQuery = '';
 
   @override
   Widget build(BuildContext context) {
@@ -56,145 +53,7 @@ class _CartScreenState extends State<CartScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Search Bar
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: CustomSearchBar(
-                hintText: 'Search Products...',
-                onChanged: (v) {},
-              ),
-            ),
-
-            // Toggle Bar
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF2F4F7),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => setState(() => _selectedToggle = 0),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: _selectedToggle == 0 ? kNavy : Colors.transparent,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.grid_view_rounded, size: 16,
-                                  color: _selectedToggle == 0 ? Colors.white : const Color(0xFF667085)),
-                              const SizedBox(width: 6),
-                              Text('Layout', style: TextStyle(
-                                  color: _selectedToggle == 0 ? Colors.white : const Color(0xFF667085),
-                                  fontWeight: FontWeight.w700, fontSize: 13)),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => setState(() => _selectedToggle = 1),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: _selectedToggle == 1 ? kNavy : Colors.transparent,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.tune_rounded, size: 16,
-                                  color: _selectedToggle == 1 ? Colors.white : const Color(0xFF667085)),
-                              const SizedBox(width: 6),
-                              Text('Filter', style: TextStyle(
-                                  color: _selectedToggle == 1 ? Colors.white : const Color(0xFF667085),
-                                  fontWeight: FontWeight.w700, fontSize: 13)),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                ),
-              ),
-
-            // Layout / Filter Controls
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Builder(builder: (context) {
-                  final cart = Provider.of<CartProvider>(context);
-                  final cartItems = cart.items.values.toList();
-                  final categories = cartItems.map((e) => e.category).toSet().toList();
-
-                  if (_selectedToggle == 0) {
-                    // Layout controls: list / grid
-                    return Row(
-                      children: [
-                        IconButton(
-                          onPressed: () => setState(() => _layoutMode = 0),
-                          icon: Icon(Icons.view_list_rounded, color: _layoutMode == 0 ? const Color(0xFF1D2939) : const Color(0xFF98A2B3)),
-                        ),
-                        IconButton(
-                          onPressed: () => setState(() => _layoutMode = 1),
-                          icon: Icon(Icons.grid_view_rounded, color: _layoutMode == 1 ? const Color(0xFF1D2939) : const Color(0xFF98A2B3)),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(_layoutMode == 0 ? 'List View' : 'Grid View', style: const TextStyle(fontWeight: FontWeight.w600)),
-                        const Spacer(),
-                        if (categories.isNotEmpty)
-                          Text('Filter: ${_categoryFilter ?? 'All'}', style: const TextStyle(color: Color(0xFF667085))),
-                      ],
-                    );
-                  }
-
-                  // Filter controls
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Filter by Category', style: TextStyle(fontWeight: FontWeight.w700)),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: categories.map((c) {
-                          final selected = _categoryFilter == c;
-                          return ChoiceChip(
-                            label: Text(c),
-                            selected: selected,
-                            onSelected: (s) => setState(() => _categoryFilter = s ? c : null),
-                          );
-                        }).toList(),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          OutlinedButton(
-                            onPressed: () => setState(() => _categoryFilter = null),
-                            child: const Text('Clear')),
-                          const SizedBox(width: 8),
-                          ElevatedButton(
-                            onPressed: () => setState(() => _selectedToggle = 0),
-                            child: const Text('Apply')),
-                        ],
-                      ),
-                    ],
-                  );
-                }),
-              ),
-
-            // Stepper
+            // Stepper Dots at the top
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
               child: Row(
@@ -208,12 +67,31 @@ class _CartScreenState extends State<CartScreen> {
               ),
             ),
 
+            // Search Bar
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: CustomSearchBar(
+                hintText: 'Search in Cart...',
+                onChanged: (v) {
+                  setState(() {
+                    _searchQuery = v.trim().toLowerCase();
+                  });
+                },
+              ),
+            ),
+            const SizedBox(height: 8),
+
             // Cart Items List
             Expanded(
               child: Builder(builder: (context) {
                 final cart = Provider.of<CartProvider>(context);
                 final allItems = cart.items.values.toList();
-                final visibleItems = allItems.where((it) => _categoryFilter == null || it.category == _categoryFilter).toList();
+                final visibleItems = allItems.where((it) {
+                  final queryMatches = _searchQuery.isEmpty || 
+                      it.title.toLowerCase().contains(_searchQuery) ||
+                      it.category.toLowerCase().contains(_searchQuery);
+                  return queryMatches;
+                }).toList();
 
                 if (allItems.isEmpty) {
                   return Center(
@@ -229,47 +107,14 @@ class _CartScreenState extends State<CartScreen> {
                 }
 
                 if (visibleItems.isEmpty) {
-                  return Center(child: Text('No items match the selected filter', style: const TextStyle(color: Color(0xFF667085))));
+                  return const Center(child: Text('No items match your search', style: TextStyle(color: Color(0xFF667085))));
                 }
 
-                if (_layoutMode == 0) {
-                  // List view
-                  return ListView.separated(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    itemCount: visibleItems.length,
-                    separatorBuilder: (context, index) => const SizedBox(height: 12),
-                    itemBuilder: (context, index) {
-                      final item = visibleItems[index];
-                      return _cartTile(
-                        category: item.category,
-                        title: item.title,
-                        price: '\$${(item.price).toStringAsFixed(2)}',
-                        qty: item.quantity,
-                        img: item.image,
-                        onQtyMinus: () => cart.removeSingleItem(item.id),
-                        onQtyPlus: () => cart.addItem(
-                          productId: item.id,
-                          title: item.title,
-                          category: item.category,
-                          price: item.price,
-                          image: item.image,
-                        ),
-                        onDelete: () => cart.removeItem(item.id),
-                      );
-                    },
-                  );
-                }
-
-                // Grid view
-                return GridView.builder(
+                // Vertical List View is clean and avoids any tile sizing or overflow crashes
+                return ListView.separated(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio: 1.9,
-                  ),
                   itemCount: visibleItems.length,
+                  separatorBuilder: (context, index) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     final item = visibleItems[index];
                     return _cartTile(
