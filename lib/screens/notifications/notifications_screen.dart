@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../../widgets/index.dart';
+import '../../services/order_service.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -22,27 +26,41 @@ class _NotifItem {
   bool isRead;
 
   _NotifItem({
-    required this.icon, required this.iconBg, required this.iconColor,
-    required this.title, required this.body, required this.time, this.isRead = false,
+    required this.icon,
+    required this.iconBg,
+    required this.iconColor,
+    required this.title,
+    required this.body,
+    required this.time,
+    this.isRead = false,
   });
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
-  final List<_NotifItem> _items = [
-    _NotifItem(icon: Icons.local_shipping_outlined, iconBg: const Color(0xFFEFF8FF), iconColor: AppColors.accentBlue,
-      title: 'Order Shipped!', body: 'Your order #ORD-2026-0038 is on its way. Track it now.', time: '2 min ago'),
-    _NotifItem(icon: Icons.local_offer_outlined, iconBg: AppColors.warningBg, iconColor: AppColors.warning,
-      title: 'Flash Sale is Live 🔥', body: 'Up to 50% OFF on electronics today only. Don\'t miss out!', time: '1 hr ago'),
-    _NotifItem(icon: Icons.check_circle_outline_rounded, iconBg: AppColors.successBg, iconColor: AppColors.success,
-      title: 'Order Delivered', body: 'Your order #ORD-2026-0031 has been delivered. Enjoy!', time: '2 days ago', isRead: true),
-    _NotifItem(icon: Icons.star_outline_rounded, iconBg: AppColors.warningBg, iconColor: AppColors.warning,
-      title: 'Rate your order', body: 'How was your Nintendo Switch OLED? Leave a review!', time: '2 days ago', isRead: true),
-    _NotifItem(icon: Icons.card_giftcard_outlined, iconBg: AppColors.primarySoft, iconColor: AppColors.primary,
-      title: 'You have a voucher!', body: 'Use code SAVE20 for \$20 OFF your next order over \$100.', time: '5 days ago', isRead: true),
+  final List<_NotifItem> _promoItems = [
+    _NotifItem(
+      icon: Icons.local_offer_outlined,
+      iconBg: AppColors.warningBg,
+      iconColor: AppColors.warning,
+      title: 'Flash Sale is Live 🔥',
+      body: 'Up to 50% OFF on electronics today only. Don\'t miss out!',
+      time: '1 hr ago',
+    ),
+    _NotifItem(
+      icon: Icons.card_giftcard_outlined,
+      iconBg: AppColors.primarySoft,
+      iconColor: AppColors.primary,
+      title: 'You have a voucher!',
+      body: 'Use code SAVE20 for \$20 OFF your next order over \$100.',
+      time: '2 days ago',
+      isRead: true,
+    ),
   ];
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
       backgroundColor: AppColors.backgroundAlt,
       appBar: CustomAppBar(
@@ -53,33 +71,82 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => setState(() { for (final n in _items) { n.isRead = true; } }),
-            child: Text('Mark all read',
-              style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600)),
+            onPressed: () {
+              setState(() {
+                for (final n in _promoItems) {
+                  n.isRead = true;
+                }
+              });
+            },
+            child: Text(
+              'Mark all read',
+              style: AppTypography.textTheme.bodySmall
+                  ?.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600),
+            ),
           ),
         ],
       ),
-      body: _items.isEmpty
-        ? Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.notifications_none_rounded, size: 64, color: AppColors.border),
-                const SizedBox(height: AppSpacing.space16),
-                Text('No notifications', style: AppTypography.textTheme.headlineSmall),
-              ],
-            ),
-          )
-        : ListView.separated(
+      body: StreamBuilder<QuerySnapshot>(
+        stream: OrderService.notificationsStreamFor(user?.uid),
+        builder: (context, snapshot) {
+          final realNotifs = <_NotifItem>[];
+
+          if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+            final docs = snapshot.data!.docs.toList();
+            docs.sort((a, b) {
+              final aTime = (a.data() as Map)['createdAt'] as Timestamp?;
+              final bTime = (b.data() as Map)['createdAt'] as Timestamp?;
+              if (aTime == null) return 1;
+              if (bTime == null) return -1;
+              return bTime.compareTo(aTime);
+            });
+
+            for (final doc in docs) {
+              final data = doc.data() as Map<String, dynamic>;
+              final timestamp = data['createdAt'] as Timestamp?;
+              final timeStr = timestamp != null
+                  ? DateFormat('MMM d • hh:mm a').format(timestamp.toDate())
+                  : 'Just now';
+
+              realNotifs.add(_NotifItem(
+                icon: Icons.check_circle_outline_rounded,
+                iconBg: const Color(0xFFECFDF3),
+                iconColor: const Color(0xFF027A48),
+                title: data['title'] ?? 'Order Update',
+                body: data['body'] ?? '',
+                time: timeStr,
+                isRead: data['isRead'] ?? false,
+              ));
+            }
+          }
+
+          final allItems = [...realNotifs, ..._promoItems];
+
+          if (allItems.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.notifications_none_rounded, size: 64, color: AppColors.border),
+                  const SizedBox(height: AppSpacing.space16),
+                  Text('No notifications', style: AppTypography.textTheme.headlineSmall),
+                ],
+              ),
+            );
+          }
+
+          return ListView.separated(
             padding: const EdgeInsets.all(AppSpacing.space16),
-            itemCount: _items.length,
+            itemCount: allItems.length,
             separatorBuilder: (context, i) => const SizedBox(height: AppSpacing.space8),
             itemBuilder: (context, i) => _NotifCard(
-              item: _items[i],
-              onTap: () => setState(() => _items[i].isRead = true),
-              onDismiss: () => setState(() => _items.removeAt(i)),
+              item: allItems[i],
+              onTap: () => setState(() => allItems[i].isRead = true),
+              onDismiss: () => setState(() => allItems.removeAt(i)),
             ),
-          ),
+          );
+        },
+      ),
     );
   }
 }
@@ -98,9 +165,12 @@ class _NotifCard extends StatelessWidget {
       direction: DismissDirection.endToStart,
       background: Container(
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: AppSpacing.space24),
-        decoration: BoxDecoration(color: AppColors.error, borderRadius: AppSpacing.radiusLarge),
-        child: const Icon(Icons.delete_outline_rounded, color: Colors.white, size: 26),
+        padding: const EdgeInsets.only(right: AppSpacing.space20),
+        decoration: BoxDecoration(
+          color: AppColors.errorBg,
+          borderRadius: AppSpacing.radiusMedium,
+        ),
+        child: const Icon(Icons.delete_outline_rounded, color: AppColors.error),
       ),
       onDismissed: (_) => onDismiss(),
       child: GestureDetector(
@@ -108,16 +178,23 @@ class _NotifCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(AppSpacing.space16),
           decoration: BoxDecoration(
-            color: item.isRead ? AppColors.background : AppColors.primarySoft.withAlpha(60),
-            borderRadius: AppSpacing.radiusLarge,
-            border: Border.all(color: item.isRead ? AppColors.border : AppColors.primary.withAlpha(60)),
+            color: item.isRead ? AppColors.background : const Color(0xFFFFFAFB),
+            borderRadius: AppSpacing.radiusMedium,
+            border: Border.all(
+              color: item.isRead ? AppColors.border : AppColors.primarySoft,
+              width: 1,
+            ),
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width: 44, height: 44,
-                decoration: BoxDecoration(color: item.iconBg, shape: BoxShape.circle),
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: item.iconBg,
+                  borderRadius: AppSpacing.radiusMedium,
+                ),
                 child: Icon(item.icon, color: item.iconColor, size: 22),
               ),
               const SizedBox(width: AppSpacing.space12),
@@ -129,24 +206,39 @@ class _NotifCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
-                          child: Text(item.title,
+                          child: Text(
+                            item.title,
                             style: AppTypography.textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w700,
-                              color: item.isRead ? AppColors.textPrimary : AppColors.primary)),
+                              fontWeight: item.isRead ? FontWeight.w600 : FontWeight.w700,
+                            ),
+                          ),
                         ),
                         if (!item.isRead)
                           Container(
-                            width: 8, height: 8,
-                            decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
+                            width: 8,
+                            height: 8,
+                            decoration: const BoxDecoration(
+                              color: AppColors.primary,
+                              shape: BoxShape.circle,
+                            ),
                           ),
                       ],
                     ),
                     const SizedBox(height: 4),
-                    Text(item.body,
-                      style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary, height: 1.4)),
-                    const SizedBox(height: 6),
-                    Text(item.time,
-                      style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.textDisabled, fontSize: 11)),
+                    Text(
+                      item.body,
+                      style: AppTypography.textTheme.bodySmall?.copyWith(
+                        color: AppColors.textSecondary,
+                        height: 1.4,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      item.time,
+                      style: AppTypography.textTheme.labelSmall?.copyWith(
+                        color: AppColors.textLight,
+                      ),
+                    ),
                   ],
                 ),
               ),

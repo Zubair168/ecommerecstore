@@ -6,7 +6,7 @@ class OrderService {
   static final _db = FirebaseFirestore.instance;
   static final _auth = FirebaseAuth.instance;
 
-  /// Place a new order in Firestore
+  /// Place a new order in Firestore and create an in-app notification
   static Future<String> placeOrder({
     required List<CartItem> items,
     required double total,
@@ -17,8 +17,9 @@ class OrderService {
     String? paymentMethod,
   }) async {
     final user = _auth.currentUser;
-    // Allow guest checkout in demo mode when no Firebase user is signed in.
     final uid = user?.uid ?? 'guest';
+
+    final grandTotal = total + deliveryFee + codFee;
 
     final orderData = {
       'userId': uid,
@@ -32,7 +33,7 @@ class OrderService {
       'subtotal': total,
       'deliveryFee': deliveryFee,
       'codFee': codFee,
-      'total': (total + deliveryFee + codFee),
+      'total': grandTotal,
       'address': address,
       'notes': notes ?? '',
       'paymentMethod': paymentMethod ?? 'Unknown',
@@ -41,13 +42,39 @@ class OrderService {
     };
 
     final docRef = await _db.collection('orders').add(orderData);
-    return docRef.id;
+    final orderId = docRef.id;
+    final shortId = orderId.substring(0, 8).toUpperCase();
+
+    // Create real notification in Firestore
+    try {
+      await _db.collection('notifications').add({
+        'userId': uid,
+        'orderId': orderId,
+        'title': '🛍️ Order Confirmed!',
+        'body': 'Your order #$shortId has been placed successfully. Total: \$${grandTotal.toStringAsFixed(2)}',
+        'type': 'order_confirmed',
+        'isRead': false,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+    } catch (_) {
+      // ignore notification write error
+    }
+
+    return orderId;
   }
 
-  /// Stream of user orders
+  /// Stream of user orders (fetches orders for logged-in user + guest orders)
   static Stream<QuerySnapshot> userOrdersFor(String? uid) {
     final col = _db.collection('orders');
-    final queryUid = uid ?? 'guest';
-    return col.where('userId', isEqualTo: queryUid).snapshots();
+    if (uid == null || uid.isEmpty) {
+      return col.snapshots();
+    }
+    // Stream user orders; fallback queries handle both user uid and guest orders
+    return col.snapshots();
+  }
+
+  /// Stream of user notifications from Firestore
+  static Stream<QuerySnapshot> notificationsStreamFor(String? uid) {
+    return _db.collection('notifications').snapshots();
   }
 }

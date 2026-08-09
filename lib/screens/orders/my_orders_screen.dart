@@ -122,7 +122,14 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                       );
                     }
 
-                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    // Filter orders matching current user UID or guest orders
+                    final userDocs = snapshot.data!.docs.where((doc) {
+                      final d = doc.data() as Map<String, dynamic>;
+                      final u = d['userId']?.toString();
+                      return u == user.uid || u == 'guest' || u == null;
+                    }).toList();
+
+                    if (userDocs.isEmpty) {
                       return Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -137,7 +144,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                       );
                     }
 
-                    final allOrders = snapshot.data!.docs.toList();
+                    final allOrders = List<QueryDocumentSnapshot>.from(userDocs);
                     allOrders.sort((a, b) {
                       final aData = a.data() as Map<String, dynamic>;
                       final bData = b.data() as Map<String, dynamic>;
