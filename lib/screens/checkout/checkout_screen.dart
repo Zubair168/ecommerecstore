@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../routes/app_routes.dart';
 import '../../providers/cart_provider.dart';
 import '../../services/order_service.dart';
+import '../../services/notification_service.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -15,6 +16,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   final _notesCtrl = TextEditingController();
   bool _isLoading = false;
   String _paymentMethod = 'Cash on Delivery';
+
+  // COD handling fee added when Cash on Delivery is selected
+  static const double _codFee = 2.00;
+  static const double _deliveryFee = 5.00;
+
+  double get _codCharge => _paymentMethod == 'Cash on Delivery' ? _codFee : 0.0;
 
   @override
   void dispose() {
@@ -29,28 +36,34 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final paymentMethod = _paymentMethod;
+      final total = cart.totalAmount + _deliveryFee + _codCharge;
 
-      // Simple flat delivery fee (could be replaced with a dynamic calculation)
-      const deliveryFee = 5.00;
-
-      await OrderService.placeOrder(
+      final orderId = await OrderService.placeOrder(
         items: cart.items.values.toList(),
         total: cart.totalAmount,
-        deliveryFee: deliveryFee,
+        deliveryFee: _deliveryFee,
+        codFee: _codCharge,
         address: 'Max Tiger, 00000, Al Garhoud, Dubai, UAE',
         notes: _notesCtrl.text,
-        paymentMethod: paymentMethod,
+        paymentMethod: _paymentMethod,
       );
-      
+
+      // Show local notification immediately after placing order
+      await NotificationService.show(
+        title: '🛍️ Order Confirmed!',
+        body: 'Your order #${orderId.substring(0, 8).toUpperCase()} has been placed successfully. Total: \$${total.toStringAsFixed(2)}',
+      );
+
       cart.clear();
-      
+
       if (mounted) {
         Navigator.pushReplacementNamed(context, AppRoutes.paymentSuccess);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error placing order: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error placing order: $e'), backgroundColor: Colors.red),
+        );
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -62,6 +75,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     const kNavy = Color(0xFF1D2939);
     const kOrange = Color(0xFFFF5722);
     final cart = Provider.of<CartProvider>(context);
+    final subtotal = cart.totalAmount;
+    final grandTotal = subtotal + _deliveryFee + _codCharge;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -78,6 +93,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       ),
       body: Column(
         children: [
+          // Progress Steps
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
             child: Row(
@@ -95,34 +111,44 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
+                // Delivery Address
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Delivery Address', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Color(0xFF101828))),
+                    const Text('Delivery Address',
+                        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Color(0xFF101828))),
                     GestureDetector(
                       onTap: () => Navigator.pushNamed(context, AppRoutes.shippingAddress),
-                      child: const Text('Edit', style: TextStyle(color: Color(0xFF2F80ED), fontWeight: FontWeight.w600, fontSize: 13)),
+                      child: const Text('Edit',
+                          style: TextStyle(color: Color(0xFF2F80ED), fontWeight: FontWeight.w600, fontSize: 13)),
                     ),
                   ],
                 ),
                 const SizedBox(height: 8),
                 Container(
                   padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFEAECF0))),
-                  child: Row(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFEAECF0)),
+                  ),
+                  child: const Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Icon(Icons.location_on_outlined, color: Color(0xFF475467), size: 20),
                       SizedBox(width: 10),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Home', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: Color(0xFF101828))),
+                            Text('Home',
+                                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: Color(0xFF101828))),
                             SizedBox(height: 4),
-                            Text('Max Tiger ( +100 123 1245 3534)', style: TextStyle(fontSize: 12, color: Color(0xFF475467))),
+                            Text('Max Tiger ( +100 123 1245 3534)',
+                                style: TextStyle(fontSize: 12, color: Color(0xFF475467))),
                             SizedBox(height: 2),
-                            Text('00000, Al Garhoud, Dubai, United Arab Emirates', style: TextStyle(fontSize: 12, color: Color(0xFF667085))),
+                            Text('00000, Al Garhoud, Dubai, United Arab Emirates',
+                                style: TextStyle(fontSize: 12, color: Color(0xFF667085))),
                           ],
                         ),
                       ),
@@ -130,37 +156,62 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                Text('Summary ( ${cart.itemCount} )', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Color(0xFF101828))),
+
+                // Order Summary
+                Text('Summary ( ${cart.itemCount} )',
+                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Color(0xFF101828))),
                 const SizedBox(height: 8),
                 ...cart.items.values.map((item) => Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
                   child: Container(
                     padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFEAECF0))),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFFEAECF0)),
+                    ),
                     child: Row(
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: Image.asset(item.image, width: 60, height: 60, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(width: 60, height: 60, color: const Color(0xFFF2F4F7))),
+                          child: Builder(builder: (context) {
+                            if (item.image.startsWith('http')) {
+                              return Image.network(item.image, width: 60, height: 60, fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) =>
+                                      Container(width: 60, height: 60, color: const Color(0xFFF2F4F7)));
+                            }
+                            return Image.asset(item.image, width: 60, height: 60, fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) =>
+                                    Container(width: 60, height: 60, color: const Color(0xFFF2F4F7)));
+                          }),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(item.title, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF101828))),
+                              Text(item.title,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                      fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF101828))),
                               const SizedBox(height: 4),
-                              Text('\$${item.price.toStringAsFixed(2)}', style: const TextStyle(color: kOrange, fontWeight: FontWeight.w800, fontSize: 13)),
+                              Text('\$${item.price.toStringAsFixed(2)}',
+                                  style: const TextStyle(color: kOrange, fontWeight: FontWeight.w800, fontSize: 13)),
                             ],
                           ),
                         ),
-                        Text('Qty : ${item.quantity}', style: const TextStyle(fontSize: 12, color: Color(0xFF667085))),
+                        Text('Qty : ${item.quantity}',
+                            style: const TextStyle(fontSize: 12, color: Color(0xFF667085))),
                       ],
                     ),
                   ),
                 )).toList(),
                 const SizedBox(height: 20),
-                const Text('Payment Method', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Color(0xFF101828))),
+
+                // Payment Method
+                const Text('Payment Method',
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Color(0xFF101828))),
                 const SizedBox(height: 8),
                 Container(
                   padding: const EdgeInsets.all(4),
@@ -182,9 +233,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.local_shipping_outlined, size: 16, color: _paymentMethod == 'Cash on Delivery' ? Colors.white : const Color(0xFF667085)),
+                                Icon(Icons.local_shipping_outlined,
+                                    size: 16,
+                                    color: _paymentMethod == 'Cash on Delivery'
+                                        ? Colors.white
+                                        : const Color(0xFF667085)),
                                 const SizedBox(width: 6),
-                                Text('Cash on Delivery', style: TextStyle(color: _paymentMethod == 'Cash on Delivery' ? Colors.white : const Color(0xFF667085), fontWeight: FontWeight.w700, fontSize: 13)),
+                                Text('Cash on Delivery',
+                                    style: TextStyle(
+                                        color: _paymentMethod == 'Cash on Delivery'
+                                            ? Colors.white
+                                            : const Color(0xFF667085),
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 12)),
                               ],
                             ),
                           ),
@@ -202,9 +263,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.credit_card_rounded, size: 16, color: _paymentMethod == 'Credit Card' ? Colors.white : const Color(0xFF667085)),
+                                Icon(Icons.credit_card_rounded,
+                                    size: 16,
+                                    color: _paymentMethod == 'Credit Card'
+                                        ? Colors.white
+                                        : const Color(0xFF667085)),
                                 const SizedBox(width: 6),
-                                Text('Credit Card', style: TextStyle(color: _paymentMethod == 'Credit Card' ? Colors.white : const Color(0xFF667085), fontWeight: FontWeight.w700, fontSize: 13)),
+                                Text('Credit Card',
+                                    style: TextStyle(
+                                        color: _paymentMethod == 'Credit Card'
+                                            ? Colors.white
+                                            : const Color(0xFF667085),
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 12)),
                               ],
                             ),
                           ),
@@ -213,6 +284,33 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     ],
                   ),
                 ),
+
+                // COD info box
+                if (_paymentMethod == 'Cash on Delivery') ...[
+                  const SizedBox(height: 10),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFF8E7),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: const Color(0xFFFFCC02).withOpacity(0.5)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.info_outline_rounded, size: 16, color: Color(0xFFB45309)),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'A Cash on Delivery handling fee of \$${_codFee.toStringAsFixed(2)} applies for COD orders.',
+                            style: const TextStyle(fontSize: 12, color: Color(0xFF92400E), height: 1.4),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+
+                // Credit card info
                 if (_paymentMethod == 'Credit Card') ...[
                   const SizedBox(height: 12),
                   Container(
@@ -230,16 +328,21 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             color: const Color(0xFFF2F4F7),
                             borderRadius: BorderRadius.circular(6),
                           ),
-                          child: const Text('VISA', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: Color(0xFF1D2939))),
+                          child: const Text('VISA',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w900, fontSize: 12, color: Color(0xFF1D2939))),
                         ),
                         const SizedBox(width: 12),
                         const Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Visa Classic Card', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: Color(0xFF101828))),
+                              Text('Visa Classic Card',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w700, fontSize: 13, color: Color(0xFF101828))),
                               SizedBox(height: 2),
-                              Text('**** **** **** 4242', style: TextStyle(fontSize: 12, color: Color(0xFF667085))),
+                              Text('**** **** **** 4242',
+                                  style: TextStyle(fontSize: 12, color: Color(0xFF667085))),
                             ],
                           ),
                         ),
@@ -248,8 +351,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     ),
                   ),
                 ],
+
                 const SizedBox(height: 20),
-                const Text('Notes', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Color(0xFF101828))),
+
+                // Notes
+                const Text('Notes',
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Color(0xFF101828))),
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _notesCtrl,
@@ -260,23 +367,50 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     filled: true,
                     fillColor: const Color(0xFFF9FAFB),
                     contentPadding: const EdgeInsets.all(12),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color(0xFFEAECF0))),
-                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color(0xFFEAECF0))),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(color: Color(0xFFEAECF0))),
+                    enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(color: Color(0xFFEAECF0))),
                   ),
                 ),
                 const SizedBox(height: 20),
+
+                // Price Breakdown
                 Container(
                   padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(color: const Color(0xFFF9FAFB), borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFEAECF0))),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF9FAFB),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFEAECF0)),
+                  ),
                   child: Column(
                     children: [
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text('Sub total', style: TextStyle(color: Color(0xFF667085), fontSize: 13)), Text('\$${cart.totalAmount.toStringAsFixed(2)}', style: const TextStyle(color: Color(0xFF101828), fontSize: 13, fontWeight: FontWeight.w600))]),
+                      _priceRow('Sub total', '\$${subtotal.toStringAsFixed(2)}'),
                       const SizedBox(height: 8),
-                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: const [Text('Coupon Discount', style: TextStyle(color: Color(0xFF667085), fontSize: 13)), Text('-\$0.00', style: TextStyle(color: Color(0xFF667085), fontSize: 13, fontWeight: FontWeight.w600))]),
-                            const SizedBox(height: 8),
-                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text('Delivery Fee', style: TextStyle(color: Color(0xFF667085), fontSize: 13)), Text('\$5.00', style: const TextStyle(color: Color(0xFF101828), fontSize: 13, fontWeight: FontWeight.w600))]),
-                            const Divider(height: 20, color: Color(0xFFEAECF0)),
-                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text('Total', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Color(0xFF101828))), Text('\$${(cart.totalAmount + 5.0).toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: kOrange))]),
+                      _priceRow('Coupon Discount', '-\$0.00'),
+                      const SizedBox(height: 8),
+                      _priceRow('Delivery Fee', '\$${_deliveryFee.toStringAsFixed(2)}'),
+                      if (_paymentMethod == 'Cash on Delivery') ...[
+                        const SizedBox(height: 8),
+                        _priceRow(
+                          'COD Handling Fee',
+                          '\$${_codCharge.toStringAsFixed(2)}',
+                          valueColor: const Color(0xFF92400E),
+                        ),
+                      ],
+                      const Divider(height: 20, color: Color(0xFFEAECF0)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Total',
+                              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: Color(0xFF101828))),
+                          Text('\$${grandTotal.toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.w800, fontSize: 17, color: kOrange)),
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -284,6 +418,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               ],
             ),
           ),
+
+          // Pay Now Button
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
             child: SizedBox(
@@ -291,8 +427,25 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               height: 52,
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _processPayment,
-                style: ElevatedButton.styleFrom(backgroundColor: kNavy, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), elevation: 0),
-                child: _isLoading ? const CircularProgressIndicator(color: Colors.white) : const Text('Pay Now', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: kNavy,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  elevation: 0,
+                ),
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.lock_outlined, size: 16),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Pay Now  •  \$${grandTotal.toStringAsFixed(2)}',
+                            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                          ),
+                        ],
+                      ),
               ),
             ),
           ),
@@ -301,12 +454,37 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
+  Widget _priceRow(String label, String value, {Color? valueColor}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: const TextStyle(color: Color(0xFF667085), fontSize: 13)),
+        Text(value,
+            style: TextStyle(
+                color: valueColor ?? const Color(0xFF101828),
+                fontSize: 13,
+                fontWeight: FontWeight.w600)),
+      ],
+    );
+  }
+
   Widget _stepDot(String label, {required bool isDone, bool isActive = false}) {
     return Column(
       children: [
-        Container(width: 14, height: 14, decoration: BoxDecoration(color: isDone ? const Color(0xFFFF9800) : const Color(0xFFEAECF0), shape: BoxShape.circle)),
+        Container(
+          width: 14,
+          height: 14,
+          decoration: BoxDecoration(
+            color: isDone ? const Color(0xFFFF9800) : const Color(0xFFEAECF0),
+            shape: BoxShape.circle,
+          ),
+        ),
         const SizedBox(height: 4),
-        Text(label, style: TextStyle(fontSize: 10, color: isActive ? const Color(0xFF101828) : const Color(0xFF98A2B3), fontWeight: isActive ? FontWeight.w700 : FontWeight.w500)),
+        Text(label,
+            style: TextStyle(
+                fontSize: 10,
+                color: isActive ? const Color(0xFF101828) : const Color(0xFF98A2B3),
+                fontWeight: isActive ? FontWeight.w700 : FontWeight.w500)),
       ],
     );
   }

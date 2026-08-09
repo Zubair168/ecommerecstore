@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
 import '../../constants/app_assets.dart';
 import '../../routes/app_routes.dart';
 import '../../widgets/index.dart';
 import '../../providers/cart_provider.dart';
+import '../../services/product_service.dart';
 
 class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({super.key});
@@ -15,6 +18,8 @@ class CategoriesScreen extends StatefulWidget {
 class _CategoriesScreenState extends State<CategoriesScreen> with SingleTickerProviderStateMixin {
   late TabController _tabCtrl;
   final Set<int> _wishlist = {};
+  List<DocumentSnapshot> _firestoreProducts = [];
+  StreamSubscription<QuerySnapshot>? _productsSub;
 
   static final _catTiles = [
     {'title': 'Men', 'img': AppAssets.catPhotoMen},
@@ -38,12 +43,21 @@ class _CategoriesScreenState extends State<CategoriesScreen> with SingleTickerPr
   void initState() {
     super.initState();
     _tabCtrl = TabController(length: 4, vsync: this);
+    _productsSub = ProductService.productsStream.listen((snap) {
+      if (mounted) setState(() => _firestoreProducts = snap.docs);
+    });
   }
 
   @override
   void dispose() {
     _tabCtrl.dispose();
+    _productsSub?.cancel();
     super.dispose();
+  }
+
+  String? _productId(int index) {
+    if (_firestoreProducts.isEmpty) return null;
+    return _firestoreProducts[index % _firestoreProducts.length].id;
   }
 
   @override
@@ -217,7 +231,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> with SingleTickerPr
                 final p = _newProducts[i];
                 final isWish = _wishlist.contains(i);
                 return GestureDetector(
-                  onTap: () => Navigator.pushNamed(context, AppRoutes.productDetails),
+                  onTap: () => Navigator.pushNamed(context, AppRoutes.productDetails, arguments: _productId(i)),
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.white,

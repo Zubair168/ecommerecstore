@@ -113,21 +113,23 @@ class _SearchScreenState extends State<SearchScreen> {
             padding: const EdgeInsets.all(AppSpacing.space16),
             itemCount: _results.length,
             separatorBuilder: (context, i) => const Divider(color: AppColors.divider, height: 16),
-            itemBuilder: (context, i) {
-              final data = _results[i].data() as Map<String, dynamic>;
-              final String img = (data['images'] as List?)?.first ?? '';
+              final doc = _results[i];
+              final data = doc.data() as Map<String, dynamic>;
+              final String img = (data['images'] as List?)?.first?.toString() ?? '';
               return ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: ClipRRect(
                   borderRadius: AppSpacing.radiusMedium,
                   child: img.isNotEmpty 
-                    ? Image.asset(img, width: 56, height: 56, fit: BoxFit.cover, errorBuilder: (_, __, ___) => _fallbackIcon())
+                    ? (img.startsWith('http')
+                        ? Image.network(img, width: 56, height: 56, fit: BoxFit.cover, errorBuilder: (_, __, ___) => _fallbackIcon())
+                        : Image.asset(img, width: 56, height: 56, fit: BoxFit.cover, errorBuilder: (_, __, ___) => _fallbackIcon()))
                     : _fallbackIcon(),
                 ),
                 title: Text(data['name'] ?? '', style: AppTypography.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
                 subtitle: Text(data['category'] ?? '', style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary)),
-                trailing: Text('\$${(data['price'] ?? 0).toStringAsFixed(2)}', style: AppTypography.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary)),
-                onTap: () => Navigator.pushNamed(context, AppRoutes.productDetails),
+                trailing: Text('\$${((data['price'] as num?) ?? 0).toStringAsFixed(2)}', style: AppTypography.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary)),
+                onTap: () => Navigator.pushNamed(context, AppRoutes.productDetails, arguments: doc.id),
               );
             },
           ),

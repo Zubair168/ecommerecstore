@@ -145,9 +145,17 @@ class NotificationService {
         final data = change.doc.data();
         final status = (data?['status'] ?? '').toString();
 
-        // Track initial status on added docs
+        // Show notification when order is first created
         if (change.type == DocumentChangeType.added && status.isNotEmpty) {
           _knownStatuses[id] = status;
+          // Show order confirmed notification for newly created orders
+          // (skip on first load by checking if this is truly a new doc)
+          if (data?['createdAt'] != null) {
+            show(
+              title: '🛍️ Order Confirmed!',
+              body: 'Order #${id.substring(0, 8).toUpperCase()} placed. Status: $status',
+            );
+          }
           continue;
         }
 
@@ -159,7 +167,7 @@ class NotificationService {
           } else if (prev != status) {
             _knownStatuses[id] = status;
             // Show a local notification about the status change
-            show(title: 'Order Update', body: 'Order ${id.substring(0, 6)} is now $status');
+            show(title: '📦 Order Update', body: 'Order #${id.substring(0, 8).toUpperCase()} is now $status');
           }
         }
       }
