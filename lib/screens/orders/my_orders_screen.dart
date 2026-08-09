@@ -68,33 +68,34 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
           ),
           const SizedBox(height: 12),
 
-          // Real-time Orders from Firestore
+          // Real-time Orders Stream combined with Local Persistence Fallback
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: OrderService.userOrdersFor(null),
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
+                final ordersList = <Map<String, dynamic>>[];
+                final seenIds = <String>{};
+
+                // Add Firestore stream orders
+                if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+                  for (final doc in snapshot.data!.docs) {
+                    final data = Map<String, dynamic>.from(doc.data() as Map);
+                    data['id'] = doc.id;
+                    ordersList.add(data);
+                    seenIds.add(doc.id);
+                  }
                 }
 
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.error_outline, size: 48, color: Colors.red),
-                        const SizedBox(height: 12),
-                        Text('Error loading orders: ${snapshot.error}',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(color: Colors.grey)),
-                      ],
-                    ),
-                  );
+                // Merge local persistent orders so user NEVER sees blank screen
+                for (final local in OrderService.localOrders) {
+                  final id = local['id']?.toString() ?? '';
+                  if (!seenIds.contains(id)) {
+                    ordersList.add(local);
+                    seenIds.add(id);
+                  }
                 }
 
-                final docs = snapshot.data?.docs ?? [];
-
-                if (docs.isEmpty) {
+                if (ordersList.isEmpty) {
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -111,31 +112,27 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                   );
                 }
 
-                final allOrders = docs.toList();
-                allOrders.sort((a, b) {
-                  final aData = a.data() as Map<String, dynamic>;
-                  final bData = b.data() as Map<String, dynamic>;
-                  final aTime = aData['createdAt'] as Timestamp?;
-                  final bTime = bData['createdAt'] as Timestamp?;
-                  if (aTime == null) return 1;
-                  if (bTime == null) return -1;
-                  return bTime.compareTo(aTime);
-                });
-
+                // Filter by selected tab
+                final targetStatus = _filters[_selectedFilter].toLowerCase();
                 final filteredOrders = _selectedFilter == 0
-                    ? allOrders
-                    : allOrders.where((doc) {
-                        final data = doc.data() as Map<String, dynamic>;
-                        final status = (data['status'] ?? '').toString().toLowerCase();
-                        final targetFilter = _filters[_selectedFilter].toLowerCase();
-                        return status == targetFilter;
+                    ? ordersList
+                    : ordersList.where((o) {
+                        final st = (o['status'] ?? '').toString().toLowerCase();
+                        return st == targetStatus;
                       }).toList();
 
                 if (filteredOrders.isEmpty) {
                   return Center(
-                    child: Text(
-                      'No ${_filters[_selectedFilter]} orders',
-                      style: const TextStyle(color: Colors.grey, fontSize: 16),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.inbox_outlined, size: 48, color: Colors.grey[300]),
+                        const SizedBox(height: 12),
+                        Text(
+                          'No ${_filters[_selectedFilter]} orders',
+                          style: const TextStyle(color: Colors.grey, fontSize: 15, fontWeight: FontWeight.w500),
+                        ),
+                      ],
                     ),
                   );
                 }
@@ -144,14 +141,17 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   itemCount: filteredOrders.length,
                   itemBuilder: (context, index) {
-                    final doc = filteredOrders[index];
-                    final order = doc.data() as Map<String, dynamic>;
+                    final order = filteredOrders[index];
                     final items = (order['items'] as List?) ?? [];
-                    final timestamp = order['createdAt'] as Timestamp?;
-                    final dateStr = timestamp != null
-                        ? DateFormat('MMM d, yyyy • hh:mm a').format(timestamp.toDate())
-                        : 'Recent';
-                    final orderId = doc.id;
+                    final timestamp = order['createdAt'];
+                    String dateStr = 'Recent';
+                    if (timestamp is Timestamp) {
+                      dateStr = DateFormat('MMM d, yyyy • hh:mm a').format(timestamp.toDate());
+                    } else if (timestamp is String) {
+                      dateStr = timestamp;
+                    }
+                    final orderId = (order['id'] ?? 'ZU0PZZLU').toString();
+                    final shortId = orderId.length >= 8 ? orderId.substring(0, 8).toUpperCase() : orderId;
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -159,10 +159,10 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                         Padding(
                           padding: const EdgeInsets.only(top: 16, bottom: 8),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.between,
                             children: [
                               Text(
-                                'Order #${orderId.substring(0, 8).toUpperCase()}',
+                                'Order #$shortId',
                                 style: const TextStyle(
                                     fontSize: 12, color: Color(0xFF344054), fontWeight: FontWeight.w700),
                               ),
@@ -170,27 +170,35 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                             ],
                           ),
                         ),
-                        ...items.map((item) {
-                          final itemData = item as Map<String, dynamic>;
-                          final imgSrc = itemData['image']?.toString() ?? AppAssets.productFashion;
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: _OrderItemCard(
-                              title: itemData['title']?.toString() ?? 'Product',
-                              price: '\$${((itemData['price'] as num?) ?? 0).toStringAsFixed(2)}',
-                              qty: (itemData['quantity'] as int?) ?? 1,
-                              totalPrice: '\$${((order['total'] as num?) ?? 0).toStringAsFixed(2)}',
-                              img: imgSrc,
-                              status: order['status']?.toString() ?? 'Processing',
-                              paymentMethod: order['paymentMethod']?.toString() ?? 'COD',
-                              onTap: () {
-                                final Map<String, dynamic> fullData = Map.from(order);
-                                fullData['id'] = orderId;
-                                Navigator.pushNamed(context, AppRoutes.orderDetails, arguments: fullData);
-                              },
-                            ),
-                          );
-                        }).toList(),
+                        if (items.isEmpty)
+                          _OrderItemCard(
+                            title: 'Online Shop Order',
+                            price: '\$${((order['total'] as num?) ?? 0).toStringAsFixed(2)}',
+                            qty: 1,
+                            totalPrice: '\$${((order['total'] as num?) ?? 0).toStringAsFixed(2)}',
+                            img: AppAssets.productFashion,
+                            status: order['status']?.toString() ?? 'Processing',
+                            paymentMethod: order['paymentMethod']?.toString() ?? 'COD',
+                            onTap: () => Navigator.pushNamed(context, AppRoutes.orderDetails, arguments: order),
+                          )
+                        else
+                          ...items.map((item) {
+                            final itemData = item as Map<String, dynamic>;
+                            final imgSrc = itemData['image']?.toString() ?? AppAssets.productFashion;
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: _OrderItemCard(
+                                title: itemData['title']?.toString() ?? 'Product',
+                                price: '\$${((itemData['price'] as num?) ?? 0).toStringAsFixed(2)}',
+                                qty: (itemData['quantity'] as int?) ?? 1,
+                                totalPrice: '\$${((order['total'] as num?) ?? 0).toStringAsFixed(2)}',
+                                img: imgSrc,
+                                status: order['status']?.toString() ?? 'Processing',
+                                paymentMethod: order['paymentMethod']?.toString() ?? 'COD',
+                                onTap: () => Navigator.pushNamed(context, AppRoutes.orderDetails, arguments: order),
+                              ),
+                            );
+                          }).toList(),
                       ],
                     );
                   },
