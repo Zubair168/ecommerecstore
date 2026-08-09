@@ -419,27 +419,33 @@ class _OrderItemCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                OutlinedButton(
-                  onPressed: () => Navigator.pushNamed(context, AppRoutes.returnRequest),
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Color(0xFFD0D5DD)),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                InkWell(
+                  onTap: () => Navigator.pushNamed(context, AppRoutes.returnRequest),
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: const Color(0xFFD0D5DD)),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Text('Cancel/Refund',
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF344054))),
                   ),
-                  child: const Text('Cancel/Refund',
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF344054))),
                 ),
                 const SizedBox(width: 8),
-                ElevatedButton(
-                  onPressed: () => Navigator.pushNamed(context, AppRoutes.productDetails),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: kNavy,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    elevation: 0,
+                InkWell(
+                  onTap: () => Navigator.pushNamed(context, AppRoutes.productDetails),
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: kNavy,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Text('Buy again',
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white)),
                   ),
-                  child: const Text('Buy again', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
                 ),
               ],
             ),
