@@ -128,7 +128,8 @@ class _ProductGridScreenState extends State<ProductGridScreen> {
         return ProductCard(
           title: (data['name'] as String?) ?? '',
           imageAsset:
-              (data['images'] as List?)?.first as String? ?? AppAssets.productFashion,
+              (data['images'] as List?)?.first as String? ??
+              AppAssets.productFashion,
           category: data['category'] as String?,
           price: ((data['price'] ?? 0) as num).toDouble(),
           originalPrice: ((data['originalPrice'] ?? 0) as num).toDouble(),

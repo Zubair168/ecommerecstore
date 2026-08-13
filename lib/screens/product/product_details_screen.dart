@@ -482,7 +482,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           const SizedBox(height: 16),
 
           Text(
-            (_product?['description'] as String?) ?? 'No description available.',
+            (_product?['description'] as String?) ??
+                'No description available.',
             maxLines: _isDescExpanded ? 20 : 3,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
@@ -682,7 +683,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         cart.addItem(
                           productId: _productId ?? 'unknown',
                           title: (_product?['name'] as String?) ?? 'Product',
-                          category: (_product?['category'] as String?) ?? 'General',
+                          category:
+                              (_product?['category'] as String?) ?? 'General',
                           price: _price,
                           image: _images.isNotEmpty
                               ? _images.first

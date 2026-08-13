@@ -80,13 +80,13 @@ class NotificationService {
 
         // Listen for token refresh and persist new token
         _tokenRefreshSubscription = _fcm.onTokenRefresh.listen((token) async {
-            await FirebaseFirestore.instance
-                .collection('users')
-                .doc(user.uid)
-                .set(
-                  {'fcmToken': token},
-                  SetOptions(merge: true),
-                );
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .set(
+                {'fcmToken': token},
+                SetOptions(merge: true),
+              );
         });
       } else {
         _stopOrderStatusListener();

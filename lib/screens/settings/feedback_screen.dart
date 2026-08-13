@@ -105,7 +105,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     isLoading: _isSubmitting,
                     onPressed: () async {
                       setState(() => _isSubmitting = true);
-                      await Future<void>.delayed(const Duration(milliseconds: 600));
+                      await Future<void>.delayed(
+                        const Duration(milliseconds: 600),
+                      );
                       if (!mounted) return;
                       setState(() => _isSubmitting = false);
                       ScaffoldMessenger.of(context).showSnackBar(

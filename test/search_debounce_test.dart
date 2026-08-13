@@ -41,12 +41,14 @@ void main() {
       expect(result, containsAll(['Hoodie', 'Shoes', 'Watch']));
     });
 
-    test('deduplicates: existing query moves to front instead of duplicating',
-        () {
-      final result = addToRecent(['Hoodie', 'Shoes', 'Watch'], 'Shoes');
-      expect(result.first, 'Shoes');
-      expect(result.where((s) => s == 'Shoes').length, 1);
-    });
+    test(
+      'deduplicates: existing query moves to front instead of duplicating',
+      () {
+        final result = addToRecent(['Hoodie', 'Shoes', 'Watch'], 'Shoes');
+        expect(result.first, 'Shoes');
+        expect(result.where((s) => s == 'Shoes').length, 1);
+      },
+    );
 
     test('ignores blank / whitespace-only queries', () {
       final result = addToRecent(['Hoodie'], '   ');

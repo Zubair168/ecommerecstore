@@ -14,7 +14,6 @@ class OrderDetailsScreen extends StatefulWidget {
 class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   int _selectedTab = 0; // 0: Order details, 1: Track order
 
-
   @override
   Widget build(BuildContext context) {
     const kNavy = Color(0xFF1D2939);
@@ -147,8 +146,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                         title: 'Your order',
                         child: Column(
                           children: items.map((item) {
-                            final itemData =
-                                Map<String, dynamic>.from(item);
+                            final itemData = Map<String, dynamic>.from(item);
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 12),
                               child: _ProductRow(
@@ -197,7 +195,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                   ),
                                   const SizedBox(height: 3),
                                   Text(
-                                    (order['address'] as String?) ?? 'No address provided',
+                                    (order['address'] as String?) ??
+                                        'No address provided',
                                     style: const TextStyle(
                                       fontSize: 12,
                                       color: Color(0xFF667085),
@@ -275,15 +274,16 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                             const SizedBox(height: 8),
                             _DetailRow('Order date', dateStr),
                             const SizedBox(height: 8),
-                             _DetailRow(
-                               'Payment method',
-                               (order['paymentMethod'] as String?) ?? 'Cash on delivery',
-                             ),
-                             const SizedBox(height: 8),
-                             _DetailRow(
-                               'Status',
-                               (order['status'] as String?) ?? 'Processing',
-                             ),
+                            _DetailRow(
+                              'Payment method',
+                              (order['paymentMethod'] as String?) ??
+                                  'Cash on delivery',
+                            ),
+                            const SizedBox(height: 8),
+                            _DetailRow(
+                              'Status',
+                              (order['status'] as String?) ?? 'Processing',
+                            ),
                           ],
                         ),
                       ),

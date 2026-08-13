@@ -357,7 +357,9 @@ class _ReturnRequestScreenState extends State<ReturnRequestScreen> {
                   : () async {
                       setState(() => _loading = true);
                       final nav = Navigator.of(context);
-                      await Future<void>.delayed(const Duration(milliseconds: 800));
+                      await Future<void>.delayed(
+                        const Duration(milliseconds: 800),
+                      );
                       if (!mounted) return;
                       nav.pop();
                       ScaffoldMessenger.of(context).showSnackBar(

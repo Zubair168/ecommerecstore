@@ -221,7 +221,9 @@ class _SetupProfileScreenState extends State<SetupProfileScreen> {
                     if (!_formKey.currentState!.validate()) return;
                     setState(() => _loading = true);
                     final nav = Navigator.of(context);
-                    await Future<void>.delayed(const Duration(milliseconds: 800));
+                    await Future<void>.delayed(
+                      const Duration(milliseconds: 800),
+                    );
                     if (!mounted) return;
                     nav.pushReplacementNamed(AppRoutes.home);
                   },
