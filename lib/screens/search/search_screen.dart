@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerecstore/routes/app_routes.dart';
@@ -19,12 +21,23 @@ class _SearchScreenState extends State<SearchScreen> {
   bool _hasQuery = false;
   List<DocumentSnapshot> _results = [];
   bool _isSearching = false;
+
+  // Debounce timer — prevents a Firestore call on every single keystroke.
+  // Search fires 300 ms after the user stops typing, reducing read costs
+  // and avoiding flickering results during fast typing.
+  Timer? _debounce;
+  static const _kDebounceMs = 300;
+
+  // Maximum number of recent searches to persist in memory
+  static const _kMaxRecent = 10;
+
   final List<String> _recentSearches = [
     'Hoodie',
     'Sneakers',
     'Headphones',
     'Bag',
   ];
+
   static const _popular = [
     'Men',
     'Women',
@@ -36,26 +49,39 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _ctrl.dispose();
     super.dispose();
   }
 
-  Future<void> _performSearch(String query) async {
-    if (query.trim().isEmpty) {
+  /// Debounced search: only fires 300 ms after the user stops typing.
+  void _onSearchChanged(String value) {
+    _debounce?.cancel();
+    if (value.trim().isEmpty) {
       setState(() {
         _hasQuery = false;
         _results = [];
+        _isSearching = false;
       });
       return;
     }
-
+    // Show loading immediately so the user knows input was registered.
     setState(() {
       _hasQuery = true;
       _isSearching = true;
     });
+    _debounce = Timer(const Duration(milliseconds: _kDebounceMs), () {
+      _performSearch(value);
+    });
+  }
+
+  /// Executes a Firestore prefix search and updates results.
+  Future<void> _performSearch(String query) async {
+    final trimmed = query.trim();
+    if (trimmed.isEmpty) return;
 
     try {
-      final snap = await ProductService.search(query);
+      final snap = await ProductService.search(trimmed);
       if (mounted) {
         setState(() {
           _results = snap.docs;
@@ -65,6 +91,36 @@ class _SearchScreenState extends State<SearchScreen> {
     } catch (e) {
       if (mounted) setState(() => _isSearching = false);
     }
+  }
+
+  /// Saves a query to the recent searches list (deduplicates, caps at max).
+  void _saveRecentSearch(String query) {
+    final trimmed = query.trim();
+    if (trimmed.isEmpty) return;
+    setState(() {
+      _recentSearches.remove(trimmed);
+      _recentSearches.insert(0, trimmed);
+      if (_recentSearches.length > _kMaxRecent) {
+        _recentSearches.removeLast();
+      }
+    });
+  }
+
+  /// Removes a single entry from recent searches.
+  void _removeRecentSearch(String query) {
+    setState(() => _recentSearches.remove(query));
+  }
+
+  /// Triggers a search from a chip tap and records it as recent.
+  void _searchFromChip(String query) {
+    _ctrl.text = query;
+    _debounce?.cancel();
+    setState(() {
+      _hasQuery = true;
+      _isSearching = true;
+    });
+    _saveRecentSearch(query);
+    _performSearch(query);
   }
 
   @override
@@ -87,7 +143,7 @@ class _SearchScreenState extends State<SearchScreen> {
             controller: _ctrl,
             hintText: 'Search products...',
             autofocus: true,
-            onChanged: (v) => _performSearch(v),
+            onChanged: _onSearchChanged,
             onFilterTap: () => Navigator.pushNamed(context, AppRoutes.filter),
           ),
         ),
@@ -122,6 +178,11 @@ class _SearchScreenState extends State<SearchScreen> {
               'No results found for "${_ctrl.text}"',
               style: const TextStyle(color: Colors.grey),
             ),
+            const SizedBox(height: 8),
+            const Text(
+              'Try a different keyword',
+              style: TextStyle(color: Color(0xFF98A2B3), fontSize: 13),
+            ),
           ],
         ),
       );
@@ -138,7 +199,7 @@ class _SearchScreenState extends State<SearchScreen> {
             0,
           ),
           child: Text(
-            '${_results.length} results found',
+            '${_results.length} result${_results.length == 1 ? '' : 's'} found',
             style: AppTypography.textTheme.bodySmall?.copyWith(
               color: AppColors.textSecondary,
             ),
@@ -196,11 +257,14 @@ class _SearchScreenState extends State<SearchScreen> {
                     color: AppColors.primary,
                   ),
                 ),
-                onTap: () => Navigator.pushNamed(
-                  context,
-                  AppRoutes.productDetails,
-                  arguments: doc.id,
-                ),
+                onTap: () {
+                  _saveRecentSearch(_ctrl.text);
+                  Navigator.pushNamed(
+                    context,
+                    AppRoutes.productDetails,
+                    arguments: doc.id,
+                  );
+                },
               );
             },
           ),
@@ -252,24 +316,27 @@ class _SearchScreenState extends State<SearchScreen> {
             ],
           ),
           const SizedBox(height: AppSpacing.space12),
+          // Each recent search chip now includes an × dismiss button so users
+          // can remove individual entries without clearing the entire history.
           Wrap(
             spacing: 8,
             runSpacing: 8,
             children: _recentSearches
                 .map(
-                  (s) => GestureDetector(
-                    onTap: () {
-                      _ctrl.text = s;
-                      _performSearch(s);
-                    },
-                    child: Chip(
-                      label: Text(s),
-                      avatar: const Icon(
-                        Icons.history_rounded,
-                        size: 16,
-                        color: AppColors.textSecondary,
-                      ),
+                  (s) => InputChip(
+                    label: Text(s),
+                    avatar: const Icon(
+                      Icons.history_rounded,
+                      size: 16,
+                      color: AppColors.textSecondary,
                     ),
+                    deleteIcon: const Icon(
+                      Icons.close_rounded,
+                      size: 14,
+                      color: AppColors.textSecondary,
+                    ),
+                    onDeleted: () => _removeRecentSearch(s),
+                    onPressed: () => _searchFromChip(s),
                   ),
                 )
                 .toList(),
@@ -289,16 +356,10 @@ class _SearchScreenState extends State<SearchScreen> {
           children: _popular
               .map(
                 (c) => GestureDetector(
-                  onTap: () {
-                    _ctrl.text = c;
-                    _performSearch(c);
-                  },
+                  onTap: () => _searchFromChip(c),
                   child: CategoryChip(
                     label: c,
-                    onTap: () {
-                      _ctrl.text = c;
-                      _performSearch(c);
-                    },
+                    onTap: () => _searchFromChip(c),
                   ),
                 ),
               )
