@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../../constants/app_assets.dart';
-import '../../routes/app_routes.dart';
-import '../../theme/app_colors.dart';
-import '../../theme/app_spacing.dart';
-import '../../theme/app_typography.dart';
-import '../../widgets/index.dart';
+import 'package:ecommerecstore/constants/app_assets.dart';
+import 'package:ecommerecstore/routes/app_routes.dart';
+import 'package:ecommerecstore/theme/app_colors.dart';
+import 'package:ecommerecstore/theme/app_spacing.dart';
+import 'package:ecommerecstore/theme/app_typography.dart';
+import 'package:ecommerecstore/widgets/index.dart';
 
 class VendorProfileScreen extends StatefulWidget {
   const VendorProfileScreen({super.key});
@@ -18,10 +18,46 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
   bool _isFollowing = false;
 
   static final _vendorProducts = [
-    {'img': AppAssets.productSwitchConsole1, 'title': 'Nintendo Switch OLED', 'category': 'Gaming', 'price': 299.99, 'orig': 349.99, 'rating': 4.8, 'reviews': 124, 'sold': 320},
-    {'img': AppAssets.productSwitchConsole2, 'title': 'JBL Charge 5 Speaker', 'category': 'Audio', 'price': 149.99, 'orig': 199.99, 'rating': 4.7, 'reviews': 134, 'sold': 290},
-    {'img': AppAssets.productHeadphone, 'title': 'Sony WH-1000XM5', 'category': 'Electronics', 'price': 199.99, 'orig': 349.99, 'rating': 4.9, 'reviews': 342, 'sold': 560},
-    {'img': AppAssets.productShoe, 'title': 'Nike Air Max 2024', 'category': 'Footwear', 'price': 89.99, 'orig': 130.00, 'rating': 4.7, 'reviews': 87, 'sold': 210},
+    {
+      'img': AppAssets.productSwitchConsole1,
+      'title': 'Nintendo Switch OLED',
+      'category': 'Gaming',
+      'price': 299.99,
+      'orig': 349.99,
+      'rating': 4.8,
+      'reviews': 124,
+      'sold': 320,
+    },
+    {
+      'img': AppAssets.productSwitchConsole2,
+      'title': 'JBL Charge 5 Speaker',
+      'category': 'Audio',
+      'price': 149.99,
+      'orig': 199.99,
+      'rating': 4.7,
+      'reviews': 134,
+      'sold': 290,
+    },
+    {
+      'img': AppAssets.productHeadphone,
+      'title': 'Sony WH-1000XM5',
+      'category': 'Electronics',
+      'price': 199.99,
+      'orig': 349.99,
+      'rating': 4.9,
+      'reviews': 342,
+      'sold': 560,
+    },
+    {
+      'img': AppAssets.productShoe,
+      'title': 'Nike Air Max 2024',
+      'category': 'Footwear',
+      'price': 89.99,
+      'orig': 130.00,
+      'rating': 4.7,
+      'reviews': 87,
+      'sold': 210,
+    },
   ];
 
   @override
@@ -41,7 +77,11 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
                   width: double.infinity,
                   color: AppColors.primary,
                   child: const Center(
-                    child: Icon(Icons.storefront_rounded, size: 64, color: Colors.white24),
+                    child: Icon(
+                      Icons.storefront_rounded,
+                      size: 64,
+                      color: Colors.white24,
+                    ),
                   ),
                 ),
                 // Back button
@@ -51,7 +91,11 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
                   child: CircleAvatar(
                     backgroundColor: Colors.white,
                     child: IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18, color: AppColors.textPrimary),
+                      icon: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        size: 18,
+                        color: AppColors.textPrimary,
+                      ),
                       onPressed: () => Navigator.pop(context),
                     ),
                   ),
@@ -62,11 +106,18 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
                   left: AppSpacing.space20,
                   child: Container(
                     padding: const EdgeInsets.all(3),
-                    decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
                     child: const CircleAvatar(
                       radius: 36,
                       backgroundColor: AppColors.primarySoft,
-                      child: Icon(Icons.store_rounded, size: 36, color: AppColors.primary),
+                      child: Icon(
+                        Icons.store_rounded,
+                        size: 36,
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
                 ),
@@ -78,7 +129,9 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
           // ── Vendor Info ───────────────────────────────────────────
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space20),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.space20,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -90,24 +143,43 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
                         children: [
                           Row(
                             children: [
-                              Text('TechWorld Official Store',
-                                style: AppTypography.textTheme.headlineSmall),
+                              Text(
+                                'TechWorld Official Store',
+                                style: AppTypography.textTheme.headlineSmall,
+                              ),
                               const SizedBox(width: 6),
-                              const Icon(Icons.verified_rounded, color: AppColors.accentBlue, size: 18),
+                              const Icon(
+                                Icons.verified_rounded,
+                                color: AppColors.accentBlue,
+                                size: 18,
+                              ),
                             ],
                           ),
                           const SizedBox(height: 2),
-                          Text('Official Authorized Reseller · New York, USA',
-                            style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary)),
+                          Text(
+                            'Official Authorized Reseller · New York, USA',
+                            style: AppTypography.textTheme.bodySmall?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
                         ],
                       ),
                       ElevatedButton(
-                        onPressed: () => setState(() => _isFollowing = !_isFollowing),
+                        onPressed: () =>
+                            setState(() => _isFollowing = !_isFollowing),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: _isFollowing ? AppColors.backgroundAlt : AppColors.primary,
-                          foregroundColor: _isFollowing ? AppColors.textPrimary : Colors.white,
+                          backgroundColor: _isFollowing
+                              ? AppColors.backgroundAlt
+                              : AppColors.primary,
+                          foregroundColor: _isFollowing
+                              ? AppColors.textPrimary
+                              : Colors.white,
                           minimumSize: const Size(90, 38),
-                          side: BorderSide(color: _isFollowing ? AppColors.border : AppColors.primary),
+                          side: BorderSide(
+                            color: _isFollowing
+                                ? AppColors.border
+                                : AppColors.primary,
+                          ),
                         ),
                         child: Text(_isFollowing ? 'Following' : '+ Follow'),
                       ),
@@ -117,7 +189,9 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
 
                   // Stats card
                   Container(
-                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.space12),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.space12,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.background,
                       borderRadius: AppSpacing.radiusLarge,
@@ -136,7 +210,10 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
                   ),
                   const SizedBox(height: AppSpacing.space20),
 
-                  Text('Store Products (48)', style: AppTypography.textTheme.headlineSmall),
+                  Text(
+                    'Store Products (48)',
+                    style: AppTypography.textTheme.headlineSmall,
+                  ),
                   const SizedBox(height: AppSpacing.space12),
                 ],
               ),
@@ -159,7 +236,8 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
                     rating: p['rating'] as double,
                     reviewCount: p['reviews'] as int,
                     soldCount: p['sold'] as int?,
-                    onTap: () => Navigator.pushNamed(context, AppRoutes.productDetails),
+                    onTap: () =>
+                        Navigator.pushNamed(context, AppRoutes.productDetails),
                     onWishlistTap: () {},
                   );
                 },
@@ -190,9 +268,21 @@ class _StatItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(value, style: AppTypography.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+        Text(
+          value,
+          style: AppTypography.textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w800,
+            color: AppColors.primary,
+          ),
+        ),
         const SizedBox(height: 2),
-        Text(label, style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary, fontSize: 11)),
+        Text(
+          label,
+          style: AppTypography.textTheme.bodySmall?.copyWith(
+            color: AppColors.textSecondary,
+            fontSize: 11,
+          ),
+        ),
       ],
     );
   }

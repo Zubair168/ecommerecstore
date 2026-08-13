@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../constants/app_assets.dart';
-import '../theme/app_colors.dart';
+import 'package:ecommerecstore/constants/app_assets.dart';
+import 'package:ecommerecstore/theme/app_colors.dart';
 
 enum NavTab { home, category, cart, settings }
 
@@ -65,7 +65,10 @@ class CustomBottomNavBar extends StatelessWidget {
                     right: 4,
                     child: Container(
                       padding: const EdgeInsets.all(3),
-                      constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                      constraints: const BoxConstraints(
+                        minWidth: 16,
+                        minHeight: 16,
+                      ),
                       decoration: const BoxDecoration(
                         color: AppColors.primary,
                         shape: BoxShape.circle,

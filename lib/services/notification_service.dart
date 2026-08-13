@@ -23,7 +23,8 @@ class NotificationService {
   static const _channelName = 'Order Updates';
 
   static bool _initialized = false;
-  static StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _ordersSubscription;
+  static StreamSubscription<QuerySnapshot<Map<String, dynamic>>>?
+  _ordersSubscription;
   static StreamSubscription<String?>? _tokenRefreshSubscription;
   static final Map<String, String> _knownStatuses = {};
 
@@ -46,7 +47,8 @@ class NotificationService {
 
       await _localNotif
           .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
+            AndroidFlutterLocalNotificationsPlugin
+          >()
           ?.createNotificationChannel(androidChannel);
 
       // Local notifications init
@@ -78,12 +80,13 @@ class NotificationService {
 
         // Listen for token refresh and persist new token
         _tokenRefreshSubscription = _fcm.onTokenRefresh.listen((token) async {
-          if (token != null) {
-            await FirebaseFirestore.instance.collection('users').doc(user.uid).set(
-              {'fcmToken': token},
-              SetOptions(merge: true),
-            );
-          }
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(user.uid)
+                .set(
+                  {'fcmToken': token},
+                  SetOptions(merge: true),
+                );
         });
       } else {
         _stopOrderStatusListener();
@@ -94,8 +97,12 @@ class NotificationService {
   }
 
   /// Show a local notification
-  static Future<void> show({required String title, required String body}) async {
-    if (kIsWeb) return; // Local notifications plugin not fully supported/needed same way on web for this demo
+  static Future<void> show({
+    required String title,
+    required String body,
+  }) async {
+    if (kIsWeb)
+      return; // Local notifications plugin not fully supported/needed same way on web for this demo
 
     await _localNotif.show(
       DateTime.now().millisecondsSinceEpoch ~/ 1000,
@@ -139,41 +146,49 @@ class NotificationService {
         .collection('orders')
         .where('userId', isEqualTo: uid);
 
-    _ordersSubscription = ref.snapshots().listen((snap) {
-      for (final change in snap.docChanges) {
-        final id = change.doc.id;
-        final data = change.doc.data();
-        final status = (data?['status'] ?? '').toString();
+    _ordersSubscription = ref.snapshots().listen(
+      (snap) {
+        for (final change in snap.docChanges) {
+          final id = change.doc.id;
+          final data = change.doc.data();
+          final status = (data?['status'] ?? '').toString();
 
-        // Show notification when order is first created
-        if (change.type == DocumentChangeType.added && status.isNotEmpty) {
-          _knownStatuses[id] = status;
-          // Show order confirmed notification for newly created orders
-          // (skip on first load by checking if this is truly a new doc)
-          if (data?['createdAt'] != null) {
-            show(
-              title: '🛍️ Order Confirmed!',
-              body: 'Order #${id.substring(0, 8).toUpperCase()} placed. Status: $status',
-            );
+          // Show notification when order is first created
+          if (change.type == DocumentChangeType.added && status.isNotEmpty) {
+            _knownStatuses[id] = status;
+            // Show order confirmed notification for newly created orders
+            // (skip on first load by checking if this is truly a new doc)
+            if (data?['createdAt'] != null) {
+              show(
+                title: '🛍️ Order Confirmed!',
+                body:
+                    'Order #${id.substring(0, 8).toUpperCase()} placed. Status: $status',
+              );
+            }
+            continue;
           }
-          continue;
-        }
 
-        // On modified, compare status
-        if (change.type == DocumentChangeType.modified) {
-          final prev = _knownStatuses[id];
-          if (prev == null) {
-            _knownStatuses[id] = status;
-          } else if (prev != status) {
-            _knownStatuses[id] = status;
-            // Show a local notification about the status change
-            show(title: '📦 Order Update', body: 'Order #${id.substring(0, 8).toUpperCase()} is now $status');
+          // On modified, compare status
+          if (change.type == DocumentChangeType.modified) {
+            final prev = _knownStatuses[id];
+            if (prev == null) {
+              _knownStatuses[id] = status;
+            } else if (prev != status) {
+              _knownStatuses[id] = status;
+              // Show a local notification about the status change
+              show(
+                title: '📦 Order Update',
+                body:
+                    'Order #${id.substring(0, 8).toUpperCase()} is now $status',
+              );
+            }
           }
         }
-      }
-    }, onError: (e) {
-      // ignore - listener may fail if permissions or connectivity change
-    });
+      },
+      onError: (e) {
+        // ignore - listener may fail if permissions or connectivity change
+      },
+    );
   }
 
   static void _stopOrderStatusListener() {
@@ -182,4 +197,3 @@ class NotificationService {
     _knownStatuses.clear();
   }
 }
-

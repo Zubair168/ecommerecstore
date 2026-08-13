@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
-import '../../theme/app_spacing.dart';
-import '../../theme/app_typography.dart';
-import '../../widgets/index.dart';
+import 'package:ecommerecstore/theme/app_colors.dart';
+import 'package:ecommerecstore/theme/app_spacing.dart';
+import 'package:ecommerecstore/theme/app_typography.dart';
+import 'package:ecommerecstore/widgets/index.dart';
 
 class TrackOrderScreen extends StatelessWidget {
   const TrackOrderScreen({super.key});
@@ -31,7 +31,11 @@ class TrackOrderScreen extends StatelessWidget {
               const SizedBox(height: AppSpacing.space8),
               _InfoRow(label: 'Payment', value: 'Cash on Delivery'),
               const SizedBox(height: AppSpacing.space8),
-              _InfoRow(label: 'Total', value: '\$299.99', valueColor: AppColors.primary),
+              _InfoRow(
+                label: 'Total',
+                value: '\$299.99',
+                valueColor: AppColors.primary,
+              ),
             ],
           ),
           const SizedBox(height: AppSpacing.space16),
@@ -43,18 +47,36 @@ class TrackOrderScreen extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    width: 36, height: 36,
-                    decoration: const BoxDecoration(color: AppColors.primarySoft, shape: BoxShape.circle),
-                    child: const Icon(Icons.location_on_rounded, color: AppColors.primary, size: 18),
+                    width: 36,
+                    height: 36,
+                    decoration: const BoxDecoration(
+                      color: AppColors.primarySoft,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.location_on_rounded,
+                      color: AppColors.primary,
+                      size: 18,
+                    ),
                   ),
                   const SizedBox(width: AppSpacing.space12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('John Doe', style: AppTypography.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
-                        Text('123 Main Street, Apt 4B\nNew York, NY 10001, USA',
-                          style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary, height: 1.5)),
+                        Text(
+                          'John Doe',
+                          style: AppTypography.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        Text(
+                          '123 Main Street, Apt 4B\nNew York, NY 10001, USA',
+                          style: AppTypography.textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary,
+                            height: 1.5,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -114,17 +136,29 @@ class TrackOrderScreen extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Icon(Icons.local_shipping_rounded, color: Colors.white, size: 32),
+                const Icon(
+                  Icons.local_shipping_rounded,
+                  color: Colors.white,
+                  size: 32,
+                ),
                 const SizedBox(width: AppSpacing.space12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Arriving Today!',
+                      Text(
+                        'Arriving Today!',
                         style: AppTypography.textTheme.bodyMedium?.copyWith(
-                          color: Colors.white, fontWeight: FontWeight.w800)),
-                      Text('Your package is out for delivery',
-                        style: AppTypography.textTheme.bodySmall?.copyWith(color: Colors.white70)),
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      Text(
+                        'Your package is out for delivery',
+                        style: AppTypography.textTheme.bodySmall?.copyWith(
+                          color: Colors.white70,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -158,7 +192,12 @@ class _InfoCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (title != null) ...[
-            Text(title!, style: AppTypography.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
+            Text(
+              title!,
+              style: AppTypography.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
             const SizedBox(height: AppSpacing.space12),
           ],
           ...children,
@@ -180,9 +219,19 @@ class _InfoRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary)),
-        Text(value, style: AppTypography.textTheme.bodySmall?.copyWith(
-          fontWeight: FontWeight.w700, color: valueColor ?? AppColors.textPrimary)),
+        Text(
+          label,
+          style: AppTypography.textTheme.bodySmall?.copyWith(
+            color: AppColors.textSecondary,
+          ),
+        ),
+        Text(
+          value,
+          style: AppTypography.textTheme.bodySmall?.copyWith(
+            fontWeight: FontWeight.w700,
+            color: valueColor ?? AppColors.textPrimary,
+          ),
+        ),
       ],
     );
   }
@@ -210,14 +259,14 @@ class _TrackStep extends StatelessWidget {
     final Color iconColor = isActive
         ? AppColors.primary
         : isDone
-            ? AppColors.success
-            : AppColors.border;
+        ? AppColors.success
+        : AppColors.border;
 
     final Color iconBg = isActive
         ? AppColors.primarySoft
         : isDone
-            ? AppColors.successBg
-            : AppColors.backgroundAlt;
+        ? AppColors.successBg
+        : AppColors.backgroundAlt;
 
     return IntrinsicHeight(
       child: Row(
@@ -227,8 +276,12 @@ class _TrackStep extends StatelessWidget {
           Column(
             children: [
               Container(
-                width: 36, height: 36,
-                decoration: BoxDecoration(color: iconBg, shape: BoxShape.circle),
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: iconBg,
+                  shape: BoxShape.circle,
+                ),
                 child: Icon(icon, color: iconColor, size: 18),
               ),
               if (!isLast)
@@ -250,13 +303,23 @@ class _TrackStep extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 6),
-                  Text(title,
+                  Text(
+                    title,
                     style: AppTypography.textTheme.bodyMedium?.copyWith(
                       fontWeight: isActive ? FontWeight.w700 : FontWeight.w600,
-                      color: isActive ? AppColors.primary : AppColors.textPrimary)),
+                      color: isActive
+                          ? AppColors.primary
+                          : AppColors.textPrimary,
+                    ),
+                  ),
                   const SizedBox(height: 2),
-                  Text(subtitle,
-                    style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary, height: 1.4)),
+                  Text(
+                    subtitle,
+                    style: AppTypography.textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                      height: 1.4,
+                    ),
+                  ),
                 ],
               ),
             ),

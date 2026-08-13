@@ -16,9 +16,14 @@ class AuthService {
 
   /// Create account with email, password, and display name
   static Future<UserCredential> signUp(
-      String email, String password, String displayName) async {
+    String email,
+    String password,
+    String displayName,
+  ) async {
     final cred = await _auth.createUserWithEmailAndPassword(
-        email: email, password: password);
+      email: email,
+      password: password,
+    );
     await cred.user?.updateDisplayName(displayName);
     // Save profile to Firestore
     await _db.collection('users').doc(cred.user!.uid).set({
@@ -58,7 +63,8 @@ class AuthService {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       if (googleUser == null) return null; // user cancelled
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
@@ -67,9 +73,9 @@ class AuthService {
       final userCred = await _auth.signInWithCredential(credential);
       await _ensureUserDoc(userCred.user);
       return userCred;
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException {
       rethrow;
-    } catch (e) {
+    } catch (_) {
       rethrow;
     }
   }

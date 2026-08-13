@@ -46,10 +46,18 @@ class CustomSearchBar extends StatelessWidget {
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: const TextStyle(color: Color(0xFF98A2B3), fontSize: 14),
-          prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF98A2B3), size: 22),
+          prefixIcon: const Icon(
+            Icons.search_rounded,
+            color: Color(0xFF98A2B3),
+            size: 22,
+          ),
           suffixIcon: onFilterTap != null
               ? IconButton(
-                  icon: const Icon(Icons.tune_rounded, color: Color(0xFFFF5722), size: 20),
+                  icon: const Icon(
+                    Icons.tune_rounded,
+                    color: Color(0xFFFF5722),
+                    size: 20,
+                  ),
                   onPressed: onFilterTap,
                 )
               : null,

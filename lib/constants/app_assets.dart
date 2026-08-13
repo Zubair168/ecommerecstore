@@ -3,13 +3,18 @@ class AppAssets {
   static const String _raw = 'assets/raw';
 
   // Illustrations
-  static const String onboardingIllustration1 = '$_raw/illustrations/onboarding_illustration_1.svg';
-  static const String onboardingIllustration2 = '$_raw/illustrations/onboarding_illustration_2.svg';
-  static const String onboardingIllustration3 = '$_raw/illustrations/onboarding_illustration_3.svg';
+  static const String onboardingIllustration1 =
+      '$_raw/illustrations/onboarding_illustration_1.svg';
+  static const String onboardingIllustration2 =
+      '$_raw/illustrations/onboarding_illustration_2.svg';
+  static const String onboardingIllustration3 =
+      '$_raw/illustrations/onboarding_illustration_3.svg';
 
   // Logos
-  static const String appLogo = '$_raw/logos/app_logo.svg';     // SVG wrapper – use appLogoPng
-  static const String appLogoPng = '$_raw/logos/app_logo.png';  // extracted raster
+  static const String appLogo =
+      '$_raw/logos/app_logo.svg'; // SVG wrapper – use appLogoPng
+  static const String appLogoPng =
+      '$_raw/logos/app_logo.png'; // extracted raster
   static const String appleLogo = '$_raw/logos/apple_logo.svg';
   static const String googleLogo = '$_raw/logos/google_logo.svg';
   static const String upsLogo = '$_raw/logos/ups_logo.svg';
@@ -37,7 +42,8 @@ class AppAssets {
   static const String iconCoupon = '$_raw/icons/icon_coupon.svg';
   static const String iconOrder = '$_raw/icons/icon_order.svg';
   static const String iconDelivery = '$_raw/icons/icon_delivery.svg';
-  static const String iconPackageDelivered = '$_raw/icons/icon_package_delivered.svg';
+  static const String iconPackageDelivered =
+      '$_raw/icons/icon_package_delivered.svg';
   static const String iconProcessing = '$_raw/icons/icon_processing.svg';
   static const String iconReturn = '$_raw/icons/icon_return.svg';
   static const String iconCancel = '$_raw/icons/icon_cancel.svg';
@@ -63,10 +69,14 @@ class AppAssets {
   static const String catSports = '$_raw/categories/cat_sports.svg';
 
   // Banners
-  static const String bannerSale50 = '$_raw/banners/banner_sale_50.svg';        // SVG wrapper
-  static const String bannerSale50Png = '$_raw/banners/banner_sale_50.png';     // raster
-  static const String bannerPromoHero = '$_raw/banners/banner_promo_hero.svg';  // SVG wrapper
-  static const String bannerPromoHeroPng = '$_raw/banners/banner_promo_hero.png'; // raster
+  static const String bannerSale50 =
+      '$_raw/banners/banner_sale_50.svg'; // SVG wrapper
+  static const String bannerSale50Png =
+      '$_raw/banners/banner_sale_50.png'; // raster
+  static const String bannerPromoHero =
+      '$_raw/banners/banner_promo_hero.svg'; // SVG wrapper
+  static const String bannerPromoHeroPng =
+      '$_raw/banners/banner_promo_hero.png'; // raster
 
   // User Provided Assets
   static const String userFlashSale = 'assets/Flash sale.png';
@@ -77,28 +87,32 @@ class AppAssets {
   static const String userBagIcon = 'assets/ph_bag-fill.png';
   static const String userSettingIcon = 'assets/weui_setting-filled.png';
   static const String userButtonImg = 'assets/Button.png';
-  static const String userSegmentedContainer = 'assets/Segmented picker container.png';
+  static const String userSegmentedContainer =
+      'assets/Segmented picker container.png';
 
   // Products — use the .png/.jpg variants; .svg files embed raster so SvgPicture won't render them
   static const String productHeadphone = '$_raw/products/product_headphone.png';
   static const String productFashion = '$_raw/products/product_fashion.png';
   static const String productShoe = '$_raw/products/product_shoe.png';
-  static const String productSwitchConsole1 = '$_raw/products/product_switch_console_1.jpg';
-  static const String productSwitchConsole2 = '$_raw/products/product_switch_console_2.jpg';
+  static const String productSwitchConsole1 =
+      '$_raw/products/product_switch_console_1.jpg';
+  static const String productSwitchConsole2 =
+      '$_raw/products/product_switch_console_2.jpg';
 
   // AI-Generated Category Photos — real product images per category
-  static const String catPhotoMen     = '$_raw/products/cat_fashion_men.png';
-  static const String catPhotoWomen   = '$_raw/products/cat_fashion_women.png';
-  static const String catPhotoShoes   = '$_raw/products/cat_shoes.png';
-  static const String catPhotoElec    = '$_raw/products/cat_electronics.png';
-  static const String catPhotoBags    = '$_raw/products/cat_bags.png';
+  static const String catPhotoMen = '$_raw/products/cat_fashion_men.png';
+  static const String catPhotoWomen = '$_raw/products/cat_fashion_women.png';
+  static const String catPhotoShoes = '$_raw/products/cat_shoes.png';
+  static const String catPhotoElec = '$_raw/products/cat_electronics.png';
+  static const String catPhotoBags = '$_raw/products/cat_bags.png';
   static const String catPhotoWatches = '$_raw/products/cat_watches.png';
 
   // Payments
   static const String iconPaymentCard = '$_raw/payments/icon_payment_card.svg';
 
   // Avatars
-  static const String avatarUserDefault = '$_raw/avatars/avatar_user_default.svg';
+  static const String avatarUserDefault =
+      '$_raw/avatars/avatar_user_default.svg';
   static const String avatarVendor = '$_raw/avatars/avatar_vendor.svg';
 
   // Images
@@ -106,11 +120,14 @@ class AppAssets {
 
   // Misc
   static const String badgeSaleTag = '$_raw/misc/badge_sale_tag.svg';
-  static const String buttonGraphicPrimary = '$_raw/misc/button_graphic_primary.svg';
-  static const String buttonGraphicSecondary = '$_raw/misc/button_graphic_secondary.svg';
+  static const String buttonGraphicPrimary =
+      '$_raw/misc/button_graphic_primary.svg';
+  static const String buttonGraphicSecondary =
+      '$_raw/misc/button_graphic_secondary.svg';
   static const String containerGraphic = '$_raw/misc/container_graphic.svg';
   static const String containerPicker = '$_raw/misc/container_picker.svg';
-  static const String containerTextInput = '$_raw/misc/container_text_input.svg';
+  static const String containerTextInput =
+      '$_raw/misc/container_text_input.svg';
   static const String containerVertical = '$_raw/misc/container_vertical.svg';
   static const String iconPaperclipPng = '$_raw/misc/icon_paperclip.png';
   static const String iconPaperclipSvg = '$_raw/misc/icon_paperclip.svg';

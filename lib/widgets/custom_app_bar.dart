@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../theme/app_colors.dart';
-import '../theme/app_typography.dart';
+import 'package:ecommerecstore/theme/app_colors.dart';
+import 'package:ecommerecstore/theme/app_typography.dart';
 
 /// Standard App Bar for header navigation across screens
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -37,7 +37,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             )
           : null,
       centerTitle: centerTitle,
-      leading: leading ??
+      leading:
+          leading ??
           (Navigator.canPop(context)
               ? IconButton(
                   icon: const Icon(

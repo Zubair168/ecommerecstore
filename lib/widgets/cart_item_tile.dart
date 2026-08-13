@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../constants/app_assets.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_spacing.dart';
-import '../theme/app_typography.dart';
+import 'package:ecommerecstore/constants/app_assets.dart';
+import 'package:ecommerecstore/theme/app_colors.dart';
+import 'package:ecommerecstore/theme/app_spacing.dart';
+import 'package:ecommerecstore/theme/app_typography.dart';
 
 /// Cart item tile for the shopping cart screen.
 /// Shows product image, title, attributes, price, stepper, and delete button.
@@ -52,8 +52,11 @@ class CartItemTile extends StatelessWidget {
                 width: 80,
                 height: 80,
                 color: AppColors.backgroundAlt,
-                child: const Icon(Icons.image_not_supported_outlined,
-                    color: AppColors.border, size: 28),
+                child: const Icon(
+                  Icons.image_not_supported_outlined,
+                  color: AppColors.border,
+                  size: 28,
+                ),
               ),
             ),
           ),
@@ -72,8 +75,7 @@ class CartItemTile extends StatelessWidget {
                         title,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style:
-                            AppTypography.textTheme.bodyMedium?.copyWith(
+                        style: AppTypography.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: AppColors.textPrimary,
                         ),

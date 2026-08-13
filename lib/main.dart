@@ -3,54 +3,54 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'firebase_options.dart';
-import 'routes/app_routes.dart';
-import 'services/notification_service.dart';
-import 'services/product_service.dart';
-import 'providers/cart_provider.dart';
-import 'theme/app_theme.dart';
+import 'package:ecommerecstore/firebase_options.dart';
+import 'package:ecommerecstore/routes/app_routes.dart';
+import 'package:ecommerecstore/services/notification_service.dart';
+import 'package:ecommerecstore/services/product_service.dart';
+import 'package:ecommerecstore/providers/cart_provider.dart';
+import 'package:ecommerecstore/theme/app_theme.dart';
 
 // Import all screens
-import 'screens/auth/login_screen.dart';
-import 'screens/auth/register_screen.dart';
-import 'screens/auth/forgot_password_screen.dart';
-import 'screens/onboarding/onboarding_screen.dart';
-import 'screens/filter/filter_screen.dart';
-import 'screens/notifications/notifications_screen.dart';
-import 'screens/home/home_screen.dart';
-import 'screens/cart/cart_screen.dart';
-import 'screens/wishlist/wishlist_screen.dart';
-import 'screens/profile/profile_screen.dart';
-import 'screens/categories/categories_screen.dart';
-import 'screens/product/product_grid_screen.dart';
-import 'screens/product/product_details_screen.dart';
-import 'screens/checkout/checkout_screen.dart';
-import 'screens/checkout/payment_method_screen.dart';
-import 'screens/checkout/payment_success_screen.dart';
-import 'screens/splash/splash_screen.dart';
-import 'screens/orders/my_orders_screen.dart';
-import 'screens/orders/order_details_screen.dart';
-import 'screens/orders/cancel_request_screen.dart';
-import 'screens/orders/return_request_screen.dart';
-import 'screens/orders/track_order_screen.dart';
-import 'screens/address/shipping_address_screen.dart';
-import 'screens/profile/edit_profile_screen.dart';
-import 'screens/settings/settings_screen.dart';
-import 'screens/review/reviews_screen.dart';
-import 'screens/search/search_screen.dart';
-import 'screens/profile/setup_profile_screen.dart';
-import 'screens/settings/chat_screen.dart';
-import 'screens/settings/feedback_screen.dart';
-import 'screens/settings/language_screen.dart';
-import 'screens/settings/terms_privacy_screen.dart';
-import 'screens/vendor/vendor_profile_screen.dart';
-import 'screens/voucher/vouchers_screen.dart';
-import 'screens/product/compare_products_screen.dart';
+import 'package:ecommerecstore/screens/auth/login_screen.dart';
+import 'package:ecommerecstore/screens/auth/register_screen.dart';
+import 'package:ecommerecstore/screens/auth/forgot_password_screen.dart';
+import 'package:ecommerecstore/screens/onboarding/onboarding_screen.dart';
+import 'package:ecommerecstore/screens/filter/filter_screen.dart';
+import 'package:ecommerecstore/screens/notifications/notifications_screen.dart';
+import 'package:ecommerecstore/screens/home/home_screen.dart';
+import 'package:ecommerecstore/screens/cart/cart_screen.dart';
+import 'package:ecommerecstore/screens/wishlist/wishlist_screen.dart';
+import 'package:ecommerecstore/screens/profile/profile_screen.dart';
+import 'package:ecommerecstore/screens/categories/categories_screen.dart';
+import 'package:ecommerecstore/screens/product/product_grid_screen.dart';
+import 'package:ecommerecstore/screens/product/product_details_screen.dart';
+import 'package:ecommerecstore/screens/checkout/checkout_screen.dart';
+import 'package:ecommerecstore/screens/checkout/payment_method_screen.dart';
+import 'package:ecommerecstore/screens/checkout/payment_success_screen.dart';
+import 'package:ecommerecstore/screens/splash/splash_screen.dart';
+import 'package:ecommerecstore/screens/orders/my_orders_screen.dart';
+import 'package:ecommerecstore/screens/orders/order_details_screen.dart';
+import 'package:ecommerecstore/screens/orders/cancel_request_screen.dart';
+import 'package:ecommerecstore/screens/orders/return_request_screen.dart';
+import 'package:ecommerecstore/screens/orders/track_order_screen.dart';
+import 'package:ecommerecstore/screens/address/shipping_address_screen.dart';
+import 'package:ecommerecstore/screens/profile/edit_profile_screen.dart';
+import 'package:ecommerecstore/screens/settings/settings_screen.dart';
+import 'package:ecommerecstore/screens/review/reviews_screen.dart';
+import 'package:ecommerecstore/screens/search/search_screen.dart';
+import 'package:ecommerecstore/screens/profile/setup_profile_screen.dart';
+import 'package:ecommerecstore/screens/settings/chat_screen.dart';
+import 'package:ecommerecstore/screens/settings/feedback_screen.dart';
+import 'package:ecommerecstore/screens/settings/language_screen.dart';
+import 'package:ecommerecstore/screens/settings/terms_privacy_screen.dart';
+import 'package:ecommerecstore/screens/vendor/vendor_profile_screen.dart';
+import 'package:ecommerecstore/screens/voucher/vouchers_screen.dart';
+import 'package:ecommerecstore/screens/product/compare_products_screen.dart';
 
 Future<void> main() async {
   try {
     WidgetsFlutterBinding.ensureInitialized();
-    
+
     // Initialize Firebase before starting the app to prevent late-initialization errors
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
@@ -59,7 +59,7 @@ Future<void> main() async {
     // Optional background services
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
     await NotificationService.initialize();
-    
+
     // Seed Firestore data in background
     ProductService.seedProducts();
   } catch (e) {

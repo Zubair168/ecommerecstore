@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_spacing.dart';
-import '../theme/app_typography.dart';
+import 'package:ecommerecstore/theme/app_colors.dart';
+import 'package:ecommerecstore/theme/app_spacing.dart';
+import 'package:ecommerecstore/theme/app_typography.dart';
 
 /// Primary action button (Vivid Coral fill, white text, 52px height)
 class PrimaryButton extends StatelessWidget {

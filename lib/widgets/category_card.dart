@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../theme/app_colors.dart';
-import '../theme/app_spacing.dart';
-import '../theme/app_typography.dart';
+import 'package:ecommerecstore/theme/app_colors.dart';
+import 'package:ecommerecstore/theme/app_spacing.dart';
+import 'package:ecommerecstore/theme/app_typography.dart';
 
 /// Category icon card used in the horizontal list and category grid.
 class CategoryCard extends StatelessWidget {
@@ -38,8 +38,7 @@ class CategoryCard extends StatelessWidget {
               color: isSelected ? AppColors.primarySoft : backgroundColor,
               borderRadius: AppSpacing.radiusLarge,
               border: Border.all(
-                color:
-                    isSelected ? AppColors.primary : Colors.transparent,
+                color: isSelected ? AppColors.primary : Colors.transparent,
                 width: 2,
               ),
             ),
@@ -56,11 +55,8 @@ class CategoryCard extends StatelessWidget {
             title,
             textAlign: TextAlign.center,
             style: AppTypography.textTheme.bodySmall?.copyWith(
-              fontWeight:
-                  isSelected ? FontWeight.w600 : FontWeight.w400,
-              color: isSelected
-                  ? AppColors.primary
-                  : AppColors.textSecondary,
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+              color: isSelected ? AppColors.primary : AppColors.textSecondary,
             ),
           ),
         ],

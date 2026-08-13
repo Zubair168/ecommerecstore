@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../routes/app_routes.dart';
-import '../../theme/app_colors.dart';
-import '../../theme/app_spacing.dart';
-import '../../theme/app_typography.dart';
-import '../../widgets/index.dart';
+import 'package:ecommerecstore/routes/app_routes.dart';
+import 'package:ecommerecstore/theme/app_colors.dart';
+import 'package:ecommerecstore/theme/app_spacing.dart';
+import 'package:ecommerecstore/theme/app_typography.dart';
+import 'package:ecommerecstore/widgets/index.dart';
 
 // ── Payment Method Screen ───────────────────────────────────────────────────────
 
@@ -20,7 +20,11 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   int _selectedIndex = 0;
 
   static const _methods = [
-    _PayMethod(icon: Icons.local_shipping_outlined, label: 'Cash on Delivery', sub: 'Pay when you receive'),
+    _PayMethod(
+      icon: Icons.local_shipping_outlined,
+      label: 'Cash on Delivery',
+      sub: 'Pay when you receive',
+    ),
   ];
 
   @override
@@ -42,9 +46,12 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
           const SizedBox(height: AppSpacing.space24),
 
           // Payment options
-          Text('Select Payment Method',
-              style: AppTypography.textTheme.bodyMedium
-                  ?.copyWith(fontWeight: FontWeight.w700)),
+          Text(
+            'Select Payment Method',
+            style: AppTypography.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
           const SizedBox(height: AppSpacing.space12),
 
           Container(
@@ -63,7 +70,12 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                       isSelected: _selectedIndex == e.key,
                       onTap: () => setState(() => _selectedIndex = e.key),
                     ),
-                    if (!isLast) const Divider(height: 1, color: AppColors.divider, indent: 56),
+                    if (!isLast)
+                      const Divider(
+                        height: 1,
+                        color: AppColors.divider,
+                        indent: 56,
+                      ),
                   ],
                 );
               }).toList(),
@@ -76,14 +88,20 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
             onPressed: () => Navigator.pushNamed(context, AppRoutes.addCard),
             icon: const Icon(Icons.add_rounded),
             label: const Text('Add New Card'),
-            style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(52)),
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size.fromHeight(52),
+            ),
           ),
           const SizedBox(height: AppSpacing.space80),
         ],
       ),
       bottomNavigationBar: Container(
         padding: const EdgeInsets.fromLTRB(
-            AppSpacing.space16, AppSpacing.space12, AppSpacing.space16, AppSpacing.space24),
+          AppSpacing.space16,
+          AppSpacing.space12,
+          AppSpacing.space16,
+          AppSpacing.space24,
+        ),
         decoration: const BoxDecoration(
           color: AppColors.background,
           border: Border(top: BorderSide(color: AppColors.divider)),
@@ -101,7 +119,11 @@ class _PayMethod {
   final IconData icon;
   final String label;
   final String sub;
-  const _PayMethod({required this.icon, required this.label, required this.sub});
+  const _PayMethod({
+    required this.icon,
+    required this.label,
+    required this.sub,
+  });
 }
 
 class _PaymentTile extends StatelessWidget {
@@ -109,7 +131,11 @@ class _PaymentTile extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
-  const _PaymentTile({required this.method, required this.isSelected, required this.onTap});
+  const _PaymentTile({
+    required this.method,
+    required this.isSelected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -117,40 +143,58 @@ class _PaymentTile extends StatelessWidget {
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.space16, vertical: AppSpacing.space14),
+          horizontal: AppSpacing.space16,
+          vertical: AppSpacing.space14,
+        ),
         child: Row(
           children: [
             Container(
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: isSelected ? AppColors.primarySoft : AppColors.backgroundAlt,
+                color: isSelected
+                    ? AppColors.primarySoft
+                    : AppColors.backgroundAlt,
                 borderRadius: AppSpacing.radiusMedium,
               ),
-              child: Icon(method.icon,
-                  color: isSelected ? AppColors.primary : AppColors.textSecondary, size: 22),
+              child: Icon(
+                method.icon,
+                color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                size: 22,
+              ),
             ),
             const SizedBox(width: AppSpacing.space12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(method.label,
-                      style: AppTypography.textTheme.bodyMedium
-                          ?.copyWith(fontWeight: FontWeight.w600)),
-                  Text(method.sub,
-                      style: AppTypography.textTheme.bodySmall
-                          ?.copyWith(color: AppColors.textSecondary)),
+                  Text(
+                    method.label,
+                    style: AppTypography.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    method.sub,
+                    style: AppTypography.textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
                 ],
               ),
             ),
             Container(
-              width: 24, height: 24,
+              width: 24,
+              height: 24,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isSelected ? const Color(0xFFFF5722) : Colors.transparent,
+                color: isSelected
+                    ? const Color(0xFFFF5722)
+                    : Colors.transparent,
                 border: Border.all(
-                  color: isSelected ? const Color(0xFFFF5722) : const Color(0xFFD0D5DD),
+                  color: isSelected
+                      ? const Color(0xFFFF5722)
+                      : const Color(0xFFD0D5DD),
                   width: isSelected ? 6 : 2,
                 ),
               ),
@@ -217,18 +261,29 @@ class _CardGraphic extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('VISA',
-                        style: AppTypography.textTheme.headlineSmall?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 2)),
-                    const Icon(Icons.contactless_rounded, color: Colors.white, size: 28),
+                    Text(
+                      'VISA',
+                      style: AppTypography.textTheme.headlineSmall?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 2,
+                      ),
+                    ),
+                    const Icon(
+                      Icons.contactless_rounded,
+                      color: Colors.white,
+                      size: 28,
+                    ),
                   ],
                 ),
                 const Spacer(),
-                Text('•••• •••• •••• 4242',
-                    style: AppTypography.textTheme.headlineSmall?.copyWith(
-                        color: Colors.white, letterSpacing: 3)),
+                Text(
+                  '•••• •••• •••• 4242',
+                  style: AppTypography.textTheme.headlineSmall?.copyWith(
+                    color: Colors.white,
+                    letterSpacing: 3,
+                  ),
+                ),
                 const SizedBox(height: AppSpacing.space8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -236,23 +291,39 @@ class _CardGraphic extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('CARD HOLDER',
-                            style: AppTypography.textTheme.labelSmall?.copyWith(
-                                color: Colors.white70, fontSize: 9)),
-                        Text('John Doe',
-                            style: AppTypography.textTheme.bodySmall?.copyWith(
-                                color: Colors.white, fontWeight: FontWeight.w700)),
+                        Text(
+                          'CARD HOLDER',
+                          style: AppTypography.textTheme.labelSmall?.copyWith(
+                            color: Colors.white70,
+                            fontSize: 9,
+                          ),
+                        ),
+                        Text(
+                          'John Doe',
+                          style: AppTypography.textTheme.bodySmall?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       ],
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('EXPIRES',
-                            style: AppTypography.textTheme.labelSmall?.copyWith(
-                                color: Colors.white70, fontSize: 9)),
-                        Text('12/28',
-                            style: AppTypography.textTheme.bodySmall?.copyWith(
-                                color: Colors.white, fontWeight: FontWeight.w700)),
+                        Text(
+                          'EXPIRES',
+                          style: AppTypography.textTheme.labelSmall?.copyWith(
+                            color: Colors.white70,
+                            fontSize: 9,
+                          ),
+                        ),
+                        Text(
+                          '12/28',
+                          style: AppTypography.textTheme.bodySmall?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -332,7 +403,8 @@ class _AddCardScreenState extends State<AddCardScreen> {
                 prefixIcon: const Icon(Icons.credit_card_rounded, size: 20),
                 onChanged: (_) => setState(() {}),
                 validator: (v) {
-                  if (v == null || v.replaceAll(' ', '').length < 16) return 'Enter valid card number';
+                  if (v == null || v.replaceAll(' ', '').length < 16)
+                    return 'Enter valid card number';
                   return null;
                 },
               ),
@@ -399,7 +471,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                   if (!_formKey.currentState!.validate()) return;
                   setState(() => _loading = true);
                   final nav = Navigator.of(context);
-                  await Future.delayed(const Duration(milliseconds: 800));
+                  await Future<void>.delayed(const Duration(milliseconds: 800));
                   if (!mounted) return;
                   nav.pop();
                 },
@@ -417,11 +489,17 @@ class _CardPreview extends StatelessWidget {
   final String cardHolder;
   final String expiry;
 
-  const _CardPreview({required this.cardNumber, required this.cardHolder, required this.expiry});
+  const _CardPreview({
+    required this.cardNumber,
+    required this.cardHolder,
+    required this.expiry,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final display = cardNumber.isEmpty ? '•••• •••• •••• ••••' : cardNumber.padRight(19, '•');
+    final display = cardNumber.isEmpty
+        ? '•••• •••• •••• ••••'
+        : cardNumber.padRight(19, '•');
     return Container(
       height: 160,
       decoration: BoxDecoration(
@@ -441,26 +519,47 @@ class _CardPreview extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Icon(Icons.contactless_rounded, color: Colors.white54, size: 24),
-                Text('VISA',
-                    style: AppTypography.textTheme.titleMedium?.copyWith(
-                        color: Colors.white, fontWeight: FontWeight.w900, letterSpacing: 2)),
+                const Icon(
+                  Icons.contactless_rounded,
+                  color: Colors.white54,
+                  size: 24,
+                ),
+                Text(
+                  'VISA',
+                  style: AppTypography.textTheme.titleMedium?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 2,
+                  ),
+                ),
               ],
             ),
             const Spacer(),
-            Text(display,
-                style: AppTypography.textTheme.bodyMedium?.copyWith(
-                    color: Colors.white, letterSpacing: 2.5)),
+            Text(
+              display,
+              style: AppTypography.textTheme.bodyMedium?.copyWith(
+                color: Colors.white,
+                letterSpacing: 2.5,
+              ),
+            ),
             const SizedBox(height: AppSpacing.space8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(cardHolder.isEmpty ? 'CARD HOLDER' : cardHolder.toUpperCase(),
-                    style: AppTypography.textTheme.bodySmall?.copyWith(
-                        color: Colors.white70, fontWeight: FontWeight.w600)),
-                Text(expiry.isEmpty ? '••/••' : expiry,
-                    style: AppTypography.textTheme.bodySmall?.copyWith(
-                        color: Colors.white70, fontWeight: FontWeight.w600)),
+                Text(
+                  cardHolder.isEmpty ? 'CARD HOLDER' : cardHolder.toUpperCase(),
+                  style: AppTypography.textTheme.bodySmall?.copyWith(
+                    color: Colors.white70,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  expiry.isEmpty ? '••/••' : expiry,
+                  style: AppTypography.textTheme.bodySmall?.copyWith(
+                    color: Colors.white70,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ],
             ),
           ],
@@ -492,7 +591,8 @@ class _ExpiryFormatter extends TextInputFormatter {
   TextEditingValue formatEditUpdate(TextEditingValue o, TextEditingValue n) {
     final digits = n.text.replaceAll(' / ', '');
     String s = digits;
-    if (digits.length >= 2) s = '${digits.substring(0, 2)} / ${digits.substring(2)}';
+    if (digits.length >= 2)
+      s = '${digits.substring(0, 2)} / ${digits.substring(2)}';
     return n.copyWith(
       text: s,
       selection: TextSelection.collapsed(offset: s.length),

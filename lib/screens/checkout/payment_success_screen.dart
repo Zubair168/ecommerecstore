@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../routes/app_routes.dart';
+import 'package:ecommerecstore/routes/app_routes.dart';
 
 class PaymentSuccessScreen extends StatelessWidget {
   const PaymentSuccessScreen({super.key});
@@ -20,12 +20,17 @@ class PaymentSuccessScreen extends StatelessWidget {
 
               // Yellow checkmark circle matching 35_payment_successful.png
               Container(
-                width: 90, height: 90,
+                width: 90,
+                height: 90,
                 decoration: const BoxDecoration(
                   color: Color(0xFFFFC107),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.check_rounded, color: Colors.white, size: 54),
+                child: const Icon(
+                  Icons.check_rounded,
+                  color: Colors.white,
+                  size: 54,
+                ),
               ),
               const SizedBox(height: 24),
 
@@ -65,15 +70,30 @@ class PaymentSuccessScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Transaction ID', style: TextStyle(color: Color(0xFF667085), fontSize: 13)),
+                        const Text(
+                          'Transaction ID',
+                          style: TextStyle(
+                            color: Color(0xFF667085),
+                            fontSize: 13,
+                          ),
+                        ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: const Color(0xFFF2F4F7),
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          child: const Text('TXN 3984903',
-                              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12, color: Color(0xFF344054))),
+                          child: const Text(
+                            'TXN 3984903',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 12,
+                              color: Color(0xFF344054),
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -90,19 +110,29 @@ class PaymentSuccessScreen extends StatelessWidget {
 
               // Email notification box
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFF2F4F7),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   children: const [
-                    Icon(Icons.mail_outline_rounded, size: 20, color: Color(0xFF475467)),
+                    Icon(
+                      Icons.mail_outline_rounded,
+                      size: 20,
+                      color: Color(0xFF475467),
+                    ),
                     SizedBox(width: 10),
                     Expanded(
                       child: Text(
                         'Receipt sent to maxtiger@gmail.com',
-                        style: TextStyle(fontSize: 13, color: Color(0xFF475467)),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Color(0xFF475467),
+                        ),
                       ),
                     ),
                   ],
@@ -121,12 +151,16 @@ class PaymentSuccessScreen extends StatelessWidget {
                     );
                   },
                   icon: const Icon(Icons.file_download_outlined, size: 20),
-                  label: const Text('Download receipt',
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                  label: const Text(
+                    'Download receipt',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: kNavy,
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     elevation: 0,
                   ),
                 ),
@@ -138,13 +172,26 @@ class PaymentSuccessScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 52,
                 child: OutlinedButton.icon(
-                  onPressed: () => Navigator.pushReplacementNamed(context, AppRoutes.home),
-                  icon: const Icon(Icons.arrow_back_rounded, size: 20, color: Color(0xFF344054)),
-                  label: const Text('Go back to home',
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF344054))),
+                  onPressed: () =>
+                      Navigator.pushReplacementNamed(context, AppRoutes.home),
+                  icon: const Icon(
+                    Icons.arrow_back_rounded,
+                    size: 20,
+                    color: Color(0xFF344054),
+                  ),
+                  label: const Text(
+                    'Go back to home',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF344054),
+                    ),
+                  ),
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: Color(0xFFD0D5DD)),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
               ),
@@ -153,7 +200,11 @@ class PaymentSuccessScreen extends StatelessWidget {
               const Text(
                 'Need help? Contact our support team at\nsupport@techstore.com',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 11, color: Color(0xFF98A2B3), height: 1.4),
+                style: TextStyle(
+                  fontSize: 11,
+                  color: Color(0xFF98A2B3),
+                  height: 1.4,
+                ),
               ),
             ],
           ),
@@ -175,7 +226,10 @@ class _RowItem extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: const TextStyle(color: Color(0xFF667085), fontSize: 13)),
+        Text(
+          label,
+          style: const TextStyle(color: Color(0xFF667085), fontSize: 13),
+        ),
         Text(
           value,
           style: TextStyle(

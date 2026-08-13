@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
-import '../../theme/app_spacing.dart';
-import '../../theme/app_typography.dart';
-import '../../widgets/index.dart';
+import 'package:ecommerecstore/theme/app_colors.dart';
+import 'package:ecommerecstore/theme/app_spacing.dart';
+import 'package:ecommerecstore/theme/app_typography.dart';
+import 'package:ecommerecstore/widgets/index.dart';
 
 class FeedbackScreen extends StatefulWidget {
   const FeedbackScreen({super.key});
@@ -54,8 +54,11 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       color: Color(0xFFFFF4E5),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.rate_review_rounded,
-                        color: AppColors.primary, size: 36),
+                    child: const Icon(
+                      Icons.rate_review_rounded,
+                      color: AppColors.primary,
+                      size: 36,
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.space16),
                   Text(
@@ -102,12 +105,14 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     isLoading: _isSubmitting,
                     onPressed: () async {
                       setState(() => _isSubmitting = true);
-                      await Future.delayed(const Duration(milliseconds: 600));
+                      await Future<void>.delayed(const Duration(milliseconds: 600));
                       if (!mounted) return;
                       setState(() => _isSubmitting = false);
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Thank you for your valuable feedback!'),
+                          content: Text(
+                            'Thank you for your valuable feedback!',
+                          ),
                         ),
                       );
                       Navigator.pop(context);

@@ -2,11 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../constants/app_assets.dart';
-import '../../services/auth_service.dart';
+import 'package:ecommerecstore/constants/app_assets.dart';
+import 'package:ecommerecstore/services/auth_service.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import '../../services/upload_service.dart';
+import 'package:ecommerecstore/services/upload_service.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -50,10 +50,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       final url = res['secure_url'] as String?;
       if (url != null) setState(() => _photoUrl = url);
       if (url != null) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Image uploaded')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Image uploaded')));
       }
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Upload failed: $e')));
+      if (mounted)
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Upload failed: $e')));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -64,7 +69,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (uid == null) return;
     setState(() => _loading = true);
     try {
-      final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get();
       final data = doc.data();
       if (data != null) {
         _nameCtrl.text = (data['displayName'] as String?) ?? _nameCtrl.text;
@@ -92,11 +100,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF344054), size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Color(0xFF344054),
+            size: 20,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Edit Profile',
-            style: TextStyle(color: Color(0xFF101828), fontWeight: FontWeight.w700, fontSize: 18)),
+        title: const Text(
+          'Edit Profile',
+          style: TextStyle(
+            color: Color(0xFF101828),
+            fontWeight: FontWeight.w700,
+            fontSize: 18,
+          ),
+        ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -113,22 +131,35 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       CircleAvatar(
                         radius: 40,
                         backgroundColor: const Color(0xFFF2F4F7),
-                        backgroundImage: _photoUrl != null && _photoUrl!.isNotEmpty
+                        backgroundImage:
+                            _photoUrl != null && _photoUrl!.isNotEmpty
                             ? NetworkImage(_photoUrl!) as ImageProvider
                             : const AssetImage(AppAssets.avatarUserDefault),
-                        child: _photoUrl == null ? const Icon(Icons.person, size: 40, color: Colors.white) : null,
+                        child: _photoUrl == null
+                            ? const Icon(
+                                Icons.person,
+                                size: 40,
+                                color: Colors.white,
+                              )
+                            : null,
                       ),
                       Positioned(
-                        bottom: 0, right: 0,
+                        bottom: 0,
+                        right: 0,
                         child: InkWell(
                           onTap: _pickAndUpload,
                           child: Container(
-                            width: 28, height: 28,
+                            width: 28,
+                            height: 28,
                             decoration: const BoxDecoration(
                               color: Colors.black,
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(Icons.edit_outlined, size: 16, color: Colors.white),
+                            child: const Icon(
+                              Icons.edit_outlined,
+                              size: 16,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
@@ -141,19 +172,40 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             const SizedBox(height: 24),
 
             // Full name
-            const Text('Full name', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Color(0xFF344054))),
+            const Text(
+              'Full name',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+                color: Color(0xFF344054),
+              ),
+            ),
             const SizedBox(height: 6),
             _inputField(controller: _nameCtrl, hint: 'Full name'),
             const SizedBox(height: 16),
 
             // Email
-            const Text('Email', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Color(0xFF344054))),
+            const Text(
+              'Email',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+                color: Color(0xFF344054),
+              ),
+            ),
             const SizedBox(height: 6),
             _inputField(controller: _emailCtrl, hint: 'Email'),
             const SizedBox(height: 16),
 
             // Phone no.
-            const Text('Phone no.', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Color(0xFF344054))),
+            const Text(
+              'Phone no.',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+                color: Color(0xFF344054),
+              ),
+            ),
             const SizedBox(height: 6),
             _inputField(
               controller: _phoneCtrl,
@@ -164,7 +216,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: const [
                     Text('🇺🇸', style: TextStyle(fontSize: 18)),
-                    Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF667085)),
+                    Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      color: Color(0xFF667085),
+                    ),
                   ],
                 ),
               ),
@@ -172,7 +227,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             const SizedBox(height: 16),
 
             // Gender
-            const Text('Gender', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Color(0xFF344054))),
+            const Text(
+              'Gender',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+                color: Color(0xFF344054),
+              ),
+            ),
             const SizedBox(height: 6),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -197,60 +259,83 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             const SizedBox(height: 16),
 
             // Birthday
-            const Text('Birthday', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Color(0xFF344054))),
+            const Text(
+              'Birthday',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+                color: Color(0xFF344054),
+              ),
+            ),
             const SizedBox(height: 6),
             _inputField(
               controller: _bdayCtrl,
               hint: 'YYYY/MM/DD',
-              suffix: const Icon(Icons.calendar_today_outlined, color: Color(0xFF667085), size: 18),
+              suffix: const Icon(
+                Icons.calendar_today_outlined,
+                color: Color(0xFF667085),
+                size: 18,
+              ),
             ),
             const SizedBox(height: 36),
 
-                // Save changes button (Dark Navy)
+            // Save changes button (Dark Navy)
             SizedBox(
               width: double.infinity,
               height: 52,
               child: ElevatedButton(
-                onPressed: _loading ? null : () async {
-                  setState(() => _loading = true);
-                  try {
-                    final updates = <String, dynamic>{
-                      'displayName': _nameCtrl.text.trim(),
-                      'email': _emailCtrl.text.trim(),
-                      'phone': _phoneCtrl.text.trim(),
-                      'gender': _gender,
-                      'birthday': _bdayCtrl.text.trim(),
-                      'photoUrl': _photoUrl ?? '',
-                    };
-                    await AuthService.updateProfile(updates);
-                    final user = FirebaseAuth.instance.currentUser;
-                    if (user != null) {
-                      await user.updateDisplayName(_nameCtrl.text.trim());
-                      if (_photoUrl != null && _photoUrl!.isNotEmpty) {
+                onPressed: _loading
+                    ? null
+                    : () async {
+                        setState(() => _loading = true);
                         try {
-                          await user.updatePhotoURL(_photoUrl);
-                        } catch (_) {}
-                      }
-                    }
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Profile updated successfully.')),
-                      );
-                      Navigator.pop(context);
-                    }
-                  } catch (e) {
-                    if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Update failed: $e')));
-                  } finally {
-                    if (mounted) setState(() => _loading = false);
-                  }
-                },
+                          final updates = <String, dynamic>{
+                            'displayName': _nameCtrl.text.trim(),
+                            'email': _emailCtrl.text.trim(),
+                            'phone': _phoneCtrl.text.trim(),
+                            'gender': _gender,
+                            'birthday': _bdayCtrl.text.trim(),
+                            'photoUrl': _photoUrl ?? '',
+                          };
+                          await AuthService.updateProfile(updates);
+                          final user = FirebaseAuth.instance.currentUser;
+                          if (user != null) {
+                            await user.updateDisplayName(_nameCtrl.text.trim());
+                            if (_photoUrl != null && _photoUrl!.isNotEmpty) {
+                              try {
+                                await user.updatePhotoURL(_photoUrl);
+                              } catch (_) {}
+                            }
+                          }
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Profile updated successfully.'),
+                              ),
+                            );
+                            Navigator.pop(context);
+                          }
+                        } catch (e) {
+                          if (mounted)
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Update failed: $e')),
+                            );
+                        } finally {
+                          if (mounted) setState(() => _loading = false);
+                        }
+                      },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: kNavy,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   elevation: 0,
                 ),
-                child: const Text('Save changes', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                child: const Text(
+                  'Save changes',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                ),
               ),
             ),
             const SizedBox(height: 24),
@@ -272,7 +357,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         suffixIcon: suffix,
         filled: true,
         fillColor: const Color(0xFFF9FAFB),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: const BorderSide(color: Color(0xFFEAECF0)),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../constants/app_assets.dart';
-import '../../routes/app_routes.dart';
+import 'package:ecommerecstore/constants/app_assets.dart';
+import 'package:ecommerecstore/routes/app_routes.dart';
 
 class _OnboardingPage {
   final String illustration;
@@ -106,7 +106,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 controller: _pageCtrl,
                 onPageChanged: (i) => setState(() => _currentPage = i),
                 itemCount: _pages.length,
-                itemBuilder: (context, i) => _OnboardingPageView(page: _pages[i]),
+                itemBuilder: (context, i) =>
+                    _OnboardingPageView(page: _pages[i]),
               ),
             ),
 
@@ -166,7 +167,10 @@ class _OnboardingPageView extends StatelessWidget {
             page.illustration,
             height: 240,
             fit: BoxFit.contain,
-            placeholderBuilder: (context) => const SizedBox(height: 240, child: Center(child: CircularProgressIndicator())),
+            placeholderBuilder: (context) => const SizedBox(
+              height: 240,
+              child: Center(child: CircularProgressIndicator()),
+            ),
           ),
           const SizedBox(height: 36),
           Text(
@@ -255,10 +259,18 @@ class _PillArrowButton extends StatelessWidget {
               width: 32,
               child: Stack(
                 children: [
-                  Icon(Icons.chevron_right_rounded, color: Colors.white.withValues(alpha: 0.5), size: 24),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: Colors.white.withValues(alpha: 0.5),
+                    size: 24,
+                  ),
                   const Positioned(
                     left: 8,
-                    child: Icon(Icons.chevron_right_rounded, color: Colors.white, size: 24),
+                    child: Icon(
+                      Icons.chevron_right_rounded,
+                      color: Colors.white,
+                      size: 24,
+                    ),
                   ),
                 ],
               ),

@@ -4,12 +4,16 @@ class ProductService {
   static final _db = FirebaseFirestore.instance;
 
   /// Stream of all products (real-time)
-  static Stream<QuerySnapshot> get productsStream =>
-      _db.collection('products').orderBy('createdAt', descending: true).snapshots();
+  static Stream<QuerySnapshot> get productsStream => _db
+      .collection('products')
+      .orderBy('createdAt', descending: true)
+      .snapshots();
 
   /// Get products by category
-  static Stream<QuerySnapshot> byCategory(String category) =>
-      _db.collection('products').where('category', isEqualTo: category).snapshots();
+  static Stream<QuerySnapshot> byCategory(String category) => _db
+      .collection('products')
+      .where('category', isEqualTo: category)
+      .snapshots();
 
   /// Get a single product by ID
   static Future<DocumentSnapshot> getById(String id) =>
@@ -41,7 +45,8 @@ class ProductService {
         'badge': '-33%',
         'inStock': true,
         'images': ['assets/raw/products/cat_fashion_men.png'],
-        'description': 'Premium slim-fit hoodie in deep navy. Made from 100% organic cotton blend for maximum comfort and durability.',
+        'description':
+            'Premium slim-fit hoodie in deep navy. Made from 100% organic cotton blend for maximum comfort and durability.',
         'createdAt': FieldValue.serverTimestamp(),
       },
       {
@@ -55,7 +60,8 @@ class ProductService {
         'badge': '-36%',
         'inStock': true,
         'images': ['assets/raw/products/cat_fashion_men.png'],
-        'description': 'Tailored chino pants with a modern fit. Available in beige, khaki, and olive.',
+        'description':
+            'Tailored chino pants with a modern fit. Available in beige, khaki, and olive.',
         'createdAt': FieldValue.serverTimestamp(),
       },
       {
@@ -69,7 +75,8 @@ class ProductService {
         'badge': '-43%',
         'inStock': true,
         'images': ['assets/raw/products/cat_fashion_men.png'],
-        'description': 'Crisp white Oxford-weave shirt. Wrinkle-resistant finish, perfect for work or casual wear.',
+        'description':
+            'Crisp white Oxford-weave shirt. Wrinkle-resistant finish, perfect for work or casual wear.',
         'createdAt': FieldValue.serverTimestamp(),
       },
 
@@ -85,7 +92,8 @@ class ProductService {
         'badge': '-38%',
         'inStock': true,
         'images': ['assets/raw/products/cat_fashion_women.png'],
-        'description': 'Elegant wrap dress with a vibrant floral print. Flattering A-line cut for all body types.',
+        'description':
+            'Elegant wrap dress with a vibrant floral print. Flattering A-line cut for all body types.',
         'createdAt': FieldValue.serverTimestamp(),
       },
       {
@@ -99,7 +107,8 @@ class ProductService {
         'badge': '-37%',
         'inStock': true,
         'images': ['assets/raw/products/cat_fashion_women.png'],
-        'description': 'Premium genuine leather tote bag. Spacious interior with multiple pockets. Perfect for work and weekend.',
+        'description':
+            'Premium genuine leather tote bag. Spacious interior with multiple pockets. Perfect for work and weekend.',
         'createdAt': FieldValue.serverTimestamp(),
       },
 
@@ -115,7 +124,8 @@ class ProductService {
         'badge': '-38%',
         'inStock': true,
         'images': ['assets/raw/products/cat_shoes.png'],
-        'description': 'Iconic clean-cut white sneakers with a chunky sole. Pairs with everything from jeans to dresses.',
+        'description':
+            'Iconic clean-cut white sneakers with a chunky sole. Pairs with everything from jeans to dresses.',
         'createdAt': FieldValue.serverTimestamp(),
       },
       {
@@ -129,7 +139,8 @@ class ProductService {
         'badge': '-38%',
         'inStock': true,
         'images': ['assets/raw/products/cat_shoes.png'],
-        'description': 'Handcrafted Oxford shoes in genuine dark brown leather. Brogue detailing for a distinguished look.',
+        'description':
+            'Handcrafted Oxford shoes in genuine dark brown leather. Brogue detailing for a distinguished look.',
         'createdAt': FieldValue.serverTimestamp(),
       },
 
@@ -145,7 +156,8 @@ class ProductService {
         'badge': '-40%',
         'inStock': true,
         'images': ['assets/raw/products/cat_electronics.png'],
-        'description': 'Over-ear wireless headphones with active noise cancellation. 30-hour battery life. Premium sound quality.',
+        'description':
+            'Over-ear wireless headphones with active noise cancellation. 30-hour battery life. Premium sound quality.',
         'createdAt': FieldValue.serverTimestamp(),
       },
       {
@@ -159,7 +171,8 @@ class ProductService {
         'badge': '-43%',
         'inStock': true,
         'images': ['assets/raw/products/cat_electronics.png'],
-        'description': 'Compact true wireless earbuds with 6-hour playtime + charging case. IPX5 water resistant.',
+        'description':
+            'Compact true wireless earbuds with 6-hour playtime + charging case. IPX5 water resistant.',
         'createdAt': FieldValue.serverTimestamp(),
       },
 
@@ -175,7 +188,8 @@ class ProductService {
         'badge': '-40%',
         'inStock': true,
         'images': ['assets/raw/products/cat_bags.png'],
-        'description': 'Compact crossbody bag in genuine tan leather. Adjustable shoulder strap, gold-tone hardware.',
+        'description':
+            'Compact crossbody bag in genuine tan leather. Adjustable shoulder strap, gold-tone hardware.',
         'createdAt': FieldValue.serverTimestamp(),
       },
       {
@@ -189,7 +203,8 @@ class ProductService {
         'badge': '-42%',
         'inStock': true,
         'images': ['assets/raw/products/cat_bags.png'],
-        'description': 'Durable waxed canvas backpack. 30L capacity, laptop compartment, multiple organization pockets.',
+        'description':
+            'Durable waxed canvas backpack. 30L capacity, laptop compartment, multiple organization pockets.',
         'createdAt': FieldValue.serverTimestamp(),
       },
 
@@ -205,7 +220,8 @@ class ProductService {
         'badge': '-41%',
         'inStock': true,
         'images': ['assets/raw/products/cat_watches.png'],
-        'description': 'Stainless steel chronograph with sapphire crystal glass. Water-resistant to 50m. Swiss movement.',
+        'description':
+            'Stainless steel chronograph with sapphire crystal glass. Water-resistant to 50m. Swiss movement.',
         'createdAt': FieldValue.serverTimestamp(),
       },
       {
@@ -219,7 +235,8 @@ class ProductService {
         'badge': '-43%',
         'inStock': true,
         'images': ['assets/raw/products/cat_watches.png'],
-        'description': 'Elegant gold-tone dress watch with minimalist white dial. Japanese quartz movement, genuine leather strap.',
+        'description':
+            'Elegant gold-tone dress watch with minimalist white dial. Japanese quartz movement, genuine leather strap.',
         'createdAt': FieldValue.serverTimestamp(),
       },
     ];

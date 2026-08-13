@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../constants/app_assets.dart';
-import '../../routes/app_routes.dart';
-import '../../theme/app_colors.dart';
-import '../../theme/app_spacing.dart';
-import '../../theme/app_typography.dart';
-import '../../widgets/index.dart';
+import 'package:ecommerecstore/constants/app_assets.dart';
+import 'package:ecommerecstore/routes/app_routes.dart';
+import 'package:ecommerecstore/theme/app_colors.dart';
+import 'package:ecommerecstore/theme/app_spacing.dart';
+import 'package:ecommerecstore/theme/app_typography.dart';
+import 'package:ecommerecstore/widgets/index.dart';
 
 /// 4-step Forgot Password flow managed as a single screen with page state.
 enum _FpStep { enterEmail, verifyOtp, newPassword, success }
@@ -35,7 +35,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   void dispose() {
     _emailCtrl.dispose();
-    for (final c in _otpCtrls) { c.dispose(); }
+    for (final c in _otpCtrls) {
+      c.dispose();
+    }
     _newPassCtrl.dispose();
     _confirmPassCtrl.dispose();
     super.dispose();
@@ -43,7 +45,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   Future<void> _next() async {
     setState(() => _loading = true);
-    await Future.delayed(const Duration(milliseconds: 700));
+    await Future<void>.delayed(const Duration(milliseconds: 700));
     if (!mounted) return;
     setState(() {
       _loading = false;
@@ -59,7 +61,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         backgroundColor: AppColors.background,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: AppColors.textPrimary),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 20,
+            color: AppColors.textPrimary,
+          ),
           onPressed: () {
             if (_step == _FpStep.enterEmail) {
               Navigator.pop(context);
@@ -108,14 +114,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           obscureNew: _obscureNew,
           obscureConfirm: _obscureConfirm,
           onToggleNew: () => setState(() => _obscureNew = !_obscureNew),
-          onToggleConfirm: () => setState(() => _obscureConfirm = !_obscureConfirm),
+          onToggleConfirm: () =>
+              setState(() => _obscureConfirm = !_obscureConfirm),
           loading: _loading,
           onNext: _next,
         );
       case _FpStep.success:
         return _SuccessStep(
           key: const ValueKey('success'),
-          onGoToLogin: () => Navigator.pushReplacementNamed(context, AppRoutes.login),
+          onGoToLogin: () =>
+              Navigator.pushReplacementNamed(context, AppRoutes.login),
         );
     }
   }
@@ -127,7 +135,12 @@ class _EnterEmailStep extends StatelessWidget {
   final bool loading;
   final VoidCallback onNext;
 
-  const _EnterEmailStep({super.key, required this.controller, required this.loading, required this.onNext});
+  const _EnterEmailStep({
+    super.key,
+    required this.controller,
+    required this.loading,
+    required this.onNext,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -137,8 +150,12 @@ class _EnterEmailStep extends StatelessWidget {
         const SizedBox(height: AppSpacing.space16),
         Text('Forgot Password?', style: AppTypography.textTheme.headlineLarge),
         const SizedBox(height: AppSpacing.space8),
-        Text("Enter your registered email and we'll send you a reset code.",
-          style: AppTypography.textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+        Text(
+          "Enter your registered email and we'll send you a reset code.",
+          style: AppTypography.textTheme.bodyMedium?.copyWith(
+            color: AppColors.textSecondary,
+          ),
+        ),
         const SizedBox(height: AppSpacing.space32),
         CustomTextField(
           label: 'Email Address',
@@ -147,12 +164,23 @@ class _EnterEmailStep extends StatelessWidget {
           keyboardType: TextInputType.emailAddress,
           prefixIcon: Padding(
             padding: const EdgeInsets.all(AppSpacing.space12),
-            child: SvgPicture.asset(AppAssets.iconMail, width: 20, height: 20,
-              colorFilter: const ColorFilter.mode(AppColors.textSecondary, BlendMode.srcIn)),
+            child: SvgPicture.asset(
+              AppAssets.iconMail,
+              width: 20,
+              height: 20,
+              colorFilter: const ColorFilter.mode(
+                AppColors.textSecondary,
+                BlendMode.srcIn,
+              ),
+            ),
           ),
         ),
         const SizedBox(height: AppSpacing.space32),
-        PrimaryButton(text: 'Send OTP Code', onPressed: onNext, isLoading: loading),
+        PrimaryButton(
+          text: 'Send OTP Code',
+          onPressed: onNext,
+          isLoading: loading,
+        ),
       ],
     );
   }
@@ -187,10 +215,18 @@ class _VerifyOtpStep extends StatelessWidget {
         const SizedBox(height: AppSpacing.space8),
         RichText(
           text: TextSpan(
-            style: AppTypography.textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+            style: AppTypography.textTheme.bodyMedium?.copyWith(
+              color: AppColors.textSecondary,
+            ),
             children: [
               const TextSpan(text: 'We sent a 4-digit code to\n'),
-              TextSpan(text: email, style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w700)),
+              TextSpan(
+                text: email,
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ],
           ),
         ),
@@ -199,7 +235,10 @@ class _VerifyOtpStep extends StatelessWidget {
         // 4-box OTP
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: List.generate(4, (i) => _OtpBox(controller: controllers[i], index: i)),
+          children: List.generate(
+            4,
+            (i) => _OtpBox(controller: controllers[i], index: i),
+          ),
         ),
         const SizedBox(height: AppSpacing.space24),
 
@@ -207,9 +246,11 @@ class _VerifyOtpStep extends StatelessWidget {
         Center(
           child: Text(
             resendSeconds > 0
-              ? 'Resend code in ${resendSeconds}s'
-              : 'Didn\'t receive a code?',
-            style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+                ? 'Resend code in ${resendSeconds}s'
+                : 'Didn\'t receive a code?',
+            style: AppTypography.textTheme.bodySmall?.copyWith(
+              color: AppColors.textSecondary,
+            ),
           ),
         ),
         if (resendSeconds == 0) ...[
@@ -217,13 +258,22 @@ class _VerifyOtpStep extends StatelessWidget {
           Center(
             child: TextButton(
               onPressed: onResend,
-              child: Text('Resend OTP',
-                style: AppTypography.textTheme.bodyMedium?.copyWith(color: AppColors.primary, fontWeight: FontWeight.w700)),
+              child: Text(
+                'Resend OTP',
+                style: AppTypography.textTheme.bodyMedium?.copyWith(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ),
           ),
         ],
         const SizedBox(height: AppSpacing.space32),
-        PrimaryButton(text: 'Verify & Continue', onPressed: onNext, isLoading: loading),
+        PrimaryButton(
+          text: 'Verify & Continue',
+          onPressed: onNext,
+          isLoading: loading,
+        ),
       ],
     );
   }
@@ -245,15 +295,26 @@ class _OtpBox extends StatelessWidget {
         textAlign: TextAlign.center,
         keyboardType: TextInputType.number,
         maxLength: 1,
-        style: AppTypography.textTheme.headlineMedium?.copyWith(color: AppColors.textPrimary),
+        style: AppTypography.textTheme.headlineMedium?.copyWith(
+          color: AppColors.textPrimary,
+        ),
         decoration: InputDecoration(
           counterText: '',
           filled: true,
           fillColor: AppColors.backgroundAlt,
           contentPadding: EdgeInsets.zero,
-          border: OutlineInputBorder(borderRadius: AppSpacing.radiusMedium, borderSide: const BorderSide(color: AppColors.border)),
-          enabledBorder: OutlineInputBorder(borderRadius: AppSpacing.radiusMedium, borderSide: const BorderSide(color: AppColors.border)),
-          focusedBorder: OutlineInputBorder(borderRadius: AppSpacing.radiusMedium, borderSide: const BorderSide(color: AppColors.primary, width: 2)),
+          border: OutlineInputBorder(
+            borderRadius: AppSpacing.radiusMedium,
+            borderSide: const BorderSide(color: AppColors.border),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: AppSpacing.radiusMedium,
+            borderSide: const BorderSide(color: AppColors.border),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: AppSpacing.radiusMedium,
+            borderSide: const BorderSide(color: AppColors.primary, width: 2),
+          ),
         ),
         onChanged: (v) {
           if (v.length == 1 && index < 3) {
@@ -296,8 +357,12 @@ class _NewPasswordStep extends StatelessWidget {
         const SizedBox(height: AppSpacing.space16),
         Text('Set New Password', style: AppTypography.textTheme.headlineLarge),
         const SizedBox(height: AppSpacing.space8),
-        Text('Your new password must be different from your previous one.',
-          style: AppTypography.textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+        Text(
+          'Your new password must be different from your previous one.',
+          style: AppTypography.textTheme.bodyMedium?.copyWith(
+            color: AppColors.textSecondary,
+          ),
+        ),
         const SizedBox(height: AppSpacing.space32),
         CustomTextField(
           label: 'New Password',
@@ -306,11 +371,22 @@ class _NewPasswordStep extends StatelessWidget {
           obscureText: obscureNew,
           prefixIcon: Padding(
             padding: const EdgeInsets.all(AppSpacing.space12),
-            child: SvgPicture.asset(AppAssets.iconPassword, width: 20, height: 20,
-              colorFilter: const ColorFilter.mode(AppColors.textSecondary, BlendMode.srcIn)),
+            child: SvgPicture.asset(
+              AppAssets.iconPassword,
+              width: 20,
+              height: 20,
+              colorFilter: const ColorFilter.mode(
+                AppColors.textSecondary,
+                BlendMode.srcIn,
+              ),
+            ),
           ),
           suffixIcon: IconButton(
-            icon: Icon(obscureNew ? Icons.visibility_off : Icons.visibility, color: AppColors.textSecondary, size: 20),
+            icon: Icon(
+              obscureNew ? Icons.visibility_off : Icons.visibility,
+              color: AppColors.textSecondary,
+              size: 20,
+            ),
             onPressed: onToggleNew,
           ),
         ),
@@ -322,16 +398,31 @@ class _NewPasswordStep extends StatelessWidget {
           obscureText: obscureConfirm,
           prefixIcon: Padding(
             padding: const EdgeInsets.all(AppSpacing.space12),
-            child: SvgPicture.asset(AppAssets.iconPassword, width: 20, height: 20,
-              colorFilter: const ColorFilter.mode(AppColors.textSecondary, BlendMode.srcIn)),
+            child: SvgPicture.asset(
+              AppAssets.iconPassword,
+              width: 20,
+              height: 20,
+              colorFilter: const ColorFilter.mode(
+                AppColors.textSecondary,
+                BlendMode.srcIn,
+              ),
+            ),
           ),
           suffixIcon: IconButton(
-            icon: Icon(obscureConfirm ? Icons.visibility_off : Icons.visibility, color: AppColors.textSecondary, size: 20),
+            icon: Icon(
+              obscureConfirm ? Icons.visibility_off : Icons.visibility,
+              color: AppColors.textSecondary,
+              size: 20,
+            ),
             onPressed: onToggleConfirm,
           ),
         ),
         const SizedBox(height: AppSpacing.space32),
-        PrimaryButton(text: 'Reset Password', onPressed: onNext, isLoading: loading),
+        PrimaryButton(
+          text: 'Reset Password',
+          onPressed: onNext,
+          isLoading: loading,
+        ),
       ],
     );
   }
@@ -352,15 +443,30 @@ class _SuccessStep extends StatelessWidget {
         Container(
           width: 100,
           height: 100,
-          decoration: const BoxDecoration(color: AppColors.successBg, shape: BoxShape.circle),
-          child: const Icon(Icons.check_circle_rounded, color: AppColors.success, size: 52),
+          decoration: const BoxDecoration(
+            color: AppColors.successBg,
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(
+            Icons.check_circle_rounded,
+            color: AppColors.success,
+            size: 52,
+          ),
         ),
         const SizedBox(height: AppSpacing.space32),
-        Text('Password Reset!', style: AppTypography.textTheme.headlineLarge, textAlign: TextAlign.center),
+        Text(
+          'Password Reset!',
+          style: AppTypography.textTheme.headlineLarge,
+          textAlign: TextAlign.center,
+        ),
         const SizedBox(height: AppSpacing.space12),
-        Text('Your password has been reset successfully.\nYou can now log in with your new password.',
-          style: AppTypography.textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
-          textAlign: TextAlign.center),
+        Text(
+          'Your password has been reset successfully.\nYou can now log in with your new password.',
+          style: AppTypography.textTheme.bodyMedium?.copyWith(
+            color: AppColors.textSecondary,
+          ),
+          textAlign: TextAlign.center,
+        ),
         const SizedBox(height: AppSpacing.space40),
         PrimaryButton(text: 'Back to Login', onPressed: onGoToLogin),
       ],

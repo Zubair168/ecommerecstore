@@ -21,22 +21,22 @@ class CartItem {
   });
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'category': category,
-        'price': price,
-        'quantity': quantity,
-        'image': image,
-      };
+    'id': id,
+    'title': title,
+    'category': category,
+    'price': price,
+    'quantity': quantity,
+    'image': image,
+  };
 
   factory CartItem.fromJson(Map<String, dynamic> json) => CartItem(
-        id: json['id'] as String,
-        title: json['title'] as String,
-        category: json['category'] as String,
-        price: (json['price'] as num).toDouble(),
-        quantity: (json['quantity'] as num).toInt(),
-        image: json['image'] as String,
-      );
+    id: json['id'] as String,
+    title: json['title'] as String,
+    category: json['category'] as String,
+    price: (json['price'] as num).toDouble(),
+    quantity: (json['quantity'] as num).toInt(),
+    image: json['image'] as String,
+  );
 }
 
 class CartProvider with ChangeNotifier {
@@ -128,9 +128,12 @@ class CartProvider with ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       final raw = prefs.getString(_prefsKey);
       if (raw == null || raw.isEmpty) return;
-      final Map<String, dynamic> data = json.decode(raw) as Map<String, dynamic>;
+      final Map<String, dynamic> data =
+          json.decode(raw) as Map<String, dynamic>;
       data.forEach((key, value) {
-        _items[key] = CartItem.fromJson(Map<String, dynamic>.from(value as Map));
+        _items[key] = CartItem.fromJson(
+          Map<String, dynamic>.from(value as Map),
+        );
       });
     } catch (_) {
       // ignore errors and start with empty cart

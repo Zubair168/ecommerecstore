@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class FilterScreen extends StatefulWidget {
   const FilterScreen({super.key});
 
@@ -19,9 +18,31 @@ class _FilterScreenState extends State<FilterScreen> {
   static const _kNavy = Color(0xFF1D2939);
   static const _kNavySoft = Color(0xFFEEF1F5);
 
-  static const _categories = ['All', 'Electronics', 'Fashion', 'Beauty', 'Sports', 'Furniture'];
-  static const _sortOptions = ['Popularity', 'Price: Low to High', 'Price: High to Low', 'Newest', 'Customer Rating'];
-  static const _brands = ['Nike', 'Sony', 'Nintendo', 'Adidas', 'Apple', "Levi's", 'JBL', 'Samsung'];
+  static const _categories = [
+    'All',
+    'Electronics',
+    'Fashion',
+    'Beauty',
+    'Sports',
+    'Furniture',
+  ];
+  static const _sortOptions = [
+    'Popularity',
+    'Price: Low to High',
+    'Price: High to Low',
+    'Newest',
+    'Customer Rating',
+  ];
+  static const _brands = [
+    'Nike',
+    'Sony',
+    'Nintendo',
+    'Adidas',
+    'Apple',
+    "Levi's",
+    'JBL',
+    'Samsung',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -32,12 +53,20 @@ class _FilterScreenState extends State<FilterScreen> {
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.close_rounded, color: Color(0xFF344054), size: 22),
+          icon: const Icon(
+            Icons.close_rounded,
+            color: Color(0xFF344054),
+            size: 22,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Filter & Sort',
-          style: TextStyle(color: Color(0xFF101828), fontWeight: FontWeight.w700, fontSize: 18),
+          style: TextStyle(
+            color: Color(0xFF101828),
+            fontWeight: FontWeight.w700,
+            fontSize: 18,
+          ),
         ),
         actions: [
           TextButton(
@@ -48,8 +77,14 @@ class _FilterScreenState extends State<FilterScreen> {
               _minRating = 0;
               _selectedBrands.clear();
             }),
-            child: const Text('Reset',
-                style: TextStyle(color: _kNavy, fontWeight: FontWeight.w700, fontSize: 14)),
+            child: const Text(
+              'Reset',
+              style: TextStyle(
+                color: _kNavy,
+                fontWeight: FontWeight.w700,
+                fontSize: 14,
+              ),
+            ),
           ),
         ],
         bottom: const PreferredSize(
@@ -60,7 +95,6 @@ class _FilterScreenState extends State<FilterScreen> {
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         children: [
-
           // ── Category ──────────────────────────────────────────────────
           _SectionTitle(title: 'Category'),
           const SizedBox(height: 12),
@@ -73,7 +107,10 @@ class _FilterScreenState extends State<FilterScreen> {
                 onTap: () => setState(() => _selectedCategory = i),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 180),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 9,
+                  ),
                   decoration: BoxDecoration(
                     color: isSelected ? _kNavy : Colors.white,
                     borderRadius: BorderRadius.circular(50),
@@ -82,15 +119,25 @@ class _FilterScreenState extends State<FilterScreen> {
                       width: isSelected ? 1.5 : 1,
                     ),
                     boxShadow: isSelected
-                        ? [BoxShadow(color: _kNavy.withValues(alpha: 0.14), blurRadius: 8, offset: const Offset(0, 3))]
+                        ? [
+                            BoxShadow(
+                              color: _kNavy.withValues(alpha: 0.14),
+                              blurRadius: 8,
+                              offset: const Offset(0, 3),
+                            ),
+                          ]
                         : [],
                   ),
                   child: Text(
                     _categories[i],
                     style: TextStyle(
                       fontSize: 13,
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                      color: isSelected ? Colors.white : const Color(0xFF667085),
+                      fontWeight: isSelected
+                          ? FontWeight.w700
+                          : FontWeight.w500,
+                      color: isSelected
+                          ? Colors.white
+                          : const Color(0xFF667085),
                     ),
                   ),
                 ),
@@ -113,7 +160,10 @@ class _FilterScreenState extends State<FilterScreen> {
                 onTap: () => setState(() => _selectedSort = i),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 180),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 9,
+                  ),
                   decoration: BoxDecoration(
                     color: isSelected ? _kNavy : Colors.white,
                     borderRadius: BorderRadius.circular(50),
@@ -122,22 +172,36 @@ class _FilterScreenState extends State<FilterScreen> {
                       width: isSelected ? 1.5 : 1,
                     ),
                     boxShadow: isSelected
-                        ? [BoxShadow(color: _kNavy.withValues(alpha: 0.14), blurRadius: 8, offset: const Offset(0, 3))]
+                        ? [
+                            BoxShadow(
+                              color: _kNavy.withValues(alpha: 0.14),
+                              blurRadius: 8,
+                              offset: const Offset(0, 3),
+                            ),
+                          ]
                         : [],
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       if (isSelected) ...[
-                        const Icon(Icons.check_rounded, size: 14, color: Colors.white),
+                        const Icon(
+                          Icons.check_rounded,
+                          size: 14,
+                          color: Colors.white,
+                        ),
                         const SizedBox(width: 4),
                       ],
                       Text(
                         _sortOptions[i],
                         style: TextStyle(
                           fontSize: 13,
-                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                          color: isSelected ? Colors.white : const Color(0xFF667085),
+                          fontWeight: isSelected
+                              ? FontWeight.w700
+                              : FontWeight.w500,
+                          color: isSelected
+                              ? Colors.white
+                              : const Color(0xFF667085),
                         ),
                       ),
                     ],
@@ -156,7 +220,10 @@ class _FilterScreenState extends State<FilterScreen> {
             children: [
               _SectionTitle(title: 'Price Range'),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: _kNavySoft,
                   borderRadius: BorderRadius.circular(6),
@@ -164,7 +231,10 @@ class _FilterScreenState extends State<FilterScreen> {
                 child: Text(
                   '\$${_priceRange.start.round()} – \$${_priceRange.end.round()}',
                   style: const TextStyle(
-                      color: _kNavy, fontWeight: FontWeight.w700, fontSize: 13),
+                    color: _kNavy,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                  ),
                 ),
               ),
             ],
@@ -203,7 +273,10 @@ class _FilterScreenState extends State<FilterScreen> {
                   onTap: () => setState(() => _minRating = r),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 180),
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: isSelected ? _kNavy : Colors.white,
                       borderRadius: BorderRadius.circular(50),
@@ -212,21 +285,38 @@ class _FilterScreenState extends State<FilterScreen> {
                         width: isSelected ? 1.5 : 1,
                       ),
                       boxShadow: isSelected
-                          ? [BoxShadow(color: _kNavy.withValues(alpha: 0.14), blurRadius: 8, offset: const Offset(0, 3))]
+                          ? [
+                              BoxShadow(
+                                color: _kNavy.withValues(alpha: 0.14),
+                                blurRadius: 8,
+                                offset: const Offset(0, 3),
+                              ),
+                            ]
                           : [],
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.star_rounded, size: 14,
-                            color: isSelected ? const Color(0xFFFDB022) : const Color(0xFFFDB022)),
+                        Icon(
+                          Icons.star_rounded,
+                          size: 14,
+                          color: isSelected
+                              ? const Color(0xFFFDB022)
+                              : const Color(0xFFFDB022),
+                        ),
                         const SizedBox(width: 4),
-                        Text('$r+',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                              color: isSelected ? Colors.white : const Color(0xFF667085),
-                            )),
+                        Text(
+                          '$r+',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: isSelected
+                                ? FontWeight.w700
+                                : FontWeight.w500,
+                            color: isSelected
+                                ? Colors.white
+                                : const Color(0xFF667085),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -247,11 +337,17 @@ class _FilterScreenState extends State<FilterScreen> {
             children: _brands.map((b) {
               final isSelected = _selectedBrands.contains(b);
               return GestureDetector(
-                onTap: () => setState(() =>
-                    isSelected ? _selectedBrands.remove(b) : _selectedBrands.add(b)),
+                onTap: () => setState(
+                  () => isSelected
+                      ? _selectedBrands.remove(b)
+                      : _selectedBrands.add(b),
+                ),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 180),
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: isSelected ? _kNavy : Colors.white,
                     borderRadius: BorderRadius.circular(50),
@@ -260,22 +356,38 @@ class _FilterScreenState extends State<FilterScreen> {
                       width: isSelected ? 1.5 : 1,
                     ),
                     boxShadow: isSelected
-                        ? [BoxShadow(color: _kNavy.withValues(alpha: 0.14), blurRadius: 8, offset: const Offset(0, 3))]
+                        ? [
+                            BoxShadow(
+                              color: _kNavy.withValues(alpha: 0.14),
+                              blurRadius: 8,
+                              offset: const Offset(0, 3),
+                            ),
+                          ]
                         : [],
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       if (isSelected) ...[
-                        const Icon(Icons.check_rounded, size: 13, color: Colors.white),
+                        const Icon(
+                          Icons.check_rounded,
+                          size: 13,
+                          color: Colors.white,
+                        ),
                         const SizedBox(width: 4),
                       ],
-                      Text(b,
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                            color: isSelected ? Colors.white : const Color(0xFF667085),
-                          )),
+                      Text(
+                        b,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: isSelected
+                              ? FontWeight.w700
+                              : FontWeight.w500,
+                          color: isSelected
+                              ? Colors.white
+                              : const Color(0xFF667085),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -326,14 +438,22 @@ class _FilterScreenState extends State<FilterScreen> {
                     color: _kNavy,
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
-                      BoxShadow(color: _kNavy.withValues(alpha: 0.25), blurRadius: 14, offset: const Offset(0, 6)),
+                      BoxShadow(
+                        color: _kNavy.withValues(alpha: 0.25),
+                        blurRadius: 14,
+                        offset: const Offset(0, 6),
+                      ),
                     ],
                   ),
                   child: const Center(
                     child: Text(
                       'Apply Filter',
                       style: TextStyle(
-                          color: Colors.white, fontSize: 15, fontWeight: FontWeight.w700, letterSpacing: 0.3),
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.3,
+                      ),
                     ),
                   ),
                 ),
@@ -352,8 +472,13 @@ class _SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(title,
-        style: const TextStyle(
-            fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF101828)));
+    return Text(
+      title,
+      style: const TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w700,
+        color: Color(0xFF101828),
+      ),
+    );
   }
 }

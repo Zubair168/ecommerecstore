@@ -55,15 +55,29 @@ class _VouchersScreenState extends State<VouchersScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF344054), size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Color(0xFF344054),
+            size: 20,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('My Voucher',
-            style: TextStyle(color: Color(0xFF101828), fontWeight: FontWeight.w700, fontSize: 18)),
+        title: const Text(
+          'My Voucher',
+          style: TextStyle(
+            color: Color(0xFF101828),
+            fontWeight: FontWeight.w700,
+            fontSize: 18,
+          ),
+        ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.search_rounded, color: Color(0xFF344054), size: 22),
+            icon: const Icon(
+              Icons.search_rounded,
+              color: Color(0xFF344054),
+              size: 22,
+            ),
             onPressed: () {},
           ),
         ],
@@ -87,7 +101,11 @@ class _VouchersScreenState extends State<VouchersScreen> {
                     children: [
                       const Text(
                         'Have a promo code?',
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF101828)),
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF101828),
+                        ),
                       ),
                       const SizedBox(height: 12),
                       Row(
@@ -95,17 +113,24 @@ class _VouchersScreenState extends State<VouchersScreen> {
                           Expanded(
                             child: Container(
                               height: 48,
-                              padding: const EdgeInsets.symmetric(horizontal: 14),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(10),
-                                border: Border.all(color: const Color(0xFFD0D5DD)),
+                                border: Border.all(
+                                  color: const Color(0xFFD0D5DD),
+                                ),
                               ),
                               child: TextField(
                                 controller: _codeCtrl,
                                 decoration: const InputDecoration(
                                   hintText: 'Enter code here',
-                                  hintStyle: TextStyle(color: Color(0xFF98A2B3), fontSize: 13),
+                                  hintStyle: TextStyle(
+                                    color: Color(0xFF98A2B3),
+                                    fontSize: 13,
+                                  ),
                                   border: InputBorder.none,
                                 ),
                               ),
@@ -118,18 +143,32 @@ class _VouchersScreenState extends State<VouchersScreen> {
                               onPressed: () {
                                 if (_codeCtrl.text.isNotEmpty) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Voucher redeemed successfully!')),
+                                    const SnackBar(
+                                      content: Text(
+                                        'Voucher redeemed successfully!',
+                                      ),
+                                    ),
                                   );
                                 }
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: kNavy,
                                 foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                padding: const EdgeInsets.symmetric(horizontal: 20),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                ),
                                 elevation: 0,
                               ),
-                              child: const Text('Redeem', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+                              child: const Text(
+                                'Redeem',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                ),
+                              ),
                             ),
                           ),
                         ],
@@ -153,7 +192,9 @@ class _VouchersScreenState extends State<VouchersScreen> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: isSelected ? const Color(0xFF101828) : const Color(0xFFEAECF0),
+                          color: isSelected
+                              ? const Color(0xFF101828)
+                              : const Color(0xFFEAECF0),
                           width: isSelected ? 1.5 : 1,
                         ),
                       ),
@@ -165,7 +206,11 @@ class _VouchersScreenState extends State<VouchersScreen> {
                               color: Color(0xFFFFECB3),
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(Icons.percent_rounded, size: 18, color: Color(0xFFFF9800)),
+                            child: const Icon(
+                              Icons.percent_rounded,
+                              size: 18,
+                              color: Color(0xFFFF9800),
+                            ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -174,17 +219,31 @@ class _VouchersScreenState extends State<VouchersScreen> {
                               children: [
                                 Text(
                                   v['title']!,
-                                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: Color(0xFF101828)),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 13,
+                                    color: Color(0xFF101828),
+                                  ),
                                 ),
                                 const SizedBox(height: 3),
                                 Row(
                                   children: [
-                                    Text('Use Code: ${v['code']!}',
-                                        style: const TextStyle(fontSize: 11, color: Color(0xFF667085))),
+                                    Text(
+                                      'Use Code: ${v['code']!}',
+                                      style: const TextStyle(
+                                        fontSize: 11,
+                                        color: Color(0xFF667085),
+                                      ),
+                                    ),
                                     if (v['sub']!.isNotEmpty) ...[
                                       const SizedBox(width: 8),
-                                      Text(v['sub']!,
-                                          style: const TextStyle(fontSize: 11, color: Color(0xFF98A2B3))),
+                                      Text(
+                                        v['sub']!,
+                                        style: const TextStyle(
+                                          fontSize: 11,
+                                          color: Color(0xFF98A2B3),
+                                        ),
+                                      ),
                                     ],
                                   ],
                                 ),
@@ -192,7 +251,11 @@ class _VouchersScreenState extends State<VouchersScreen> {
                             ),
                           ),
                           if (isSelected)
-                            const Icon(Icons.check_rounded, color: Color(0xFF101828), size: 20),
+                            const Icon(
+                              Icons.check_rounded,
+                              color: Color(0xFF101828),
+                              size: 20,
+                            ),
                         ],
                       ),
                     ),
@@ -211,17 +274,24 @@ class _VouchersScreenState extends State<VouchersScreen> {
               child: ElevatedButton(
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Voucher applied to your order!')),
+                    const SnackBar(
+                      content: Text('Voucher applied to your order!'),
+                    ),
                   );
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: kNavy,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   elevation: 0,
                 ),
-                child: const Text('Use Voucher', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                child: const Text(
+                  'Use Voucher',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                ),
               ),
             ),
           ),

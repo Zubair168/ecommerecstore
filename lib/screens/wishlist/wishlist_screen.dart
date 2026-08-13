@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../constants/app_assets.dart';
-import '../../routes/app_routes.dart';
-import '../../services/auth_service.dart';
-import '../../widgets/index.dart';
+import 'package:ecommerecstore/constants/app_assets.dart';
+import 'package:ecommerecstore/routes/app_routes.dart';
+import 'package:ecommerecstore/services/auth_service.dart';
+import 'package:ecommerecstore/widgets/index.dart';
 
 class WishlistScreen extends StatefulWidget {
   const WishlistScreen({super.key});
@@ -61,11 +61,21 @@ class _WishlistScreenState extends State<WishlistScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF344054), size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Color(0xFF344054),
+            size: 20,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Wishlist',
-            style: TextStyle(color: Color(0xFF101828), fontWeight: FontWeight.w700, fontSize: 18)),
+        title: const Text(
+          'Wishlist',
+          style: TextStyle(
+            color: Color(0xFF101828),
+            fontWeight: FontWeight.w700,
+            fontSize: 18,
+          ),
+        ),
         centerTitle: true,
       ),
       body: Column(
@@ -97,15 +107,32 @@ class _WishlistScreenState extends State<WishlistScreen> {
                       child: Container(
                         height: 38,
                         decoration: BoxDecoration(
-                          color: _selectedLayout == 0 ? kNavy : Colors.transparent,
+                          color: _selectedLayout == 0
+                              ? kNavy
+                              : Colors.transparent,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.grid_view_rounded, size: 16, color: _selectedLayout == 0 ? Colors.white : const Color(0xFF667085)),
+                            Icon(
+                              Icons.grid_view_rounded,
+                              size: 16,
+                              color: _selectedLayout == 0
+                                  ? Colors.white
+                                  : const Color(0xFF667085),
+                            ),
                             const SizedBox(width: 6),
-                            Text('Layout', style: TextStyle(color: _selectedLayout == 0 ? Colors.white : const Color(0xFF667085), fontWeight: FontWeight.w700, fontSize: 13)),
+                            Text(
+                              'Layout',
+                              style: TextStyle(
+                                color: _selectedLayout == 0
+                                    ? Colors.white
+                                    : const Color(0xFF667085),
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -117,15 +144,32 @@ class _WishlistScreenState extends State<WishlistScreen> {
                       child: Container(
                         height: 38,
                         decoration: BoxDecoration(
-                          color: _selectedLayout == 1 ? kNavy : Colors.transparent,
+                          color: _selectedLayout == 1
+                              ? kNavy
+                              : Colors.transparent,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.tune_rounded, size: 16, color: _selectedLayout == 1 ? Colors.white : const Color(0xFF667085)),
+                            Icon(
+                              Icons.tune_rounded,
+                              size: 16,
+                              color: _selectedLayout == 1
+                                  ? Colors.white
+                                  : const Color(0xFF667085),
+                            ),
                             const SizedBox(width: 6),
-                            Text('Filter', style: TextStyle(color: _selectedLayout == 1 ? Colors.white : const Color(0xFF667085), fontWeight: FontWeight.w700, fontSize: 13)),
+                            Text(
+                              'Filter',
+                              style: TextStyle(
+                                color: _selectedLayout == 1
+                                    ? Colors.white
+                                    : const Color(0xFF667085),
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -144,160 +188,279 @@ class _WishlistScreenState extends State<WishlistScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text('Please sign in to view your wishlist', style: TextStyle(fontSize: 16, color: Color(0xFF667085))),
+                        const Text(
+                          'Please sign in to view your wishlist',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF667085),
+                          ),
+                        ),
                         const SizedBox(height: 12),
-                        ElevatedButton(onPressed: () => Navigator.pushNamed(context, AppRoutes.login), child: const Text('Sign in')),
+                        ElevatedButton(
+                          onPressed: () =>
+                              Navigator.pushNamed(context, AppRoutes.login),
+                          child: const Text('Sign in'),
+                        ),
                       ],
                     ),
                   )
-                : Builder(builder: (context) {
-              // Build category list from items
-              final categories = _wishlistItems.map((e) => e['category'] as String).toSet().toList();
+                : Builder(
+                    builder: (context) {
+                      // Build category list from items
+                      final categories = _wishlistItems
+                          .map((e) => e['category'] as String)
+                          .toSet()
+                          .toList();
 
-              // Apply filter
-              final filteredItems = _selectedCategory == null
-                  ? _wishlistItems
-                  : _wishlistItems.where((e) => e['category'] == _selectedCategory).toList();
+                      // Apply filter
+                      final filteredItems = _selectedCategory == null
+                          ? _wishlistItems
+                          : _wishlistItems
+                                .where(
+                                  (e) => e['category'] == _selectedCategory,
+                                )
+                                .toList();
 
-              if (_selectedLayout == 1) {
-                // Show filter options as selectable chips
-                return Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Filter by Category', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
-                      const SizedBox(height: 12),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          // 'All' chip
-                          ChoiceChip(
-                            label: const Text('All'),
-                            selected: _selectedCategory == null,
-                            onSelected: (_) => setState(() {
-                              _selectedCategory = null;
-                              _selectedLayout = 0; // switch back to list
-                            }),
-                            selectedColor: kNavy,
-                            labelStyle: TextStyle(
-                              color: _selectedCategory == null ? Colors.white : const Color(0xFF344054),
-                              fontWeight: FontWeight.w600,
-                            ),
+                      if (_selectedLayout == 1) {
+                        // Show filter options as selectable chips
+                        return Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Filter by Category',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: [
+                                  // 'All' chip
+                                  ChoiceChip(
+                                    label: const Text('All'),
+                                    selected: _selectedCategory == null,
+                                    onSelected: (_) => setState(() {
+                                      _selectedCategory = null;
+                                      _selectedLayout =
+                                          0; // switch back to list
+                                    }),
+                                    selectedColor: kNavy,
+                                    labelStyle: TextStyle(
+                                      color: _selectedCategory == null
+                                          ? Colors.white
+                                          : const Color(0xFF344054),
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  // Category chips
+                                  ...categories.map((c) {
+                                    final isSelected = _selectedCategory == c;
+                                    return ChoiceChip(
+                                      label: Text(c),
+                                      selected: isSelected,
+                                      onSelected: (_) => setState(() {
+                                        _selectedCategory = isSelected
+                                            ? null
+                                            : c;
+                                        _selectedLayout =
+                                            0; // switch back to list
+                                      }),
+                                      selectedColor: kNavy,
+                                      labelStyle: TextStyle(
+                                        color: isSelected
+                                            ? Colors.white
+                                            : const Color(0xFF344054),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    );
+                                  }),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              // Preview filtered count
+                              Text(
+                                '${filteredItems.length} item${filteredItems.length != 1 ? 's' : ''} ${_selectedCategory != null ? 'in $_selectedCategory' : 'total'}',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Color(0xFF98A2B3),
+                                ),
+                              ),
+                            ],
                           ),
-                          // Category chips
-                          ...categories.map((c) {
-                            final isSelected = _selectedCategory == c;
-                            return ChoiceChip(
-                              label: Text(c),
-                              selected: isSelected,
-                              onSelected: (_) => setState(() {
-                                _selectedCategory = isSelected ? null : c;
-                                _selectedLayout = 0; // switch back to list
-                              }),
-                              selectedColor: kNavy,
-                              labelStyle: TextStyle(
-                                color: isSelected ? Colors.white : const Color(0xFF344054),
-                                fontWeight: FontWeight.w600,
+                        );
+                      }
+
+                      // layout display
+                      if (_layoutMode == 0) {
+                        return ListView.separated(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          itemCount: filteredItems.length,
+                          separatorBuilder: (_, __) => const Divider(
+                            height: 24,
+                            color: Color(0xFFEAECF0),
+                          ),
+                          itemBuilder: (context, i) {
+                            final item = filteredItems[i];
+                            return GestureDetector(
+                              onTap: () => Navigator.pushNamed(
+                                context,
+                                AppRoutes.productDetails,
+                              ),
+                              child: Row(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: Image.asset(
+                                      item['img']!,
+                                      width: 70,
+                                      height: 70,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) => Container(
+                                        width: 70,
+                                        height: 70,
+                                        color: const Color(0xFFF2F4F7),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          item['category']!,
+                                          style: const TextStyle(
+                                            fontSize: 10,
+                                            color: Color(0xFF98A2B3),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          item['title']!,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w700,
+                                            color: Color(0xFF101828),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              item['price']!,
+                                              style: const TextStyle(
+                                                color: kOrange,
+                                                fontWeight: FontWeight.w800,
+                                                fontSize: 13,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 6),
+                                            Text(
+                                              item['orig']!,
+                                              style: const TextStyle(
+                                                decoration:
+                                                    TextDecoration.lineThrough,
+                                                color: Color(0xFF98A2B3),
+                                                fontSize: 11,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const Icon(
+                                    Icons.favorite_rounded,
+                                    color: Color(0xFF98A2B3),
+                                    size: 20,
+                                  ),
+                                ],
                               ),
                             );
-                          }),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      // Preview filtered count
-                      Text(
-                        '${filteredItems.length} item${filteredItems.length != 1 ? 's' : ''} ${_selectedCategory != null ? 'in $_selectedCategory' : 'total'}',
-                        style: const TextStyle(fontSize: 12, color: Color(0xFF98A2B3)),
-                      ),
-                    ],
-                  ),
-                );
-              }
+                          },
+                        );
+                      }
 
-              // layout display
-              if (_layoutMode == 0) {
-                return ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: filteredItems.length,
-                  separatorBuilder: (_, __) => const Divider(height: 24, color: Color(0xFFEAECF0)),
-                  itemBuilder: (context, i) {
-                    final item = filteredItems[i];
-                    return GestureDetector(
-                      onTap: () => Navigator.pushNamed(context, AppRoutes.productDetails),
-                      child: Row(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.asset(item['img']!, width: 70, height: 70, fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => Container(width: 70, height: 70, color: const Color(0xFFF2F4F7))),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
+                      // grid
+                      return GridView.builder(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 12,
+                              mainAxisSpacing: 12,
+                              childAspectRatio: 0.85,
+                            ),
+                        itemCount: filteredItems.length,
+                        itemBuilder: (context, i) {
+                          final item = filteredItems[i];
+                          return GestureDetector(
+                            onTap: () => Navigator.pushNamed(
+                              context,
+                              AppRoutes.productDetails,
+                            ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(item['category']!, style: const TextStyle(fontSize: 10, color: Color(0xFF98A2B3))),
-                                const SizedBox(height: 2),
-                                Text(item['title']!, maxLines: 2, overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF101828))),
+                                Expanded(
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Image.asset(
+                                      item['img']!,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) => Container(
+                                        color: const Color(0xFFF2F4F7),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  item['category']!,
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    color: Color(0xFF98A2B3),
+                                  ),
+                                ),
                                 const SizedBox(height: 4),
-                                Row(
-                                  children: [
-                                    Text(item['price']!, style: const TextStyle(color: kOrange, fontWeight: FontWeight.w800, fontSize: 13)),
-                                    const SizedBox(width: 6),
-                                    Text(item['orig']!, style: const TextStyle(decoration: TextDecoration.lineThrough, color: Color(0xFF98A2B3), fontSize: 11)),
-                                  ],
+                                Text(
+                                  item['title']!,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                    color: Color(0xFF101828),
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  item['price']!,
+                                  style: const TextStyle(
+                                    color: kOrange,
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 13,
+                                  ),
                                 ),
                               ],
                             ),
-                          ),
-                          const Icon(Icons.favorite_rounded, color: Color(0xFF98A2B3), size: 20),
-                        ],
-                      ),
-                    );
-                  },
-                );
-              }
-
-              // grid
-              return GridView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 0.85,
-                ),
-                itemCount: filteredItems.length,
-                itemBuilder: (context, i) {
-                  final item = filteredItems[i];
-                  return GestureDetector(
-                    onTap: () => Navigator.pushNamed(context, AppRoutes.productDetails),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Image.asset(item['img']!, width: double.infinity, fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => Container(color: const Color(0xFFF2F4F7))),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(item['category']!, style: const TextStyle(fontSize: 10, color: Color(0xFF98A2B3))),
-                        const SizedBox(height: 4),
-                        Text(item['title']!, maxLines: 2, overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF101828))),
-                        const SizedBox(height: 6),
-                        Text(item['price']!, style: const TextStyle(color: kOrange, fontWeight: FontWeight.w800, fontSize: 13)),
-                      ],
-                    ),
-                  );
-                },
-              );
-            }),
+                          );
+                        },
+                      );
+                    },
+                  ),
           ),
 
           // Bottom Action Button: Add to cart (Dark Navy)
@@ -311,10 +474,15 @@ class _WishlistScreenState extends State<WishlistScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: kNavy,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   elevation: 0,
                 ),
-                child: const Text('Add to cart', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                child: const Text(
+                  'Add to cart',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                ),
               ),
             ),
           ),

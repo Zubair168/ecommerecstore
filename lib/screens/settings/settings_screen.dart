@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../constants/app_assets.dart';
-import '../../routes/app_routes.dart';
-import '../../services/auth_service.dart';
-import '../../widgets/index.dart';
-import '../../providers/cart_provider.dart';
+import 'package:ecommerecstore/constants/app_assets.dart';
+import 'package:ecommerecstore/routes/app_routes.dart';
+import 'package:ecommerecstore/services/auth_service.dart';
+import 'package:ecommerecstore/widgets/index.dart';
+import 'package:ecommerecstore/providers/cart_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -27,12 +27,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF344054), size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Color(0xFF344054),
+            size: 20,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Setting',
-          style: TextStyle(color: Color(0xFF101828), fontWeight: FontWeight.w700, fontSize: 18),
+          style: TextStyle(
+            color: Color(0xFF101828),
+            fontWeight: FontWeight.w700,
+            fontSize: 18,
+          ),
         ),
         centerTitle: true,
       ),
@@ -48,9 +56,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   radius: 30,
                   backgroundColor: const Color(0xFFEAECF0),
                   backgroundImage: AuthService.currentUser?.photoURL != null
-                      ? NetworkImage(AuthService.currentUser!.photoURL!) as ImageProvider
+                      ? NetworkImage(AuthService.currentUser!.photoURL!)
+                            as ImageProvider
                       : const AssetImage(AppAssets.avatarUserDefault),
-                  child: AuthService.currentUser?.photoURL == null ? const Icon(Icons.person, color: Color(0xFF667085), size: 30) : null,
+                  child: AuthService.currentUser?.photoURL == null
+                      ? const Icon(
+                          Icons.person,
+                          color: Color(0xFF667085),
+                          size: 30,
+                        )
+                      : null,
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -59,25 +74,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     children: [
                       Text(
                         AuthService.currentUser?.displayName ?? 'Guest User',
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF101828)),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF101828),
+                        ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         AuthService.currentUser?.email ?? 'Not signed in',
-                        style: const TextStyle(fontSize: 13, color: Color(0xFF667085)),
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Color(0xFF667085),
+                        ),
                       ),
                     ],
                   ),
                 ),
                 GestureDetector(
-                  onTap: () => Navigator.pushNamed(context, AppRoutes.editProfile),
+                  onTap: () =>
+                      Navigator.pushNamed(context, AppRoutes.editProfile),
                   child: Container(
-                    width: 38, height: 38,
+                    width: 38,
+                    height: 38,
                     decoration: const BoxDecoration(
                       color: Color(0xFFF2F4F7),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.edit_outlined, size: 18, color: Color(0xFF344054)),
+                    child: const Icon(
+                      Icons.edit_outlined,
+                      size: 18,
+                      color: Color(0xFF344054),
+                    ),
                   ),
                 ),
               ],
@@ -87,7 +115,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             // Section: Information
             const Text(
               'Information',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF101828)),
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF101828),
+              ),
             ),
             const SizedBox(height: 12),
             _SettingTile(
@@ -108,7 +140,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             _SettingTile(
               icon: Icons.location_on_outlined,
               title: 'Address Book',
-              onTap: () => Navigator.pushNamed(context, AppRoutes.shippingAddress),
+              onTap: () =>
+                  Navigator.pushNamed(context, AppRoutes.shippingAddress),
             ),
 
             const SizedBox(height: 20),
@@ -116,7 +149,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             // Section: Account Settings
             const Text(
               'Account Settings',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF101828)),
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF101828),
+              ),
             ),
             const SizedBox(height: 12),
             _SettingTile(
@@ -130,17 +167,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Row(
                 children: [
-                  const Icon(Icons.wb_sunny_outlined, size: 20, color: Color(0xFF475467)),
+                  const Icon(
+                    Icons.wb_sunny_outlined,
+                    size: 20,
+                    color: Color(0xFF475467),
+                  ),
                   const SizedBox(width: 14),
                   const Expanded(
                     child: Text(
                       'Light Theme',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Color(0xFF344054)),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF344054),
+                      ),
                     ),
                   ),
                   Switch(
                     value: _isLightTheme,
-                    activeColor: kNavy,
+                    activeThumbColor: kNavy,
                     onChanged: (v) => setState(() => _isLightTheme = v),
                   ),
                 ],
@@ -174,7 +219,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               showChevron: false,
               onTap: () async {
                 await AuthService.signOut();
-                if (mounted) Navigator.pushReplacementNamed(context, AppRoutes.login);
+                if (mounted)
+                  Navigator.pushReplacementNamed(context, AppRoutes.login);
               },
             ),
 
@@ -227,10 +273,18 @@ class _SettingTile extends StatelessWidget {
           leading: Icon(icon, size: 20, color: const Color(0xFF475467)),
           title: Text(
             title,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Color(0xFF344054)),
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF344054),
+            ),
           ),
           trailing: showChevron
-              ? const Icon(Icons.chevron_right_rounded, size: 20, color: Color(0xFF98A2B3))
+              ? const Icon(
+                  Icons.chevron_right_rounded,
+                  size: 20,
+                  color: Color(0xFF98A2B3),
+                )
               : null,
         ),
         const Divider(height: 1, color: Color(0xFFEAECF0)),

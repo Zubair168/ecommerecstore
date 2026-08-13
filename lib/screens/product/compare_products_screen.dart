@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../constants/app_assets.dart';
-import '../../theme/app_colors.dart';
-import '../../theme/app_spacing.dart';
-import '../../theme/app_typography.dart';
-import '../../widgets/index.dart';
+import 'package:ecommerecstore/constants/app_assets.dart';
+import 'package:ecommerecstore/theme/app_colors.dart';
+import 'package:ecommerecstore/theme/app_spacing.dart';
+import 'package:ecommerecstore/theme/app_typography.dart';
+import 'package:ecommerecstore/widgets/index.dart';
 
 class CompareProductsScreen extends StatelessWidget {
   const CompareProductsScreen({super.key});
@@ -39,17 +39,21 @@ class CompareProductsScreen extends StatelessWidget {
             Row(
               children: [
                 const SizedBox(width: 100),
-                Expanded(child: _ProductHeader(
-                  imageAsset: AppAssets.productSwitchConsole1,
-                  name: 'Nintendo Switch OLED',
-                  price: '\$299.99',
-                )),
+                Expanded(
+                  child: _ProductHeader(
+                    imageAsset: AppAssets.productSwitchConsole1,
+                    name: 'Nintendo Switch OLED',
+                    price: '\$299.99',
+                  ),
+                ),
                 const SizedBox(width: AppSpacing.space8),
-                Expanded(child: _ProductHeader(
-                  imageAsset: AppAssets.productHeadphone,
-                  name: 'Sony WH-1000XM5',
-                  price: '\$199.99',
-                )),
+                Expanded(
+                  child: _ProductHeader(
+                    imageAsset: AppAssets.productHeadphone,
+                    name: 'Sony WH-1000XM5',
+                    price: '\$199.99',
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: AppSpacing.space16),
@@ -67,7 +71,8 @@ class CompareProductsScreen extends StatelessWidget {
                   return Column(
                     children: [
                       _SpecRow(spec: e.value),
-                      if (!isLast) const Divider(height: 1, color: AppColors.divider),
+                      if (!isLast)
+                        const Divider(height: 1, color: AppColors.divider),
                     ],
                   );
                 }).toList(),
@@ -139,20 +144,30 @@ class _ProductHeader extends StatelessWidget {
               errorBuilder: (_, __, ___) => Container(
                 height: 90,
                 color: AppColors.backgroundAlt,
-                child: const Icon(Icons.image_outlined, color: AppColors.border),
+                child: const Icon(
+                  Icons.image_outlined,
+                  color: AppColors.border,
+                ),
               ),
             ),
           ),
           const SizedBox(height: AppSpacing.space8),
-          Text(name,
-              maxLines: 2,
-              textAlign: TextAlign.center,
-              style: AppTypography.textTheme.bodySmall
-                  ?.copyWith(fontWeight: FontWeight.w600)),
+          Text(
+            name,
+            maxLines: 2,
+            textAlign: TextAlign.center,
+            style: AppTypography.textTheme.bodySmall?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           const SizedBox(height: AppSpacing.space4),
-          Text(price,
-              style: AppTypography.textTheme.bodyMedium?.copyWith(
-                  color: AppColors.primary, fontWeight: FontWeight.w700)),
+          Text(
+            price,
+            style: AppTypography.textTheme.bodyMedium?.copyWith(
+              color: AppColors.primary,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         ],
       ),
     );
@@ -167,27 +182,39 @@ class _SpecRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.space16, vertical: AppSpacing.space12),
+        horizontal: AppSpacing.space16,
+        vertical: AppSpacing.space12,
+      ),
       child: Row(
         children: [
           SizedBox(
             width: 84,
-            child: Text(spec.label,
-                style: AppTypography.textTheme.bodySmall
-                    ?.copyWith(color: AppColors.textSecondary, fontWeight: FontWeight.w600)),
+            child: Text(
+              spec.label,
+              style: AppTypography.textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
           Expanded(
-            child: Text(spec.valueA,
-                textAlign: TextAlign.center,
-                style: AppTypography.textTheme.bodySmall
-                    ?.copyWith(fontWeight: FontWeight.w600)),
+            child: Text(
+              spec.valueA,
+              textAlign: TextAlign.center,
+              style: AppTypography.textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
           const SizedBox(width: AppSpacing.space8),
           Expanded(
-            child: Text(spec.valueB,
-                textAlign: TextAlign.center,
-                style: AppTypography.textTheme.bodySmall
-                    ?.copyWith(fontWeight: FontWeight.w600)),
+            child: Text(
+              spec.valueB,
+              textAlign: TextAlign.center,
+              style: AppTypography.textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),

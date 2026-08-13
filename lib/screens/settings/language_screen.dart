@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
-import '../../theme/app_spacing.dart';
-import '../../theme/app_typography.dart';
-import '../../widgets/index.dart';
+import 'package:ecommerecstore/theme/app_colors.dart';
+import 'package:ecommerecstore/theme/app_spacing.dart';
+import 'package:ecommerecstore/theme/app_typography.dart';
+import 'package:ecommerecstore/widgets/index.dart';
 
 class LanguageScreen extends StatefulWidget {
   const LanguageScreen({super.key});
@@ -45,7 +45,8 @@ class _LanguageScreenState extends State<LanguageScreen> {
             child: ListView.separated(
               padding: const EdgeInsets.all(AppSpacing.space16),
               itemCount: _languages.length,
-              separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.space8),
+              separatorBuilder: (_, __) =>
+                  const SizedBox(height: AppSpacing.space8),
               itemBuilder: (context, i) {
                 final lang = _languages[i];
                 final isSelected = _selectedLang == lang['name'];
@@ -61,12 +62,19 @@ class _LanguageScreenState extends State<LanguageScreen> {
                   ),
                   child: ListTile(
                     onTap: () => setState(() => _selectedLang = lang['name']!),
-                    leading: Text(lang['flag']!, style: const TextStyle(fontSize: 24)),
+                    leading: Text(
+                      lang['flag']!,
+                      style: const TextStyle(fontSize: 24),
+                    ),
                     title: Text(
                       lang['name']!,
                       style: AppTypography.textTheme.bodyMedium?.copyWith(
-                        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                        color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                        fontWeight: isSelected
+                            ? FontWeight.w700
+                            : FontWeight.w500,
+                        color: isSelected
+                            ? AppColors.primary
+                            : AppColors.textPrimary,
                       ),
                     ),
                     subtitle: Text(
@@ -76,7 +84,10 @@ class _LanguageScreenState extends State<LanguageScreen> {
                       ),
                     ),
                     trailing: isSelected
-                        ? const Icon(Icons.check_circle_rounded, color: AppColors.primary)
+                        ? const Icon(
+                            Icons.check_circle_rounded,
+                            color: AppColors.primary,
+                          )
                         : null,
                   ),
                 );

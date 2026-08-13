@@ -7,7 +7,11 @@
 
 # The following line activates a set of recommended lints for Flutter apps,
 # packages, and plugins designed to encourage good coding practices.
-include: package:flutter_lints/flutter.yaml
+include: package:very_good_analysis/analysis_options.yaml
+
+analyzer:
+  errors:
+    deprecated_member_use: ignore
 
 linter:
   # The lint rules applied to this project can be customized in the
@@ -21,8 +25,55 @@ linter:
   # `// ignore_for_file: name_of_lint` syntax on the line or in the file
   # producing the lint.
   rules:
-    # avoid_print: false  # Uncomment to disable the `avoid_print` rule
-    # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
+    public_member_api_docs: false
+    lines_longer_than_80_chars: false
+    always_put_required_named_parameters_first: false
+    sort_constructors_first: false
+    directives_ordering: false
+    one_member_abstracts: false
+    prefer_int_literals: false
+    specify_nonobvious_property_types: false
+    type_annotate_public_apis: false
+    use_setters_to_change_properties: false
+    avoid_positional_boolean_parameters: false
+    cascade_invocations: false
+    use_raw_strings: false
+    avoid_escaping_inner_quotes: false
+    avoid_redundant_argument_values: false
+    unnecessary_underscores: false
+    discarded_futures: false
+    flutter_style_todos: false
+    diagnostic_describe_all_properties: false
+    dangling_library_doc_comments: false
+    implicit_call_tearoffs: false
+    library_private_types_in_public_api: false
+    use_super_parameters: false
+    prefer_expression_function_bodies: false
+    matching_super_parameters: false
+    strict_top_level_inference: false
+    unawaited_futures: false
+    avoid_catches_without_on_clauses: false
+    unnecessary_lambdas: false
+    cast_nullable_to_non_nullable: false
+    omit_local_variable_types: false
+    use_build_context_synchronously: false
+    no_default_cases: false
+    prefer_final_fields: false
+    curly_braces_in_flow_control_structures: false
+    prefer_const_constructors: false
+    prefer_const_literals_to_create_immutables: false
+    avoid_dynamic_calls: false
+    unnecessary_parenthesis: false
+    inference_failure_on_instance_creation: false
+    inference_failure_on_function_invocation: false
+    noop_primitive_operations: false
+    use_named_constants: false
+    use_colored_box: false
+    unnecessary_to_list_in_spreads: false
+    prefer_const_declarations: false
+    deprecated_member_use: false
+    document_ignores: false
+    unnecessary_ignore: false
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../providers/cart_provider.dart';
+import 'package:ecommerecstore/providers/cart_provider.dart';
 
 class OrderService {
   static final _db = FirebaseFirestore.instance;
@@ -18,7 +18,7 @@ class OrderService {
           'price': 34.99,
           'quantity': 1,
           'image': 'assets/raw/products/cat_bags.png',
-        }
+        },
       ],
       'subtotal': 34.99,
       'deliveryFee': 5.00,
@@ -40,7 +40,7 @@ class OrderService {
           'price': 29.99,
           'quantity': 1,
           'image': 'assets/raw/products/cat_fashion_men.png',
-        }
+        },
       ],
       'subtotal': 29.99,
       'deliveryFee': 5.00,
@@ -62,7 +62,7 @@ class OrderService {
           'price': 49.99,
           'quantity': 1,
           'image': 'assets/raw/products/cat_shoes.png',
-        }
+        },
       ],
       'subtotal': 49.99,
       'deliveryFee': 5.00,
@@ -90,13 +90,17 @@ class OrderService {
     final uid = user?.uid ?? 'guest';
     final grandTotal = total + deliveryFee + codFee;
 
-    final itemsList = items.map((item) => {
-      'id': item.id,
-      'title': item.title,
-      'price': item.price,
-      'quantity': item.quantity,
-      'image': item.image,
-    }).toList();
+    final itemsList = items
+        .map(
+          (item) => {
+            'id': item.id,
+            'title': item.title,
+            'price': item.price,
+            'quantity': item.quantity,
+            'image': item.image,
+          },
+        )
+        .toList();
 
     final orderData = {
       'userId': uid,
@@ -112,7 +116,8 @@ class OrderService {
       'createdAt': Timestamp.now(),
     };
 
-    String orderId = 'ORD${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
+    String orderId =
+        'ORD${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
 
     try {
       final docRef = await _db.collection('orders').add({
@@ -122,7 +127,9 @@ class OrderService {
       orderId = docRef.id;
     } catch (_) {}
 
-    final shortId = orderId.length >= 8 ? orderId.substring(0, 8).toUpperCase() : orderId;
+    final shortId = orderId.length >= 8
+        ? orderId.substring(0, 8).toUpperCase()
+        : orderId;
 
     // Save locally to guarantee instant display on My Orders
     localOrders.insert(0, {
@@ -136,7 +143,8 @@ class OrderService {
         'userId': uid,
         'orderId': orderId,
         'title': '🛍️ Order Confirmed!',
-        'body': 'Your order #$shortId has been placed successfully. Total: \$${grandTotal.toStringAsFixed(2)}',
+        'body':
+            'Your order #$shortId has been placed successfully. Total: \$${grandTotal.toStringAsFixed(2)}',
         'type': 'order_confirmed',
         'isRead': false,
         'createdAt': FieldValue.serverTimestamp(),

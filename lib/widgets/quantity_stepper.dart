@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../constants/app_assets.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_spacing.dart';
-import '../theme/app_typography.dart';
+import 'package:ecommerecstore/constants/app_assets.dart';
+import 'package:ecommerecstore/theme/app_colors.dart';
+import 'package:ecommerecstore/theme/app_spacing.dart';
+import 'package:ecommerecstore/theme/app_typography.dart';
 
 /// Compact ±1 quantity stepper used in Cart and Product Detail screens.
 class QuantityStepper extends StatelessWidget {
@@ -98,9 +98,7 @@ class _StepperButton extends StatelessWidget {
             width: 18,
             height: 18,
             colorFilter: ColorFilter.mode(
-              onPressed != null
-                  ? AppColors.primary
-                  : AppColors.textDisabled,
+              onPressed != null ? AppColors.primary : AppColors.textDisabled,
               BlendMode.srcIn,
             ),
           ),

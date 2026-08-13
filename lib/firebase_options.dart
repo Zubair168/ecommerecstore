@@ -8,7 +8,7 @@ import 'package:flutter/foundation.dart'
 ///
 /// Example:
 /// ```dart
-/// import 'firebase_options.dart';
+/// import 'package:ecommerecstore/firebase_options.dart';
 /// // ...
 /// await Firebase.initializeApp(
 ///   options: DefaultFirebaseOptions.currentPlatform,
@@ -67,8 +67,10 @@ class DefaultFirebaseOptions {
     messagingSenderId: '210548096618',
     projectId: 'flutter-firebase-auth-c6d6c',
     storageBucket: 'flutter-firebase-auth-c6d6c.firebasestorage.app',
-    androidClientId: '210548096618-9vvpbi1vc001ddcopjkdvok6vk7q70qi.apps.googleusercontent.com',
-    iosClientId: '210548096618-ntbcd5k3vu5o46uhnv57bg5b3goh772h.apps.googleusercontent.com',
+    androidClientId:
+        '210548096618-9vvpbi1vc001ddcopjkdvok6vk7q70qi.apps.googleusercontent.com',
+    iosClientId:
+        '210548096618-ntbcd5k3vu5o46uhnv57bg5b3goh772h.apps.googleusercontent.com',
     iosBundleId: 'com.example.ecommerecstore',
   );
 

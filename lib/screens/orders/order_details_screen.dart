@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../constants/app_assets.dart';
-import '../../routes/app_routes.dart';
+import 'package:ecommerecstore/constants/app_assets.dart';
+import 'package:ecommerecstore/routes/app_routes.dart';
 
 class OrderDetailsScreen extends StatefulWidget {
   const OrderDetailsScreen({super.key});
@@ -14,19 +14,6 @@ class OrderDetailsScreen extends StatefulWidget {
 class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   int _selectedTab = 0; // 0: Order details, 1: Track order
 
-  static double _parseDouble(dynamic val) {
-    if (val == null) return 0.0;
-    if (val is num) return val.toDouble();
-    if (val is String) return double.tryParse(val) ?? 0.0;
-    return 0.0;
-  }
-
-  static int _parseInt(dynamic val) {
-    if (val == null) return 1;
-    if (val is num) return val.toInt();
-    if (val is String) return int.tryParse(val) ?? 1;
-    return 1;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +21,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     const kOrange = Color(0xFFFF5722);
 
     final rawArg = ModalRoute.of(context)?.settings.arguments;
-    final Map<String, dynamic>? order = rawArg is Map ? Map<String, dynamic>.from(rawArg) : null;
+    final Map<String, dynamic>? order = rawArg is Map
+        ? Map<String, dynamic>.from(rawArg)
+        : null;
 
     if (order == null) {
       return const Scaffold(body: Center(child: Text('No order data found')));
@@ -64,11 +53,21 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF344054), size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Color(0xFF344054),
+            size: 20,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Order',
-            style: TextStyle(color: Color(0xFF101828), fontWeight: FontWeight.w700, fontSize: 18)),
+        title: const Text(
+          'Order',
+          style: TextStyle(
+            color: Color(0xFF101828),
+            fontWeight: FontWeight.w700,
+            fontSize: 18,
+          ),
+        ),
         centerTitle: true,
       ),
       body: Column(
@@ -97,7 +96,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                         child: Text(
                           'Order details',
                           style: TextStyle(
-                            color: _selectedTab == 0 ? Colors.white : const Color(0xFF667085),
+                            color: _selectedTab == 0
+                                ? Colors.white
+                                : const Color(0xFF667085),
                             fontWeight: FontWeight.w700,
                             fontSize: 13,
                           ),
@@ -118,7 +119,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                         child: Text(
                           'Track order',
                           style: TextStyle(
-                            color: _selectedTab == 1 ? Colors.white : const Color(0xFF667085),
+                            color: _selectedTab == 1
+                                ? Colors.white
+                                : const Color(0xFF667085),
                             fontWeight: FontWeight.w700,
                             fontSize: 13,
                           ),
@@ -144,15 +147,22 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                         title: 'Your order',
                         child: Column(
                           children: items.map((item) {
-                            final itemData = item is Map ? Map<String, dynamic>.from(item) : <String, dynamic>{};
+                            final itemData =
+                                Map<String, dynamic>.from(item);
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 12),
                               child: _ProductRow(
                                 category: 'Product',
-                                title: itemData['title']?.toString() ?? 'Product',
-                                price: '\$${((itemData['price'] as num?) ?? 0).toStringAsFixed(2)}',
-                                qty: (itemData['quantity'] as num?)?.toInt() ?? 1,
-                                img: itemData['image']?.toString() ?? AppAssets.productFashion,
+                                title:
+                                    itemData['title']?.toString() ?? 'Product',
+                                price:
+                                    '\$${((itemData['price'] as num?) ?? 0).toStringAsFixed(2)}',
+                                qty:
+                                    (itemData['quantity'] as num?)?.toInt() ??
+                                    1,
+                                img:
+                                    itemData['image']?.toString() ??
+                                    AppAssets.productFashion,
                               ),
                             );
                           }).toList(),
@@ -167,15 +177,32 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Icon(Icons.location_on_outlined, color: Color(0xFF475467), size: 20),
+                            const Icon(
+                              Icons.location_on_outlined,
+                              color: Color(0xFF475467),
+                              size: 20,
+                            ),
                             const SizedBox(width: 10),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text('Default Address', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: Color(0xFF101828))),
+                                  const Text(
+                                    'Default Address',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 13,
+                                      color: Color(0xFF101828),
+                                    ),
+                                  ),
                                   const SizedBox(height: 3),
-                                  Text(order['address'] ?? 'No address provided', style: const TextStyle(fontSize: 12, color: Color(0xFF667085))),
+                                  Text(
+                                    (order['address'] as String?) ?? 'No address provided',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Color(0xFF667085),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -190,19 +217,43 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                         title: 'Payment Details',
                         child: Column(
                           children: [
-                            _DetailRow('Sub total', '\$${((order['subtotal'] as num?) ?? order['total'] as num? ?? 0).toStringAsFixed(2)}'),
+                            _DetailRow(
+                              'Sub total',
+                              '\$${((order['subtotal'] as num?) ?? order['total'] as num? ?? 0).toStringAsFixed(2)}',
+                            ),
                             const SizedBox(height: 8),
-                            _DetailRow('Delivery Fee', '\$${((order['deliveryFee'] as num?) ?? 5.0).toStringAsFixed(2)}'),
-                            if (order['codFee'] != null && (order['codFee'] as num) > 0) ...[
+                            _DetailRow(
+                              'Delivery Fee',
+                              '\$${((order['deliveryFee'] as num?) ?? 5.0).toStringAsFixed(2)}',
+                            ),
+                            if (order['codFee'] != null &&
+                                (order['codFee'] as num) > 0) ...[
                               const SizedBox(height: 8),
-                              _DetailRow('COD Fee', '\$${((order['codFee'] as num)).toStringAsFixed(2)}'),
+                              _DetailRow(
+                                'COD Fee',
+                                '\$${((order['codFee'] as num)).toStringAsFixed(2)}',
+                              ),
                             ],
                             const Divider(height: 20, color: Color(0xFFEAECF0)),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text('Total Amount', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Color(0xFF101828))),
-                                Text('\$${((order['total'] as num?) ?? 0).toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: kOrange)),
+                                const Text(
+                                  'Total Amount',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 14,
+                                    color: Color(0xFF101828),
+                                  ),
+                                ),
+                                Text(
+                                  '\$${((order['total'] as num?) ?? 0).toStringAsFixed(2)}',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 16,
+                                    color: kOrange,
+                                  ),
+                                ),
                               ],
                             ),
                           ],
@@ -216,13 +267,23 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                         title: 'Order Summary',
                         child: Column(
                           children: [
-                            _DetailRow('Order ID', '#${(order['id'] ?? 'N/A').toString().substring(0, 8).toUpperCase()}', isBold: true),
+                            _DetailRow(
+                              'Order ID',
+                              '#${(order['id'] ?? 'N/A').toString().substring(0, 8).toUpperCase()}',
+                              isBold: true,
+                            ),
                             const SizedBox(height: 8),
                             _DetailRow('Order date', dateStr),
                             const SizedBox(height: 8),
-                            _DetailRow('Payment method', order['paymentMethod'] ?? 'Cash on delivery'),
-                            const SizedBox(height: 8),
-                            _DetailRow('Status', order['status'] ?? 'Processing'),
+                             _DetailRow(
+                               'Payment method',
+                               (order['paymentMethod'] as String?) ?? 'Cash on delivery',
+                             ),
+                             const SizedBox(height: 8),
+                             _DetailRow(
+                               'Status',
+                               (order['status'] as String?) ?? 'Processing',
+                             ),
                           ],
                         ),
                       ),
@@ -233,14 +294,25 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                         width: double.infinity,
                         height: 52,
                         child: ElevatedButton(
-                          onPressed: () => Navigator.pushNamed(context, AppRoutes.cancelRequest),
+                          onPressed: () => Navigator.pushNamed(
+                            context,
+                            AppRoutes.cancelRequest,
+                          ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: kNavy,
                             foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                             elevation: 0,
                           ),
-                          child: const Text('Cancel Order', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                          child: const Text(
+                            'Cancel Order',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 24),
@@ -252,14 +324,39 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     );
   }
 
-  Widget _buildTrackOrderView(Map<String, dynamic> order, String dateStr, Color kNavy, Color kOrange) {
+  Widget _buildTrackOrderView(
+    Map<String, dynamic> order,
+    String dateStr,
+    Color kNavy,
+    Color kOrange,
+  ) {
     final status = (order['status'] ?? 'Processing').toString().toLowerCase();
     final steps = [
-      {'title': 'Order Placed', 'desc': 'Order has been placed on $dateStr', 'isDone': true},
-      {'title': 'Processing', 'desc': 'Seller is preparing your item(s)', 'isDone': status != 'pending'},
-      {'title': 'Shipped', 'desc': 'Courier has picked up your package', 'isDone': status == 'shipped' || status == 'completed'},
-      {'title': 'Out for Delivery', 'desc': 'Package is on its way to your address', 'isDone': status == 'completed'},
-      {'title': 'Delivered', 'desc': 'Package handed over successfully', 'isDone': status == 'completed'},
+      {
+        'title': 'Order Placed',
+        'desc': 'Order has been placed on $dateStr',
+        'isDone': true,
+      },
+      {
+        'title': 'Processing',
+        'desc': 'Seller is preparing your item(s)',
+        'isDone': status != 'pending',
+      },
+      {
+        'title': 'Shipped',
+        'desc': 'Courier has picked up your package',
+        'isDone': status == 'shipped' || status == 'completed',
+      },
+      {
+        'title': 'Out for Delivery',
+        'desc': 'Package is on its way to your address',
+        'isDone': status == 'completed',
+      },
+      {
+        'title': 'Delivered',
+        'desc': 'Package handed over successfully',
+        'isDone': status == 'completed',
+      },
     ];
 
     return ListView(
@@ -278,16 +375,39 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Estimated Delivery', style: TextStyle(fontSize: 12, color: Color(0xFF667085))),
+                  const Text(
+                    'Estimated Delivery',
+                    style: TextStyle(fontSize: 12, color: Color(0xFF667085)),
+                  ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(color: const Color(0xFFECFDF3), borderRadius: BorderRadius.circular(6)),
-                    child: Text(order['status'] ?? 'Processing', style: const TextStyle(color: Color(0xFF027A48), fontWeight: FontWeight.w700, fontSize: 11)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFECFDF3),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      (order['status'] as String?) ?? 'Processing',
+                      style: const TextStyle(
+                        color: Color(0xFF027A48),
+                        fontWeight: FontWeight.w700,
+                        fontSize: 11,
+                      ),
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: 4),
-              const Text('3-5 Business Days', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF101828))),
+              const Text(
+                '3-5 Business Days',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF101828),
+                ),
+              ),
               const Divider(height: 24, color: Color(0xFFEAECF0)),
               ...List.generate(steps.length, (idx) {
                 final step = steps[idx];
@@ -299,16 +419,30 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                     Column(
                       children: [
                         Container(
-                          width: 22, height: 22,
+                          width: 22,
+                          height: 22,
                           decoration: BoxDecoration(
                             color: isDone ? kNavy : const Color(0xFFF2F4F7),
                             shape: BoxShape.circle,
-                            border: Border.all(color: isDone ? kNavy : const Color(0xFFD0D5DD), width: 2),
+                            border: Border.all(
+                              color: isDone ? kNavy : const Color(0xFFD0D5DD),
+                              width: 2,
+                            ),
                           ),
-                          child: isDone ? const Icon(Icons.check_rounded, color: Colors.white, size: 14) : null,
+                          child: isDone
+                              ? const Icon(
+                                  Icons.check_rounded,
+                                  color: Colors.white,
+                                  size: 14,
+                                )
+                              : null,
                         ),
                         if (!isLast)
-                          Container(width: 2, height: 38, color: isDone ? kNavy : const Color(0xFFEAECF0)),
+                          Container(
+                            width: 2,
+                            height: 38,
+                            color: isDone ? kNavy : const Color(0xFFEAECF0),
+                          ),
                       ],
                     ),
                     const SizedBox(width: 12),
@@ -318,9 +452,24 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(step['title'] as String, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: isDone ? const Color(0xFF101828) : const Color(0xFF98A2B3))),
+                            Text(
+                              step['title'] as String,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                                color: isDone
+                                    ? const Color(0xFF101828)
+                                    : const Color(0xFF98A2B3),
+                              ),
+                            ),
                             const SizedBox(height: 2),
-                            Text(step['desc'] as String, style: const TextStyle(fontSize: 11, color: Color(0xFF667085))),
+                            Text(
+                              step['desc'] as String,
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: Color(0xFF667085),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -341,7 +490,11 @@ class _SectionBlock extends StatelessWidget {
   final String title;
   final Widget child;
 
-  const _SectionBlock({required this.icon, required this.title, required this.child});
+  const _SectionBlock({
+    required this.icon,
+    required this.title,
+    required this.child,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -364,7 +517,14 @@ class _SectionBlock extends StatelessWidget {
               children: [
                 Icon(icon, size: 18, color: const Color(0xFF475467)),
                 const SizedBox(width: 8),
-                Text(title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: Color(0xFF101828))),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                    color: Color(0xFF101828),
+                  ),
+                ),
               ],
             ),
           ),
@@ -399,24 +559,57 @@ class _ProductRow extends StatelessWidget {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(8),
-          child: Image.asset(img, width: 64, height: 64, fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(width: 64, height: 64, color: const Color(0xFFF2F4F7))),
+          child: Image.asset(
+            img,
+            width: 64,
+            height: 64,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => Container(
+              width: 64,
+              height: 64,
+              color: const Color(0xFFF2F4F7),
+            ),
+          ),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(category, style: const TextStyle(fontSize: 10, color: Color(0xFF98A2B3))),
+              Text(
+                category,
+                style: const TextStyle(fontSize: 10, color: Color(0xFF98A2B3)),
+              ),
               const SizedBox(height: 2),
-              Text(title, maxLines: 2, overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF101828))),
+              Text(
+                title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF101828),
+                ),
+              ),
               const SizedBox(height: 4),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(price, style: const TextStyle(color: Color(0xFFFF5722), fontWeight: FontWeight.w800, fontSize: 13)),
-                  Text('Qty: $qty', style: const TextStyle(fontSize: 11, color: Color(0xFF667085))),
+                  Text(
+                    price,
+                    style: const TextStyle(
+                      color: Color(0xFFFF5722),
+                      fontWeight: FontWeight.w800,
+                      fontSize: 13,
+                    ),
+                  ),
+                  Text(
+                    'Qty: $qty',
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: Color(0xFF667085),
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -439,8 +632,18 @@ class _DetailRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: const TextStyle(color: Color(0xFF667085), fontSize: 13)),
-        Text(value, style: TextStyle(color: const Color(0xFF101828), fontSize: 13, fontWeight: isBold ? FontWeight.w800 : FontWeight.w600)),
+        Text(
+          label,
+          style: const TextStyle(color: Color(0xFF667085), fontSize: 13),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            color: const Color(0xFF101828),
+            fontSize: 13,
+            fontWeight: isBold ? FontWeight.w800 : FontWeight.w600,
+          ),
+        ),
       ],
     );
   }

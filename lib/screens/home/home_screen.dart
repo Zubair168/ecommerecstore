@@ -3,14 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../constants/app_assets.dart';
-import '../../routes/app_routes.dart';
-import '../../widgets/index.dart';
-import '../../providers/cart_provider.dart';
-import '../../services/product_service.dart';
+import 'package:ecommerecstore/constants/app_assets.dart';
+import 'package:ecommerecstore/routes/app_routes.dart';
+import 'package:ecommerecstore/widgets/index.dart';
+import 'package:ecommerecstore/providers/cart_provider.dart';
+import 'package:ecommerecstore/services/product_service.dart';
 
 const _kOrange = Color(0xFFFF5722);
-const _kNavy = Color(0xFF1D2939);
 const _kCoral = Color(0xFFFF6542);
 
 class HomeScreen extends StatefulWidget {
@@ -21,8 +20,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _saleSeconds = 45 * 86400 + 20 * 3600 + 32 * 60 + 24; // 45d 20h 32m 24s matching design
-  int _dealSeconds = 20 * 3600 + 32 * 60 + 14;              // 20h 32m 14s
+  int _saleSeconds =
+      45 * 86400 + 20 * 3600 + 32 * 60 + 24; // 45d 20h 32m 24s matching design
+  int _dealSeconds = 20 * 3600 + 32 * 60 + 14; // 20h 32m 14s
 
   late Timer _timer;
   late PageController _heroPageCtrl;
@@ -50,23 +50,32 @@ class _HomeScreenState extends State<HomeScreen> {
   static const _flash = [
     {
       'title': 'Slim Fit Navy Hoodie',
-      'price': 29.99, 'orig': 45.00, 'badge': 'SALE',
+      'price': 29.99,
+      'orig': 45.00,
+      'badge': 'SALE',
       'badgeColor': Color(0xFFEF4444),
-      'hasSold': 82, 'total': 100,
+      'hasSold': 82,
+      'total': 100,
       'img': AppAssets.catPhotoMen,
     },
     {
       'title': 'Classic White Sneakers',
-      'price': 49.99, 'orig': 80.00, 'badge': '50% OFF',
+      'price': 49.99,
+      'orig': 80.00,
+      'badge': '50% OFF',
       'badgeColor': Color(0xFFEF4444),
-      'hasSold': 45, 'total': 100,
+      'hasSold': 45,
+      'total': 100,
       'img': AppAssets.catPhotoShoes,
     },
     {
       'title': 'Pro Wireless Headphones',
-      'price': 89.99, 'orig': 149.00, 'badge': '-40%',
+      'price': 89.99,
+      'orig': 149.00,
+      'badge': '-40%',
       'badgeColor': Color(0xFFEF4444),
-      'hasSold': 82, 'total': 100,
+      'hasSold': 82,
+      'total': 100,
       'img': AppAssets.catPhotoElec,
     },
   ];
@@ -74,17 +83,23 @@ class _HomeScreenState extends State<HomeScreen> {
   static const _deals = [
     {
       'title': 'Brown Leather Crossbody',
-      'price': 44.99, 'orig': 75.00, 'badge': '-40%',
+      'price': 44.99,
+      'orig': 75.00,
+      'badge': '-40%',
       'img': AppAssets.catPhotoBags,
     },
     {
       'title': 'Steel Chronograph Watch',
-      'price': 129.99, 'orig': 220.00, 'badge': '-41%',
+      'price': 129.99,
+      'orig': 220.00,
+      'badge': '-41%',
       'img': AppAssets.catPhotoWatches,
     },
     {
       'title': 'Floral Wrap Summer Dress',
-      'price': 39.99, 'orig': 65.00, 'badge': '-38%',
+      'price': 39.99,
+      'orig': 65.00,
+      'badge': '-38%',
       'img': AppAssets.catPhotoWomen,
     },
   ];
@@ -92,23 +107,57 @@ class _HomeScreenState extends State<HomeScreen> {
   static const _featuredList = [
     {
       'title': 'Slim Fit Navy Hoodie',
-      'price': 29.99, 'orig': 45.00, 'badge': '-33%',
-      'rating': '4.8 (124)', 'sold': '82 Sold',
+      'price': 29.99,
+      'orig': 45.00,
+      'badge': '-33%',
+      'rating': '4.8 (124)',
+      'sold': '82 Sold',
       'img': AppAssets.catPhotoMen,
     },
     {
       'title': 'Classic White Sneakers',
-      'price': 49.99, 'orig': 80.00, 'badge': '-38%',
-      'rating': '4.9 (521)', 'sold': '145 Sold',
+      'price': 49.99,
+      'orig': 80.00,
+      'badge': '-38%',
+      'rating': '4.9 (521)',
+      'sold': '145 Sold',
       'img': AppAssets.catPhotoShoes,
     },
   ];
 
   static const _newProducts = [
-    {'title': 'Minimalist Brown Bag', 'category': 'Clothing', 'price': 9.00, 'orig': 15.00, 'badge': '-56%', 'img': AppAssets.catPhotoWomen},
-    {'title': 'Slim Fit Navy Hoodie', 'category': 'Men', 'price': 29.99, 'orig': 45.00, 'badge': '-33%', 'img': AppAssets.catPhotoMen},
-    {'title': 'Classic White Sneakers', 'category': 'Shoes', 'price': 49.99, 'orig': 80.00, 'badge': '-38%', 'img': AppAssets.catPhotoShoes},
-    {'title': 'Pro Wireless Headphones', 'category': 'Electronics', 'price': 89.99, 'orig': 149.00, 'badge': '-40%', 'img': AppAssets.catPhotoElec},
+    {
+      'title': 'Minimalist Brown Bag',
+      'category': 'Clothing',
+      'price': 9.00,
+      'orig': 15.00,
+      'badge': '-56%',
+      'img': AppAssets.catPhotoWomen,
+    },
+    {
+      'title': 'Slim Fit Navy Hoodie',
+      'category': 'Men',
+      'price': 29.99,
+      'orig': 45.00,
+      'badge': '-33%',
+      'img': AppAssets.catPhotoMen,
+    },
+    {
+      'title': 'Classic White Sneakers',
+      'category': 'Shoes',
+      'price': 49.99,
+      'orig': 80.00,
+      'badge': '-38%',
+      'img': AppAssets.catPhotoShoes,
+    },
+    {
+      'title': 'Pro Wireless Headphones',
+      'category': 'Electronics',
+      'price': 89.99,
+      'orig': 149.00,
+      'badge': '-40%',
+      'img': AppAssets.catPhotoElec,
+    },
   ];
 
   @override
@@ -167,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const kOrange = Color(0xFFFF5722);
     const kNavy = Color(0xFF1D2939);
     const kCoral = Color(0xFFFF6542);
-    
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -181,20 +230,35 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  width: 28, height: 28,
+                  width: 28,
+                  height: 28,
                   decoration: BoxDecoration(
                     color: kOrange,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(Icons.shopping_bag_rounded, color: Colors.white, size: 18),
+                  child: const Icon(
+                    Icons.shopping_bag_rounded,
+                    color: Colors.white,
+                    size: 18,
+                  ),
                 ),
                 const SizedBox(width: 8),
                 RichText(
                   text: const TextSpan(
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, fontFamily: 'Outfit'),
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      fontFamily: 'Outfit',
+                    ),
                     children: [
-                      TextSpan(text: 'Online', style: TextStyle(color: Color(0xFFFF5722))),
-                      TextSpan(text: 'Shop', style: TextStyle(color: Color(0xFF1D2939))),
+                      TextSpan(
+                        text: 'Online',
+                        style: TextStyle(color: Color(0xFFFF5722)),
+                      ),
+                      TextSpan(
+                        text: 'Shop',
+                        style: TextStyle(color: Color(0xFF1D2939)),
+                      ),
                     ],
                   ),
                 ),
@@ -206,32 +270,48 @@ class _HomeScreenState extends State<HomeScreen> {
                 GestureDetector(
                   onTap: () => Navigator.pushNamed(context, AppRoutes.search),
                   child: Container(
-                    width: 38, height: 38,
+                    width: 38,
+                    height: 38,
                     decoration: BoxDecoration(
                       color: const Color(0xFFF2F4F7),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(Icons.search_rounded, size: 20, color: Color(0xFF344054)),
+                    child: const Icon(
+                      Icons.search_rounded,
+                      size: 20,
+                      color: Color(0xFF344054),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
                 GestureDetector(
-                  onTap: () => Navigator.pushNamed(context, AppRoutes.notifications),
+                  onTap: () =>
+                      Navigator.pushNamed(context, AppRoutes.notifications),
                   child: Stack(
                     children: [
                       Container(
-                        width: 38, height: 38,
+                        width: 38,
+                        height: 38,
                         decoration: BoxDecoration(
                           color: const Color(0xFFF2F4F7),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Icon(Icons.notifications_outlined, size: 20, color: Color(0xFF344054)),
+                        child: const Icon(
+                          Icons.notifications_outlined,
+                          size: 20,
+                          color: Color(0xFF344054),
+                        ),
                       ),
                       Positioned(
-                        top: 6, right: 6,
+                        top: 6,
+                        right: 6,
                         child: Container(
-                          width: 6, height: 6,
-                          decoration: BoxDecoration(color: kOrange, shape: BoxShape.circle),
+                          width: 6,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: kOrange,
+                            shape: BoxShape.circle,
+                          ),
                         ),
                       ),
                     ],
@@ -258,7 +338,8 @@ class _HomeScreenState extends State<HomeScreen> {
           SliverToBoxAdapter(
             child: _sectionHeader(
               title: 'Limited-Time Deals',
-              onSeeAll: () => Navigator.pushNamed(context, AppRoutes.productGrid),
+              onSeeAll: () =>
+                  Navigator.pushNamed(context, AppRoutes.productGrid),
               orange: kOrange,
             ),
           ),
@@ -271,7 +352,8 @@ class _HomeScreenState extends State<HomeScreen> {
           SliverToBoxAdapter(
             child: _sectionHeader(
               title: 'Featured Products',
-              onSeeAll: () => Navigator.pushNamed(context, AppRoutes.productGrid),
+              onSeeAll: () =>
+                  Navigator.pushNamed(context, AppRoutes.productGrid),
               orange: kOrange,
             ),
           ),
@@ -284,7 +366,8 @@ class _HomeScreenState extends State<HomeScreen> {
           SliverToBoxAdapter(
             child: _sectionHeader(
               title: 'New Products',
-              onSeeAll: () => Navigator.pushNamed(context, AppRoutes.productGrid),
+              onSeeAll: () =>
+                  Navigator.pushNamed(context, AppRoutes.productGrid),
               orange: kOrange,
             ),
           ),
@@ -375,7 +458,10 @@ class _HomeScreenState extends State<HomeScreen> {
               return Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [slide['color1'] as Color, slide['color2'] as Color],
+                    colors: [
+                      slide['color1'] as Color,
+                      slide['color2'] as Color,
+                    ],
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,
                   ),
@@ -383,11 +469,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Stack(
                   children: [
                     Positioned(
-                      right: -10, top: 0, bottom: 0,
+                      right: -10,
+                      top: 0,
+                      bottom: 0,
                       child: Image.asset(
                         slide['img'] as String,
-                        width: 170, fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
+                        width: 170,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const SizedBox.shrink(),
                       ),
                     ),
                     Positioned.fill(
@@ -395,7 +485,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              (slide['color1'] as Color).withValues(alpha: 0.95),
+                              (slide['color1'] as Color).withValues(
+                                alpha: 0.95,
+                              ),
                               (slide['color1'] as Color).withValues(alpha: 0.4),
                               Colors.transparent,
                             ],
@@ -411,25 +503,42 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 3,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.white24,
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
                               slide['badge'] as String,
-                              style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w800, letterSpacing: 0.5),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 9,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 0.5,
+                              ),
                             ),
                           ),
                           const SizedBox(height: 6),
                           Text(
                             slide['title'] as String,
-                            style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w800, height: 1.1),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                              height: 1.1,
+                            ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             slide['subtitle'] as String,
-                            style: const TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.w500),
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ],
                       ),
@@ -440,7 +549,8 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
           Positioned(
-            bottom: 10, left: 16,
+            bottom: 10,
+            left: 16,
             child: Row(
               children: List.generate(
                 slides.length,
@@ -481,18 +591,28 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    width: 58, height: 58,
+                    width: 58,
+                    height: 58,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: const Color(0xFFEAECF0), width: 1),
+                      border: Border.all(
+                        color: const Color(0xFFEAECF0),
+                        width: 1,
+                      ),
                     ),
                     child: ClipOval(
                       child: Image.asset(
                         cat['img'] as String,
-                        width: 58, height: 58, fit: BoxFit.cover,
+                        width: 58,
+                        height: 58,
+                        fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) => Container(
                           color: const Color(0xFFF2F4F7),
-                          child: const Icon(Icons.person, color: Color(0xFF667085), size: 24),
+                          child: const Icon(
+                            Icons.person,
+                            color: Color(0xFF667085),
+                            size: 24,
+                          ),
                         ),
                       ),
                     ),
@@ -501,7 +621,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text(
                     cat['label'] as String,
                     style: const TextStyle(
-                      fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF344054),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF344054),
                     ),
                   ),
                 ],
@@ -530,14 +652,26 @@ class _HomeScreenState extends State<HomeScreen> {
             AppAssets.userFlashSale,
             height: 26,
             fit: BoxFit.contain,
-                errorBuilder: (_, __, ___) => Text('FLASH SALE',
-                  style: TextStyle(fontWeight: FontWeight.w900, color: orange, fontSize: 14)),
+            errorBuilder: (_, __, ___) => Text(
+              'FLASH SALE',
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                color: orange,
+                fontSize: 14,
+              ),
+            ),
           ),
           const SizedBox(width: 8),
           Container(width: 1, height: 20, color: const Color(0xFFEAECF0)),
           const SizedBox(width: 8),
-          const Text('Promotion ends in',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Color(0xFF475467))),
+          const Text(
+            'Promotion ends in',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF475467),
+            ),
+          ),
           const Spacer(),
           // Coral Countdown Boxes matching original screenshot
           Row(
@@ -561,19 +695,27 @@ class _HomeScreenState extends State<HomeScreen> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 26, height: 26,
+          width: 26,
+          height: 26,
           alignment: Alignment.center,
-            decoration: BoxDecoration(
+          decoration: BoxDecoration(
             color: color,
             borderRadius: BorderRadius.circular(6),
           ),
           child: Text(
             val,
-            style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w800),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 11,
+              fontWeight: FontWeight.w800,
+            ),
           ),
         ),
         const SizedBox(height: 2),
-        Text(label, style: const TextStyle(fontSize: 9, color: Color(0xFF98A2B3))),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 9, color: Color(0xFF98A2B3)),
+        ),
       ],
     );
   }
@@ -593,9 +735,14 @@ class _HomeScreenState extends State<HomeScreen> {
             child: _FlashCard(
               p: p,
               wishlisted: _wFlash.contains(i),
-              onTap: () => Navigator.pushNamed(context, AppRoutes.productDetails, arguments: _productId(i)),
-              onHeart: () => setState(() =>
-                  _wFlash.contains(i) ? _wFlash.remove(i) : _wFlash.add(i)),
+              onTap: () => Navigator.pushNamed(
+                context,
+                AppRoutes.productDetails,
+                arguments: _productId(i),
+              ),
+              onHeart: () => setState(
+                () => _wFlash.contains(i) ? _wFlash.remove(i) : _wFlash.add(i),
+              ),
             ),
           );
         },
@@ -619,9 +766,14 @@ class _HomeScreenState extends State<HomeScreen> {
               p: p,
               wishlisted: _wDeals.contains(i),
               showProgress: false,
-              onTap: () => Navigator.pushNamed(context, AppRoutes.productDetails, arguments: _productId(i + 10)),
-              onHeart: () => setState(() =>
-                  _wDeals.contains(i) ? _wDeals.remove(i) : _wDeals.add(i)),
+              onTap: () => Navigator.pushNamed(
+                context,
+                AppRoutes.productDetails,
+                arguments: _productId(i + 10),
+              ),
+              onHeart: () => setState(
+                () => _wDeals.contains(i) ? _wDeals.remove(i) : _wDeals.add(i),
+              ),
             ),
           );
         },
@@ -647,10 +799,16 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Stack(
           children: [
             Positioned(
-              right: 0, top: 0, bottom: 0,
-              child: Image.asset(AppAssets.userHeroPromo,
-                  width: 130, fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => const SizedBox.shrink()),
+              right: 0,
+              top: 0,
+              bottom: 0,
+              child: Image.asset(
+                AppAssets.userHeroPromo,
+                width: 130,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    const SizedBox.shrink(),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(14),
@@ -658,21 +816,45 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(crossAxisAlignment: CrossAxisAlignment.start, children: const [
-                    Text('Seasonal Special',
-                        style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800)),
-                    SizedBox(height: 2),
-                    Text('Refresh your wardrobe with our\nlimited-time seasonal offers.',
-                        style: TextStyle(color: Colors.white70, fontSize: 11, height: 1.3)),
-                  ]),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text(
+                        'Seasonal Special',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      SizedBox(height: 2),
+                      Text(
+                        'Refresh your wardrobe with our\nlimited-time seasonal offers.',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 11,
+                          height: 1.3,
+                        ),
+                      ),
+                    ],
+                  ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Text('Explore Now',
-                          style: TextStyle(color: orange, fontSize: 11, fontWeight: FontWeight.w700)),
+                    child: Text(
+                      'Explore Now',
+                      style: TextStyle(
+                        color: orange,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -708,8 +890,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     borderRadius: BorderRadius.circular(14),
                     child: Image.asset(
                       item['img'] as String,
-                      width: 95, height: 110, fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(width: 95, height: 110, color: const Color(0xFFEAECF0)),
+                      width: 95,
+                      height: 110,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Container(
+                        width: 95,
+                        height: 110,
+                        color: const Color(0xFFEAECF0),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -720,26 +908,52 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         Text(
                           item['title'] as String,
-                          maxLines: 1, overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF101828)),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF101828),
+                          ),
                         ),
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            Text('\$${(item['price'] as double).toStringAsFixed(2)}',
-                                style: TextStyle(color: orange, fontWeight: FontWeight.w800, fontSize: 13)),
+                            Text(
+                              '\$${(item['price'] as double).toStringAsFixed(2)}',
+                              style: TextStyle(
+                                color: orange,
+                                fontWeight: FontWeight.w800,
+                                fontSize: 13,
+                              ),
+                            ),
                             const SizedBox(width: 6),
-                            Text('\$${(item['orig'] as double).toStringAsFixed(2)}',
-                                style: const TextStyle(decoration: TextDecoration.lineThrough, color: Color(0xFF98A2B3), fontSize: 11)),
+                            Text(
+                              '\$${(item['orig'] as double).toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                decoration: TextDecoration.lineThrough,
+                                color: Color(0xFF98A2B3),
+                                fontSize: 11,
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(height: 6),
                         Row(
                           children: [
-                            const Icon(Icons.star_rounded, color: Color(0xFFFFC107), size: 14),
+                            const Icon(
+                              Icons.star_rounded,
+                              color: Color(0xFFFFC107),
+                              size: 14,
+                            ),
                             const SizedBox(width: 2),
-                            Text('${item['rating']}  ${item['sold']}',
-                                style: const TextStyle(fontSize: 10, color: Color(0xFF667085))),
+                            Text(
+                              '${item['rating']}  ${item['sold']}',
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: Color(0xFF667085),
+                              ),
+                            ),
                           ],
                         ),
                       ],
@@ -772,10 +986,20 @@ class _HomeScreenState extends State<HomeScreen> {
           // Header Row with Clock & White Countdown Boxes matching screenshot
           Row(
             children: [
-              const Text('Deal of the Day',
-                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: Color(0xFF101828))),
+              const Text(
+                'Deal of the Day',
+                style: TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 16,
+                  color: Color(0xFF101828),
+                ),
+              ),
               const SizedBox(width: 6),
-              const Icon(Icons.access_time_rounded, size: 18, color: Color(0xFF101828)),
+              const Icon(
+                Icons.access_time_rounded,
+                size: 18,
+                color: Color(0xFF101828),
+              ),
               const Spacer(),
               _whiteTimeBox(''),
               const SizedBox(width: 4),
@@ -797,19 +1021,36 @@ class _HomeScreenState extends State<HomeScreen> {
                     borderRadius: BorderRadius.circular(12),
                     child: Image.asset(
                       AppAssets.productFashion,
-                      width: 85, height: 85, fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(width: 85, height: 85, color: const Color(0xFFEAECF0)),
+                      width: 85,
+                      height: 85,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        width: 85,
+                        height: 85,
+                        color: const Color(0xFFEAECF0),
+                      ),
                     ),
                   ),
                   Positioned(
-                    top: 6, left: 6,
+                    top: 6,
+                    left: 6,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: _kCoral,
                         borderRadius: BorderRadius.circular(4),
                       ),
-                      child: const Text('-12%', style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w800)),
+                      child: const Text(
+                        '-12%',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 9,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -821,23 +1062,53 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     const Text(
                       'Winter Front Zipper And Front Pocket Hoodie Warm For Men',
-                      maxLines: 2, overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF101828), height: 1.3),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF101828),
+                        height: 1.3,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Text('\$9.00', style: TextStyle(color: orange, fontWeight: FontWeight.w800, fontSize: 14)),
+                        Text(
+                          '\$9.00',
+                          style: TextStyle(
+                            color: orange,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 14,
+                          ),
+                        ),
                         const SizedBox(width: 6),
-                        const Text('\$15.00', style: TextStyle(decoration: TextDecoration.lineThrough, color: Color(0xFF98A2B3), fontSize: 11)),
+                        const Text(
+                          '\$15.00',
+                          style: TextStyle(
+                            decoration: TextDecoration.lineThrough,
+                            color: Color(0xFF98A2B3),
+                            fontSize: 11,
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 4),
                     Row(
                       children: const [
-                        Icon(Icons.star_rounded, color: Color(0xFFFFC107), size: 14),
+                        Icon(
+                          Icons.star_rounded,
+                          color: Color(0xFFFFC107),
+                          size: 14,
+                        ),
                         SizedBox(width: 4),
-                        Text('4.5 ( 2 )', style: TextStyle(fontSize: 11, color: Color(0xFF667085))),
+                        Text(
+                          '4.5 ( 2 )',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Color(0xFF667085),
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -868,7 +1139,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: TextStyle(fontSize: 11, color: Color(0xFF667085)),
                   children: [
                     TextSpan(text: 'Available: '),
-                    TextSpan(text: '84', style: TextStyle(fontWeight: FontWeight.w800, color: Color(0xFF101828))),
+                    TextSpan(
+                      text: '84',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF101828),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -877,7 +1154,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: TextStyle(fontSize: 11, color: Color(0xFF667085)),
                   children: [
                     TextSpan(text: 'Sold: '),
-                    TextSpan(text: '31', style: TextStyle(fontWeight: FontWeight.w800, color: Color(0xFF101828))),
+                    TextSpan(
+                      text: '31',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF101828),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -891,7 +1174,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _whiteTimeBox(String val) {
     if (val.isEmpty) return const SizedBox.shrink();
     return Container(
-      width: 26, height: 26,
+      width: 26,
+      height: 26,
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: Colors.white,
@@ -899,21 +1183,43 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       child: Text(
         val,
-        style: const TextStyle(color: Color(0xFF101828), fontWeight: FontWeight.w800, fontSize: 11),
+        style: const TextStyle(
+          color: Color(0xFF101828),
+          fontWeight: FontWeight.w800,
+          fontSize: 11,
+        ),
       ),
     );
   }
 
-  Widget _sectionHeader({required String title, required VoidCallback onSeeAll, Color orange = _kOrange}) {
+  Widget _sectionHeader({
+    required String title,
+    required VoidCallback onSeeAll,
+    Color orange = _kOrange,
+  }) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Color(0xFF101828))),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF101828),
+            ),
+          ),
           GestureDetector(
             onTap: onSeeAll,
-            child: Text('See All', style: TextStyle(color: orange, fontWeight: FontWeight.w700, fontSize: 13)),
+            child: Text(
+              'See All',
+              style: TextStyle(
+                color: orange,
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
+              ),
+            ),
           ),
         ],
       ),
@@ -925,7 +1231,11 @@ class _HomeScreenState extends State<HomeScreen> {
     final isWish = _wNew.contains(i);
 
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, AppRoutes.productDetails, arguments: _productId(i)),
+      onTap: () => Navigator.pushNamed(
+        context,
+        AppRoutes.productDetails,
+        arguments: _productId(i),
+      ),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -938,29 +1248,60 @@ class _HomeScreenState extends State<HomeScreen> {
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(12),
+                  ),
                   child: Image.asset(
                     p['img'] as String,
-                    width: double.infinity, height: 150, fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(height: 150, color: const Color(0xFFF2F4F7)),
+                    width: double.infinity,
+                    height: 150,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) =>
+                        Container(height: 150, color: const Color(0xFFF2F4F7)),
                   ),
                 ),
                 Positioned(
-                  top: 8, left: 8,
+                  top: 8,
+                  left: 8,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(color: orange, borderRadius: BorderRadius.circular(4)),
-                    child: Text(p['badge'] as String, style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w800)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: orange,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      p['badge'] as String,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
                   ),
                 ),
                 Positioned(
-                  top: 8, right: 8,
+                  top: 8,
+                  right: 8,
                   child: GestureDetector(
-                    onTap: () => setState(() => isWish ? _wNew.remove(i) : _wNew.add(i)),
+                    onTap: () =>
+                        setState(() => isWish ? _wNew.remove(i) : _wNew.add(i)),
                     child: Container(
-                      width: 28, height: 28,
-                      decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                      child: Icon(isWish ? Icons.favorite_rounded : Icons.favorite_border_rounded, size: 16, color: isWish ? Colors.red : const Color(0xFF98A2B3)),
+                      width: 28,
+                      height: 28,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        isWish
+                            ? Icons.favorite_rounded
+                            : Icons.favorite_border_rounded,
+                        size: 16,
+                        color: isWish ? Colors.red : const Color(0xFF98A2B3),
+                      ),
                     ),
                   ),
                 ),
@@ -971,26 +1312,68 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(p['category'] as String, style: const TextStyle(fontSize: 10, color: Color(0xFF98A2B3))),
+                  Text(
+                    p['category'] as String,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: Color(0xFF98A2B3),
+                    ),
+                  ),
                   const SizedBox(height: 2),
-                  Text(p['title'] as String, maxLines: 1, overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF101828))),
+                  Text(
+                    p['title'] as String,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF101828),
+                    ),
+                  ),
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      Text('\$${(p['price'] as double).toStringAsFixed(2)}', style: const TextStyle(color: _kOrange, fontWeight: FontWeight.w800, fontSize: 13)),
+                      Text(
+                        '\$${(p['price'] as double).toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          color: _kOrange,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 13,
+                        ),
+                      ),
                       const SizedBox(width: 4),
-                      Text('\$${(p['orig'] as double).toStringAsFixed(2)}', style: const TextStyle(decoration: TextDecoration.lineThrough, color: Color(0xFF98A2B3), fontSize: 10)),
+                      Text(
+                        '\$${(p['orig'] as double).toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          decoration: TextDecoration.lineThrough,
+                          color: Color(0xFF98A2B3),
+                          fontSize: 10,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.star_rounded, color: Color(0xFFFFC107), size: 14),
+                      const Icon(
+                        Icons.star_rounded,
+                        color: Color(0xFFFFC107),
+                        size: 14,
+                      ),
                       const SizedBox(width: 2),
-                      const Text('4.5', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF101828))),
+                      const Text(
+                        '4.5',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF101828),
+                        ),
+                      ),
                       const SizedBox(width: 4),
-                      Text('(2) | 10 Sold', style: TextStyle(fontSize: 10, color: Colors.grey[600])),
+                      Text(
+                        '(2) | 10 Sold',
+                        style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+                      ),
                     ],
                   ),
                 ],
@@ -1001,74 +1384,8 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-  // ── Customer Reviews Strip matching Figma ─────────────────────────────────
-  Widget _reviewsStrip() {
-    final reviews = [
-      {'name': 'Jack wylde', 'rating': 5, 'time': '2 Weeks ago', 'text': 'Absolutely love this bag! The quality is amazing for the price.', 'img': AppAssets.productFashion},
-      {'name': 'Alexa young', 'rating': 5, 'time': '1 Week ago', 'text': 'Perfect fit and great quality. Will buy again!', 'img': AppAssets.productShoe},
-      {'name': 'Mark Johnson', 'rating': 4, 'time': '3 Days ago', 'text': 'Really happy with this purchase. Fast shipping too.', 'img': AppAssets.productHeadphone},
-    ];
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        children: reviews.map((r) {
-          return Container(
-            margin: const EdgeInsets.only(bottom: 14),
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: const Color(0xFFEAECF0)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.asset(
-                        r['img'] as String,
-                        width: 36, height: 36, fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          width: 36, height: 36,
-                          decoration: const BoxDecoration(color: Color(0xFFF2F4F7), shape: BoxShape.circle),
-                          child: Center(child: Text((r['name'] as String).substring(0, 1),
-                              style: const TextStyle(fontWeight: FontWeight.w700, color: Color(0xFF344054)))),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(r['name'] as String,
-                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF101828))),
-                          Text(r['time'] as String,
-                              style: const TextStyle(fontSize: 10, color: Color(0xFF98A2B3))),
-                        ],
-                      ),
-                    ),
-                    Row(
-                      children: List.generate(5, (i) => Icon(
-                        i < (r['rating'] as int) ? Icons.star_rounded : Icons.star_border_rounded,
-                        color: const Color(0xFFFFC107), size: 13,
-                      )),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(r['text'] as String,
-                    style: const TextStyle(fontSize: 12, color: Color(0xFF475467), height: 1.4)),
-              ],
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
+
 }
 
 class _FlashCard extends StatelessWidget {
@@ -1106,29 +1423,61 @@ class _FlashCard extends StatelessWidget {
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(12),
+                  ),
                   child: Image.asset(
                     p['img'] as String,
-                    width: double.infinity, height: 135, fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(height: 135, color: const Color(0xFFF2F4F7)),
+                    width: double.infinity,
+                    height: 135,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) =>
+                        Container(height: 135, color: const Color(0xFFF2F4F7)),
                   ),
                 ),
                 Positioned(
-                  top: 6, left: 6,
+                  top: 6,
+                  left: 6,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(color: badgeColor, borderRadius: BorderRadius.circular(4)),
-                    child: Text(p['badge'] as String, style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w800)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: badgeColor,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      p['badge'] as String,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
                   ),
                 ),
                 Positioned(
-                  top: 6, right: 6,
+                  top: 6,
+                  right: 6,
                   child: GestureDetector(
                     onTap: onHeart,
                     child: Container(
-                      width: 26, height: 26,
-                      decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                      child: Icon(wishlisted ? Icons.favorite_rounded : Icons.favorite_border_rounded, size: 14, color: wishlisted ? Colors.red : const Color(0xFF98A2B3)),
+                      width: 26,
+                      height: 26,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        wishlisted
+                            ? Icons.favorite_rounded
+                            : Icons.favorite_border_rounded,
+                        size: 14,
+                        color: wishlisted
+                            ? Colors.red
+                            : const Color(0xFF98A2B3),
+                      ),
                     ),
                   ),
                 ),
@@ -1139,25 +1488,64 @@ class _FlashCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(p['title'] as String, maxLines: 2, overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF101828))),
+                  Text(
+                    p['title'] as String,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF101828),
+                    ),
+                  ),
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      Text('\$${(p['price'] as double).toStringAsFixed(2)}', style: const TextStyle(color: _kOrange, fontWeight: FontWeight.w800, fontSize: 12)),
+                      Text(
+                        '\$${(p['price'] as double).toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          color: _kOrange,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 12,
+                        ),
+                      ),
                       const SizedBox(width: 4),
-                      Text('\$${(p['orig'] as double).toStringAsFixed(2)}', style: const TextStyle(decoration: TextDecoration.lineThrough, color: Color(0xFF98A2B3), fontSize: 9)),
+                      Text(
+                        '\$${(p['orig'] as double).toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          decoration: TextDecoration.lineThrough,
+                          color: Color(0xFF98A2B3),
+                          fontSize: 9,
+                        ),
+                      ),
                     ],
                   ),
                   if (showProgress) ...[
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        const Icon(Icons.star_rounded, color: Color(0xFFFFC107), size: 14),
+                        const Icon(
+                          Icons.star_rounded,
+                          color: Color(0xFFFFC107),
+                          size: 14,
+                        ),
                         const SizedBox(width: 2),
-                        const Text('4.8', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF101828))),
+                        const Text(
+                          '4.8',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF101828),
+                          ),
+                        ),
                         const SizedBox(width: 4),
-                        Text('(124) | $sold Sold', style: TextStyle(fontSize: 10, color: Color(0xFF667085))),
+                        Text(
+                          '(124) | $sold Sold',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Color(0xFF667085),
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 6),

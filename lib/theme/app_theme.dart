@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'app_colors.dart';
-import 'app_spacing.dart';
-import 'app_typography.dart';
+import 'package:ecommerecstore/theme/app_colors.dart';
+import 'package:ecommerecstore/theme/app_spacing.dart';
+import 'package:ecommerecstore/theme/app_typography.dart';
 
 /// Central app ThemeData for the Online Shop Flutter application.
 ThemeData buildAppTheme() {
@@ -30,8 +30,7 @@ ThemeData buildAppTheme() {
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: true,
-      titleTextStyle:
-          AppTypography.textTheme.headlineSmall?.copyWith(
+      titleTextStyle: AppTypography.textTheme.headlineSmall?.copyWith(
         color: AppColors.textPrimary,
         fontWeight: FontWeight.w600,
       ),

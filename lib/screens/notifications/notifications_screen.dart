@@ -3,11 +3,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
-import '../../theme/app_colors.dart';
-import '../../theme/app_spacing.dart';
-import '../../theme/app_typography.dart';
-import '../../widgets/index.dart';
-import '../../services/order_service.dart';
+import 'package:ecommerecstore/theme/app_colors.dart';
+import 'package:ecommerecstore/theme/app_spacing.dart';
+import 'package:ecommerecstore/theme/app_typography.dart';
+import 'package:ecommerecstore/widgets/index.dart';
+import 'package:ecommerecstore/services/order_service.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -95,16 +95,18 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 iconColor = const Color(0xFF0086C9);
               }
 
-              realNotifs.add(_NotifItem(
-                id: doc.id,
-                icon: icon,
-                iconBg: iconBg,
-                iconColor: iconColor,
-                title: data['title'] ?? 'Order Notification',
-                body: data['body'] ?? '',
-                time: timeStr,
-                isRead: data['isRead'] ?? false,
-              ));
+              realNotifs.add(
+                _NotifItem(
+                  id: doc.id,
+                  icon: icon,
+                  iconBg: iconBg,
+                  iconColor: iconColor,
+                  title: (data['title'] as String?) ?? 'Order Notification',
+                  body: (data['body'] as String?) ?? '',
+                  time: timeStr,
+                  isRead: (data['isRead'] as bool?) ?? false,
+                ),
+              );
             }
           }
 
@@ -113,13 +115,22 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.notifications_none_rounded, size: 64, color: AppColors.border),
+                  const Icon(
+                    Icons.notifications_none_rounded,
+                    size: 64,
+                    color: AppColors.border,
+                  ),
                   const SizedBox(height: AppSpacing.space16),
-                  Text('No notifications yet', style: AppTypography.textTheme.headlineSmall),
+                  Text(
+                    'No notifications yet',
+                    style: AppTypography.textTheme.headlineSmall,
+                  ),
                   const SizedBox(height: 8),
                   Text(
                     'Order confirmation & status updates will appear here',
-                    style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+                    style: AppTypography.textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -130,7 +141,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           return ListView.separated(
             padding: const EdgeInsets.all(AppSpacing.space16),
             itemCount: realNotifs.length,
-            separatorBuilder: (context, i) => const SizedBox(height: AppSpacing.space8),
+            separatorBuilder: (context, i) =>
+                const SizedBox(height: AppSpacing.space8),
             itemBuilder: (context, i) => _NotifCard(
               item: realNotifs[i],
               onTap: () async {
@@ -146,7 +158,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 final id = realNotifs[i].id;
                 setState(() => realNotifs.removeAt(i));
                 try {
-                  await FirebaseFirestore.instance.collection('notifications').doc(id).delete();
+                  await FirebaseFirestore.instance
+                      .collection('notifications')
+                      .doc(id)
+                      .delete();
                 } catch (_) {}
               },
             ),
@@ -162,7 +177,11 @@ class _NotifCard extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback onDismiss;
 
-  const _NotifCard({required this.item, required this.onTap, required this.onDismiss});
+  const _NotifCard({
+    required this.item,
+    required this.onTap,
+    required this.onDismiss,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -215,7 +234,9 @@ class _NotifCard extends StatelessWidget {
                           child: Text(
                             item.title,
                             style: AppTypography.textTheme.bodyMedium?.copyWith(
-                              fontWeight: item.isRead ? FontWeight.w600 : FontWeight.w700,
+                              fontWeight: item.isRead
+                                  ? FontWeight.w600
+                                  : FontWeight.w700,
                             ),
                           ),
                         ),

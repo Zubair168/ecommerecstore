@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
-import '../../theme/app_spacing.dart';
-import '../../theme/app_typography.dart';
-import '../../widgets/index.dart';
+import 'package:ecommerecstore/theme/app_colors.dart';
+import 'package:ecommerecstore/theme/app_spacing.dart';
+import 'package:ecommerecstore/theme/app_typography.dart';
+import 'package:ecommerecstore/widgets/index.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -17,7 +17,11 @@ class _ChatMessage {
   final bool isSent;
   final String time;
 
-  const _ChatMessage({required this.text, required this.isSent, required this.time});
+  const _ChatMessage({
+    required this.text,
+    required this.isSent,
+    required this.time,
+  });
 }
 
 class _ChatScreenState extends State<ChatScreen> {
@@ -26,25 +30,33 @@ class _ChatScreenState extends State<ChatScreen> {
 
   final List<_ChatMessage> _messages = [
     const _ChatMessage(
-        text: 'Hello! How can I help you today?', isSent: false, time: '10:00 AM'),
+      text: 'Hello! How can I help you today?',
+      isSent: false,
+      time: '10:00 AM',
+    ),
     const _ChatMessage(
-        text: 'Hi, I have an issue with my recent order #2026-0038.',
-        isSent: true,
-        time: '10:01 AM'),
+      text: 'Hi, I have an issue with my recent order #2026-0038.',
+      isSent: true,
+      time: '10:01 AM',
+    ),
     const _ChatMessage(
-        text:
-            'Sure! I can help with that. Could you please describe the issue you\'re facing?',
-        isSent: false,
-        time: '10:01 AM'),
+      text:
+          'Sure! I can help with that. Could you please describe the issue you\'re facing?',
+      isSent: false,
+      time: '10:01 AM',
+    ),
     const _ChatMessage(
-        text: 'The item I received looks different from what was shown on the website.',
-        isSent: true,
-        time: '10:02 AM'),
+      text:
+          'The item I received looks different from what was shown on the website.',
+      isSent: true,
+      time: '10:02 AM',
+    ),
     const _ChatMessage(
-        text:
-            'I\'m sorry to hear that! We\'ll look into this right away. Could you please share a photo of the item you received?',
-        isSent: false,
-        time: '10:02 AM'),
+      text:
+          'I\'m sorry to hear that! We\'ll look into this right away. Could you please share a photo of the item you received?',
+      isSent: false,
+      time: '10:02 AM',
+    ),
   ];
 
   @override
@@ -58,24 +70,31 @@ class _ChatScreenState extends State<ChatScreen> {
     final text = _msgCtrl.text.trim();
     if (text.isEmpty) return;
     setState(() {
-      _messages.add(_ChatMessage(text: text, isSent: true, time: _currentTime()));
+      _messages.add(
+        _ChatMessage(text: text, isSent: true, time: _currentTime()),
+      );
     });
     _msgCtrl.clear();
     Future.delayed(const Duration(milliseconds: 100), () {
       if (_scrollCtrl.hasClients) {
-        _scrollCtrl.animateTo(_scrollCtrl.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+        _scrollCtrl.animateTo(
+          _scrollCtrl.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
       }
     });
     // Simulate response
     Future.delayed(const Duration(seconds: 1), () {
       if (!mounted) return;
       setState(() {
-        _messages.add(const _ChatMessage(
-          text: 'Thank you for your message! Our team will respond shortly.',
-          isSent: false,
-          time: '10:03 AM',
-        ));
+        _messages.add(
+          const _ChatMessage(
+            text: 'Thank you for your message! Our team will respond shortly.',
+            isSent: false,
+            time: '10:03 AM',
+          ),
+        );
       });
     });
   }
@@ -98,8 +117,14 @@ class _ChatScreenState extends State<ChatScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
-          IconButton(icon: const Icon(Icons.call_outlined, size: 22), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.more_vert_rounded, size: 22), onPressed: () {}),
+          IconButton(
+            icon: const Icon(Icons.call_outlined, size: 22),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.more_vert_rounded, size: 22),
+            onPressed: () {},
+          ),
         ],
       ),
       body: Column(
@@ -107,7 +132,9 @@ class _ChatScreenState extends State<ChatScreen> {
           // Agent header
           Container(
             padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.space16, vertical: AppSpacing.space12),
+              horizontal: AppSpacing.space16,
+              vertical: AppSpacing.space12,
+            ),
             color: AppColors.background,
             child: Row(
               children: [
@@ -116,13 +143,18 @@ class _ChatScreenState extends State<ChatScreen> {
                     CircleAvatar(
                       radius: 22,
                       backgroundColor: AppColors.primarySoft,
-                      child: const Icon(Icons.headset_mic_rounded,
-                          color: AppColors.primary, size: 22),
+                      child: const Icon(
+                        Icons.headset_mic_rounded,
+                        color: AppColors.primary,
+                        size: 22,
+                      ),
                     ),
                     Positioned(
-                      bottom: 0, right: 0,
+                      bottom: 0,
+                      right: 0,
                       child: Container(
-                        width: 12, height: 12,
+                        width: 12,
+                        height: 12,
                         decoration: BoxDecoration(
                           color: AppColors.success,
                           shape: BoxShape.circle,
@@ -137,12 +169,18 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Support Agent',
-                          style: AppTypography.textTheme.bodyMedium
-                              ?.copyWith(fontWeight: FontWeight.w700)),
-                      Text('Online · Typically replies in minutes',
-                          style: AppTypography.textTheme.bodySmall
-                              ?.copyWith(color: AppColors.success)),
+                      Text(
+                        'Support Agent',
+                        style: AppTypography.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      Text(
+                        'Online · Typically replies in minutes',
+                        style: AppTypography.textTheme.bodySmall?.copyWith(
+                          color: AppColors.success,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -167,7 +205,9 @@ class _ChatScreenState extends State<ChatScreen> {
           // Input bar
           Container(
             padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.space12, vertical: AppSpacing.space8),
+              horizontal: AppSpacing.space12,
+              vertical: AppSpacing.space8,
+            ),
             decoration: const BoxDecoration(
               color: AppColors.background,
               border: Border(top: BorderSide(color: AppColors.divider)),
@@ -177,8 +217,11 @@ class _ChatScreenState extends State<ChatScreen> {
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.attach_file_rounded,
-                        color: AppColors.textSecondary, size: 22),
+                    icon: const Icon(
+                      Icons.attach_file_rounded,
+                      color: AppColors.textSecondary,
+                      size: 22,
+                    ),
                     onPressed: () {},
                   ),
                   Expanded(
@@ -190,7 +233,9 @@ class _ChatScreenState extends State<ChatScreen> {
                       decoration: InputDecoration(
                         hintText: 'Type a message...',
                         contentPadding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.space16, vertical: AppSpacing.space12),
+                          horizontal: AppSpacing.space16,
+                          vertical: AppSpacing.space12,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: AppSpacing.radiusPill,
                           borderSide: const BorderSide(color: AppColors.border),
@@ -201,7 +246,9 @@ class _ChatScreenState extends State<ChatScreen> {
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: AppSpacing.radiusPill,
-                          borderSide: const BorderSide(color: AppColors.primary),
+                          borderSide: const BorderSide(
+                            color: AppColors.primary,
+                          ),
                         ),
                         filled: true,
                         fillColor: AppColors.backgroundAlt,
@@ -212,10 +259,17 @@ class _ChatScreenState extends State<ChatScreen> {
                   GestureDetector(
                     onTap: _sendMessage,
                     child: Container(
-                      width: 44, height: 44,
+                      width: 44,
+                      height: 44,
                       decoration: const BoxDecoration(
-                          color: AppColors.primary, shape: BoxShape.circle),
-                      child: const Icon(Icons.send_rounded, color: Colors.white, size: 20),
+                        color: AppColors.primary,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.send_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
                     ),
                   ),
                 ],
@@ -240,16 +294,22 @@ class _MessageBubble extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(bottom: AppSpacing.space12),
         constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width * 0.72),
+          maxWidth: MediaQuery.of(context).size.width * 0.72,
+        ),
         child: Column(
-          crossAxisAlignment:
-              message.isSent ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          crossAxisAlignment: message.isSent
+              ? CrossAxisAlignment.end
+              : CrossAxisAlignment.start,
           children: [
             Container(
               padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.space16, vertical: AppSpacing.space12),
+                horizontal: AppSpacing.space16,
+                vertical: AppSpacing.space12,
+              ),
               decoration: BoxDecoration(
-                color: message.isSent ? AppColors.primary : AppColors.background,
+                color: message.isSent
+                    ? AppColors.primary
+                    : AppColors.background,
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(16),
                   topRight: const Radius.circular(16),
@@ -270,9 +330,13 @@ class _MessageBubble extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 4),
-            Text(message.time,
-                style: AppTypography.textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary, fontSize: 10)),
+            Text(
+              message.time,
+              style: AppTypography.textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+                fontSize: 10,
+              ),
+            ),
           ],
         ),
       ),

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../constants/app_assets.dart';
-import '../../routes/app_routes.dart';
-import '../../services/auth_service.dart';
+import 'package:ecommerecstore/constants/app_assets.dart';
+import 'package:ecommerecstore/routes/app_routes.dart';
+import 'package:ecommerecstore/services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -33,7 +33,10 @@ class _LoginScreenState extends State<LoginScreen> {
       await AuthService.signIn(_emailCtrl.text.trim(), _passCtrl.text);
       if (mounted) Navigator.pushReplacementNamed(context, AppRoutes.home);
     } on Exception catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login failed: ${e.toString()}')));
+      if (mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Login failed: ${e.toString()}')),
+        );
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -46,11 +49,21 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) Navigator.pushReplacementNamed(context, AppRoutes.home);
     } catch (e) {
       final msg = e.toString();
-      if (msg.contains('ApiException') || msg.contains('DEVELOPER_ERROR') || msg.contains('sign_in_failed') || msg.contains('10')) {
-        final help = 'Google sign-in failed (ApiException 10).\n\nPlease add your Android app SHA-1/ SHA-256 fingerprint to the Firebase console for the Android app, download an updated google-services.json and rebuild the app.';
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(help)));
+      if (msg.contains('ApiException') ||
+          msg.contains('DEVELOPER_ERROR') ||
+          msg.contains('sign_in_failed') ||
+          msg.contains('10')) {
+        final help =
+            'Google sign-in failed (ApiException 10).\n\nPlease add your Android app SHA-1/ SHA-256 fingerprint to the Firebase console for the Android app, download an updated google-services.json and rebuild the app.';
+        if (mounted)
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(help)));
       } else {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Google sign-in failed: $e')));
+        if (mounted)
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Google sign-in failed: $e')));
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -67,7 +80,11 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF344054), size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Color(0xFF344054),
+            size: 20,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -87,20 +104,35 @@ class _LoginScreenState extends State<LoginScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                        width: 32, height: 32,
+                        width: 32,
+                        height: 32,
                         decoration: BoxDecoration(
                           color: const Color(0xFFFF5722),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Icon(Icons.shopping_bag_rounded, color: Colors.white, size: 20),
+                        child: const Icon(
+                          Icons.shopping_bag_rounded,
+                          color: Colors.white,
+                          size: 20,
+                        ),
                       ),
                       const SizedBox(width: 8),
                       RichText(
                         text: const TextSpan(
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800, fontFamily: 'Outfit'),
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w800,
+                            fontFamily: 'Outfit',
+                          ),
                           children: [
-                            TextSpan(text: 'Online', style: TextStyle(color: Color(0xFFFF5722))),
-                            TextSpan(text: 'Shop', style: TextStyle(color: Color(0xFF1D2939))),
+                            TextSpan(
+                              text: 'Online',
+                              style: TextStyle(color: Color(0xFFFF5722)),
+                            ),
+                            TextSpan(
+                              text: 'Shop',
+                              style: TextStyle(color: Color(0xFF1D2939)),
+                            ),
                           ],
                         ),
                       ),
@@ -135,7 +167,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Email field
                 const Text(
                   'Email',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: Color(0xFF344054)),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                    color: Color(0xFF344054),
+                  ),
                 ),
                 const SizedBox(height: 6),
                 TextFormField(
@@ -143,11 +179,21 @@ class _LoginScreenState extends State<LoginScreen> {
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     hintText: 'Email',
-                    hintStyle: const TextStyle(color: Color(0xFF98A2B3), fontSize: 14),
-                    prefixIcon: const Icon(Icons.mail_outline_rounded, color: Color(0xFF667085), size: 20),
+                    hintStyle: const TextStyle(
+                      color: Color(0xFF98A2B3),
+                      fontSize: 14,
+                    ),
+                    prefixIcon: const Icon(
+                      Icons.mail_outline_rounded,
+                      color: Color(0xFF667085),
+                      size: 20,
+                    ),
                     filled: true,
                     fillColor: const Color(0xFFF9FAFB),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: const BorderSide(color: Color(0xFFEAECF0)),
@@ -171,7 +217,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Password field
                 const Text(
                   'Password',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: Color(0xFF344054)),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                    color: Color(0xFF344054),
+                  ),
                 ),
                 const SizedBox(height: 6),
                 TextFormField(
@@ -179,11 +229,20 @@ class _LoginScreenState extends State<LoginScreen> {
                   obscureText: _obscure,
                   decoration: InputDecoration(
                     hintText: '*******',
-                    hintStyle: const TextStyle(color: Color(0xFF98A2B3), fontSize: 14),
-                    prefixIcon: const Icon(Icons.lock_outline_rounded, color: Color(0xFF667085), size: 20),
+                    hintStyle: const TextStyle(
+                      color: Color(0xFF98A2B3),
+                      fontSize: 14,
+                    ),
+                    prefixIcon: const Icon(
+                      Icons.lock_outline_rounded,
+                      color: Color(0xFF667085),
+                      size: 20,
+                    ),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                        _obscure
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
                         color: const Color(0xFF667085),
                         size: 20,
                       ),
@@ -191,7 +250,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     filled: true,
                     fillColor: const Color(0xFFF9FAFB),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: const BorderSide(color: Color(0xFFEAECF0)),
@@ -216,7 +278,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    onPressed: () => Navigator.pushNamed(context, AppRoutes.forgotPassword),
+                    onPressed: () =>
+                        Navigator.pushNamed(context, AppRoutes.forgotPassword),
                     child: const Text(
                       'Forgot Password?',
                       style: TextStyle(
@@ -245,12 +308,19 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     child: _loading
                         ? const SizedBox(
-                            width: 24, height: 24,
+                            width: 24,
+                            height: 24,
                             child: CircularProgressIndicator(
-                              strokeWidth: 2, valueColor: AlwaysStoppedAnimation(Colors.white)))
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation(Colors.white),
+                            ),
+                          )
                         : const Text(
                             'Sign in',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                   ),
                 ),
@@ -260,12 +330,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 Center(
                   child: RichText(
                     text: TextSpan(
-                      style: const TextStyle(fontSize: 13, color: Color(0xFF667085)),
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: Color(0xFF667085),
+                      ),
                       children: [
                         const TextSpan(text: "Don't have an account? "),
                         WidgetSpan(
                           child: GestureDetector(
-                            onTap: () => Navigator.pushNamed(context, AppRoutes.register),
+                            onTap: () => Navigator.pushNamed(
+                              context,
+                              AppRoutes.register,
+                            ),
                             child: const Text(
                               'Sign up',
                               style: TextStyle(
@@ -287,7 +363,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     Expanded(child: Divider(color: Color(0xFFEAECF0))),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Text('Or', style: TextStyle(color: Color(0xFF98A2B3), fontSize: 13)),
+                      child: Text(
+                        'Or',
+                        style: TextStyle(
+                          color: Color(0xFF98A2B3),
+                          fontSize: 13,
+                        ),
+                      ),
                     ),
                     Expanded(child: Divider(color: Color(0xFFEAECF0))),
                   ],
@@ -344,8 +426,13 @@ class _SocialButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SvgPicture.asset(icon, width: 20, height: 20,
-                errorBuilder: (_, __, ___) => const Icon(Icons.g_mobiledata, size: 24)),
+            SvgPicture.asset(
+              icon,
+              width: 20,
+              height: 20,
+              errorBuilder: (_, __, ___) =>
+                  const Icon(Icons.g_mobiledata, size: 24),
+            ),
             const SizedBox(width: 10),
             Text(
               label,
