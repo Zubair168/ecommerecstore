@@ -64,9 +64,11 @@ dev_dependencies:
   flutter_native_splash: ^2.4.4
 
 flutter_launcher_icons:
-  android: "ic_launcher"
+  android: true
   ios: true
   image_path: "assets/raw/logos/app_logo.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/raw/logos/app_logo.png"
   min_sdk_android: 21
 
 flutter_native_splash:
