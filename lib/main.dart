@@ -47,9 +47,12 @@ import 'package:ecommerecstore/screens/vendor/vendor_profile_screen.dart';
 import 'package:ecommerecstore/screens/voucher/vouchers_screen.dart';
 import 'package:ecommerecstore/screens/product/compare_products_screen.dart';
 
+import 'package:ecommerecstore/config/app_config.dart';
+
 Future<void> main() async {
   try {
     WidgetsFlutterBinding.ensureInitialized();
+    debugPrint('Configured API URL: ${AppConfig.apiUrl}');
 
     // Initialize Firebase before starting the app to prevent late-initialization errors
     await Firebase.initializeApp(
