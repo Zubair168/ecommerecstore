@@ -204,5 +204,35 @@ flutter test
 
 ---
 
+## 🛠️ App Configuration Implementation
+
+### 1. Flutter Flavors (`dev`, `staging`, `prod`)
+- **Android Configuration**: Modified `android/app/build.gradle.kts` adding `flavorDimensions += "default"` and product flavors:
+  - **`dev`**: `applicationIdSuffix = ".dev"`, display name `"E-Commerce Dev"`
+  - **`staging`**: `applicationIdSuffix = ".staging"`, display name `"E-Commerce Staging"`
+  - **`prod`**: base `com.example.ecommerecstore`, display name `"E-Commerce App"`
+- **Manifest Label**: Updated `android/app/src/main/AndroidManifest.xml` to `android:label="@string/app_name"`.
+
+### 2. Environment-Specific API URL with `--dart-define`
+- **Config Class**: Created `lib/config/app_config.dart` using `String.fromEnvironment('API_URL', defaultValue: 'https://api.example.com')`.
+- **API Service**: Created `lib/services/api_service.dart` exposing `ApiService.baseUrl` from `AppConfig.apiUrl`.
+- **Run Commands Supported**:
+  - `flutter run --flavor dev --dart-define=API_URL=https://dev-api.example.com`
+  - `flutter run --flavor staging --dart-define=API_URL=https://staging-api.example.com`
+  - `flutter run --flavor prod --dart-define=API_URL=https://api.example.com`
+
+### 3. Custom App Icon
+- **Package**: `flutter_launcher_icons` v0.14.3
+- **Source Asset**: `assets/raw/logos/app_logo.png`
+- **Platforms**: Generated for Android (mipmap icons) and iOS (`AppIcon.appiconset`).
+
+### 4. Custom Splash Screen
+- **Package**: `flutter_native_splash` v2.4.4
+- **Source Asset**: `assets/raw/logos/app_logo.png`
+- **Platforms**: Generated native drawables for Android (v21 & Android 12 splash APIs) and iOS launch storyboard.
+
+---
+
 **Report Prepared By:** Zubair (`Zubair168`)  
 **Status:** 100% Complete & Ready for Evaluation
+
